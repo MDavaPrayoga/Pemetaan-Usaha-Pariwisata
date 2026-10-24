@@ -4,52 +4,40 @@ namespace App\Services;
 
 class DbscanService
 {
-    /**
-     * Radius rata-rata bumi dalam satuan kilometer (WGS-84 standard).
-     */
+    // Konstanta jari-jari rata-rata bumi dalam satuan kilometer (standar geodesik WGS-84)
     protected const EARTH_RADIUS_KM = 6371.0;
 
-    /**
-     * Hitung jarak geodetik permukaan bumi antara dua titik koordinat
-     * menggunakan rumus Haversine (Great-Circle Distance).
-     *
-     * @param float $lat1 Lintang titik asal (derajat)
-     * @param float $lon1 Bujur titik asal (derajat)
-     * @param float $lat2 Lintang titik tujuan (derajat)
-     * @param float $lon2 Bujur titik tujuan (derajat)
-     * @return float Jarak dalam kilometer
-     */
+    // Menghitung jarak lengkung bumi antara dua koordinat menggunakan rumus Haversine
     public function haversineDistance(float $lat1, float $lon1, float $lat2, float $lon2): float
     {
+        // Mengubah selisih derajat lintang dan bujur menjadi radian
         $dLat = deg2rad($lat2 - $lat1);
         $dLon = deg2rad($lon2 - $lon1);
 
+        // Mengubah derajat lintang kedua titik menjadi radian untuk fungsi trigonometri
         $phi1 = deg2rad($lat1);
         $phi2 = deg2rad($lat2);
 
+        // Menghitung komponen kuadrat separuh tali busur (rumus Haversine bagian a)
         $a = sin($dLat / 2) * sin($dLat / 2) +
              cos($phi1) * cos($phi2) *
              sin($dLon / 2) * sin($dLon / 2);
 
+        // Menghitung jarak sudut dalam radian (rumus Haversine bagian c)
         $c = 2 * atan2(sqrt($a), sqrt(1 - $a));
 
+        // Mengalikan jarak sudut dengan jari-jari bumi untuk mendapatkan jarak nyata dalam kilometer
         return self::EARTH_RADIUS_KM * $c;
     }
 
-    /**
-     * Cari semua indeks tetangga yang berada dalam jarak <= epsilon.
-     *
-     * @param int $targetIdx Indeks titik acuan
-     * @param array $dataset Seluruh kumpulan titik koordinat
-     * @param float $eps Radius maksimum tetangga (km)
-     * @return array Daftar indeks titik tetangga dalam radius eps
-     */
+    // Mencari semua titik tetangga yang berada dalam jangkauan jarak epsilon (eps)
     protected function regionQuery(int $targetIdx, array &$dataset, float $eps): array
     {
         $neighbors = [];
         $targetLat = (float) $dataset[$targetIdx]['latitude'];
         $targetLon = (float) $dataset[$targetIdx]['longitude'];
 
+        // Menghitung jarak dari titik acuan ke setiap titik lain di dalam dataset
         foreach ($dataset as $idx => $point) {
             $dist = $this->haversineDistance(
                 $targetLat,
@@ -58,6 +46,7 @@ class DbscanService
                 (float) $point['longitude']
             );
 
+            // Jika jaraknya lebih kecil atau sama dengan eps, masukkan indeks titik ke daftar tetangga
             if ($dist <= $eps) {
                 $neighbors[] = $idx;
             }
@@ -66,19 +55,14 @@ class DbscanService
         return $neighbors;
     }
 
-    /**
-     * Eksekusi algoritma DBSCAN untuk pengelompokan spasial berbasis kepadatan.
-     *
-     * @param array $dataset Array data usaha yang wajib memiliki kunci: 'id_usaha', 'latitude', 'longitude'
-     * @param float $eps Parameter epsilon / radius jangkauan tetangga (kilometer)
-     * @param int $minPts Parameter densitas minimum titik untuk membentuk klaster
-     * @return array Hasil klasterisasi lengkap dengan metrik performa
-     */
+    // Fungsi utama untuk menjalankan keseluruhan proses klasterisasi DBSCAN
     public function run(array $dataset, float $eps, int $minPts): array
     {
+        // Mencatat waktu mulai komputasi untuk mengukur performa algoritma
         $startTime = microtime(true);
         $totalPoints = count($dataset);
 
+        // Jika data kosong, langsung kembalikan struktur hasil kosong
         if ($totalPoints === 0) {
             return [
                 'success' => false,
@@ -93,28 +77,42 @@ class DbscanService
             ];
         }
 
+        // Array penanda apakah titik sudah pernah diperiksa (true/false)
         $visited = array_fill(0, $totalPoints, false);
-        $labels = array_fill(0, $totalPoints, 0); // 0 = unclassified, -1 = noise, 1..k = cluster_id
-        $pointTypes = array_fill(0, $totalPoints, 'unclassified'); // 'core', 'border', 'noise'
 
+        // Array penyimpan label klaster: 0 = belum diproses, -1 = noise, 1, 2, ... = nomor klaster
+        $labels = array_fill(0, $totalPoints, 0);
+
+        // Array penyimpan tipe titik ilmiah DBSCAN: core, border, atau noise
+        $pointTypes = array_fill(0, $totalPoints, 'unclassified');
+
+        // Nomor urut klaster dimulai dari nol
         $clusterId = 0;
 
+        // Melakukan iterasi ke setiap titik di dalam dataset
         for ($i = 0; $i < $totalPoints; $i++) {
+            // Lewati titik yang sudah pernah dikunjungi pada proses sebelumnya
             if ($visited[$i]) {
                 continue;
             }
 
+            // Tandai titik saat ini sebagai sudah dikunjungi
             $visited[$i] = true;
+
+            // Cari semua tetangga yang berada dalam radius epsilon
             $neighbors = $this->regionQuery($i, $dataset, $eps);
 
+            // Jika jumlah tetangga kurang dari batas minimum (MinPts), tandai sementara sebagai noise
             if (count($neighbors) < $minPts) {
                 $labels[$i] = -1;
                 $pointTypes[$i] = 'noise';
             } else {
+                // Jika memenuhi MinPts, buat klaster baru dan jadikan titik ini sebagai Core Point
                 $clusterId++;
                 $labels[$i] = $clusterId;
                 $pointTypes[$i] = 'core';
 
+                // Perluas klaster ke semua tetangga yang terhubung secara kepadatan (density-reachable)
                 $this->expandCluster(
                     $i,
                     $neighbors,
@@ -129,13 +127,15 @@ class DbscanService
             }
         }
 
+        // Hitung total waktu komputasi dalam satuan milidetik (ms)
         $executionTimeMs = (int) round((microtime(true) - $startTime) * 1000);
 
-        // Rekapitulasi hasil klasterisasi
+        // Menyiapkan wadah untuk mengelompokkan data hasil akhir
         $clusters = [];
         $noise = [];
         $outputPoints = [];
 
+        // Menyusun kembali data titik beserta label dan tipe titiknya
         for ($i = 0; $i < $totalPoints; $i++) {
             $pointData = $dataset[$i];
             $pointData['cluster_label'] = $labels[$i];
@@ -143,6 +143,7 @@ class DbscanService
 
             $outputPoints[] = $pointData;
 
+            // Pisahkan titik pencilan (noise) dan titik yang masuk anggota klaster
             if ($labels[$i] === -1) {
                 $noise[] = $pointData;
             } else {
@@ -150,6 +151,7 @@ class DbscanService
             }
         }
 
+        // Mengembalikan seluruh hasil klasterisasi dan metrik evaluasi
         return [
             'success' => true,
             'parameter_eps' => $eps,
@@ -164,9 +166,7 @@ class DbscanService
         ];
     }
 
-    /**
-     * Ekspansi klaster secara rekursif berbasis antrean tetangga (density-reachable).
-     */
+    // Memperluas keanggotaan klaster dari sebuah core point ke seluruh tetangganya
     protected function expandCluster(
         int $rootIdx,
         array $neighbors,
@@ -178,32 +178,38 @@ class DbscanService
         array &$labels,
         array &$pointTypes
     ): void {
+        // Antrean pemrosesan titik tetangga
         $queue = $neighbors;
-        $inQueue = array_fill(0, count($dataset), false);
 
+        // Tabel lookup cepat untuk memastikan tidak ada titik yang dimasukkan ganda ke antrean
+        $inQueue = array_fill(0, count($dataset), false);
         foreach ($queue as $idx) {
             $inQueue[$idx] = true;
         }
 
         $qPointer = 0;
 
+        // Telusuri antrean satu per satu sampai habis
         while ($qPointer < count($queue)) {
             $currentIdx = $queue[$qPointer];
             $qPointer++;
 
-            // Jika sebelumnya ditandai noise, ubah jadi border point di klaster ini
+            // Jika titik sebelumnya berstatus noise, ubah menjadi border point dari klaster ini
             if ($labels[$currentIdx] === -1) {
                 $labels[$currentIdx] = $clusterId;
                 $pointTypes[$currentIdx] = 'border';
             }
 
+            // Jika titik belum pernah dikunjungi, tandai dan periksa tetangganya
             if (!$visited[$currentIdx]) {
                 $visited[$currentIdx] = true;
                 $currentNeighbors = $this->regionQuery($currentIdx, $dataset, $eps);
 
+                // Jika tetangga titik ini juga >= MinPts, titik ini adalah core point tambahan
                 if (count($currentNeighbors) >= $minPts) {
                     $pointTypes[$currentIdx] = 'core';
-                    // Tambahkan tetangga baru yang belum ada di antrean
+
+                    // Masukkan tetangga baru ke dalam antrean untuk ditelusuri lebih lanjut
                     foreach ($currentNeighbors as $nbIdx) {
                         if (!$inQueue[$nbIdx]) {
                             $inQueue[$nbIdx] = true;
@@ -211,11 +217,12 @@ class DbscanService
                         }
                     }
                 } else {
-                    // Titik terhubung ke core point, tapi jumlah tetangganya < MinPts => Border Point
+                    // Jika tetangganya < MinPts, titik ini hanya sebagai batas klaster (border point)
                     $pointTypes[$currentIdx] = 'border';
                 }
             }
 
+            // Jika titik belum memiliki label klaster, tetapkan ke klaster saat ini
             if ($labels[$currentIdx] === 0) {
                 $labels[$currentIdx] = $clusterId;
                 if ($pointTypes[$currentIdx] === 'unclassified') {
