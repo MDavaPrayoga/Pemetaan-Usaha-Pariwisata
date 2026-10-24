@@ -1,0 +1,39 @@
+@import 'tailwindcss';
+@import 'leaflet/dist/leaflet.css';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+    /* Ampera Maroon Primary Palette */
+    --color-ampera-50: #fdf2f3;
+    --color-ampera-100: #fde2e4;
+    --color-ampera-200: #fbc9cd;
+    --color-ampera-300: #f7a4ab;
+    --color-ampera-400: #f0727e;
+    --color-ampera-500: #e44555;
+    --color-ampera-600: #cb293b;
+    --color-ampera-700: #aa1e2e;
+    --color-ampera-800: #8b1e2d;
+    --color-ampera-900: #741d29;
+    --color-ampera-950: #410b12;
+
+    /* Categorical DBSCAN Cluster Palette */
+    --color-cluster-1: #8B1E2D;
+    --color-cluster-2: #1E40AF;
+    --color-cluster-3: #047857;
+    --color-cluster-4: #B45309;
+    --color-cluster-5: #6D28D9;
+    --color-cluster-6: #0E7490;
+    --color-cluster-noise: #64748B;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: #f8fafc;
+    color: #0f172a;
+}

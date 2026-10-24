@@ -4,17 +4,29 @@
 /.env.production
 /vendor/
 /node_modules/
+/public/build
 /public/hot
 /public/storage
 /storage/*.key
+/storage/pail
 .phpunit.result.cache
+/.phpunit.cache
+/auth.json
+Homestead.json
+Homestead.yaml
 
 # IDE / System
 .vscode/
 .idea/
+.fleet/
+.nova/
+.zed/
+.phpactor.json
 Thumbs.db
 .DS_Store
 
 # Temporary / Scratch
 /scratch/
 *.log
+~$*
+.DS_Store
