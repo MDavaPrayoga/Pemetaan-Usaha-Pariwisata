@@ -157,7 +157,9 @@
                 <p class="text-xs text-slate-500 mb-6">Jumlah tempat usaha pariwisata yang aktif dan berizin di setiap kecamatan.</p>
                 
                 <div class="relative h-95 w-full">
-                    <canvas id="chartKecamatan"></canvas>
+                    <canvas id="chartKecamatan" 
+                            data-labels='{!! json_encode($chartKecamatanLabels) !!}' 
+                            data-values='{!! json_encode($chartKecamatanData) !!}'></canvas>
                 </div>
             </div>
             <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
@@ -176,18 +178,20 @@
                 <p class="text-xs text-slate-500 mb-6">Pembagian proporsi bidang usaha penunjang kepariwisataan Kota Palembang.</p>
                 
                 <div class="relative h-70 w-full flex items-center justify-center">
-                    <canvas id="chartSektor"></canvas>
+                    <canvas id="chartSektor" 
+                            data-labels='{!! json_encode($chartSektor['labels']) !!}' 
+                            data-values='{!! json_encode($chartSektor['data']) !!}'></canvas>
                 </div>
 
                 <!-- Custom Sector Legend / Summary -->
                 <div class="mt-6 space-y-2.5">
                     @php
-                        $colors = ['#8B1E2D', '#1E40AF', '#047857', '#64748B'];
+                        $bgColors = ['bg-[#8B1E2D]', 'bg-[#1E40AF]', 'bg-[#047857]', 'bg-[#64748B]'];
                     @endphp
                     @foreach($chartSektor['labels'] as $index => $label)
                         <div class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-slate-50">
                             <div class="flex items-center space-x-2">
-                                <span class="w-3 h-3 rounded-full" style="background-color: {{ $colors[$index] }};"></span>
+                                <span class="w-3 h-3 rounded-full {{ $bgColors[$index] ?? 'bg-slate-500' }}"></span>
                                 <span class="text-slate-700 font-medium">{{ $label }}</span>
                             </div>
                             <span class="font-bold text-slate-900">{{ number_format($chartSektor['data'][$index], 0, ',', '.') }} Usaha</span>
@@ -302,8 +306,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 1. Data untuk Grafik Batang Kepadatan Kecamatan
     const ctxKecamatan = document.getElementById('chartKecamatan');
     if (ctxKecamatan) {
-        const labelsKecamatan = @json($chartKecamatanLabels);
-        const dataKecamatan = @json($chartKecamatanData);
+        const labelsKecamatan = JSON.parse(ctxKecamatan.dataset.labels || '[]');
+        const dataKecamatan = JSON.parse(ctxKecamatan.dataset.values || '[]');
 
         new Chart(ctxKecamatan, {
             type: 'bar',
@@ -373,8 +377,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // 2. Data untuk Grafik Donat Sektor Usaha
     const ctxSektor = document.getElementById('chartSektor');
     if (ctxSektor) {
-        const labelsSektor = @json($chartSektor['labels']);
-        const dataSektor = @json($chartSektor['data']);
+        const labelsSektor = JSON.parse(ctxSektor.dataset.labels || '[]');
+        const dataSektor = JSON.parse(ctxSektor.dataset.values || '[]');
 
         new Chart(ctxSektor, {
             type: 'doughnut',
