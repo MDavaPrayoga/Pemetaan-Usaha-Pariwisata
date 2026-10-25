@@ -23,4 +23,8 @@ Route::post('/logout', [AuthController::class, 'prosesLogout'])->name('logout')-
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
     // Menampilkan halaman kelola 2.809 data usaha pariwisata
     Route::get('/usaha', [AdminUsahaController::class, 'index'])->name('usaha.index');
+    
+    // Kunci parameter konfigurasi sentra resmi dinas ke database
+    Route::post('/kunci-konfigurasi', [PetaController::class, 'kunciKonfigurasi'])->name('kunci-konfigurasi');
 });
+
