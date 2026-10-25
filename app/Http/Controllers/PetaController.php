@@ -12,6 +12,7 @@ use App\Services\DbscanService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class PetaController extends Controller
 {
@@ -198,7 +199,7 @@ class PetaController extends Controller
      */
     public function kunciKonfigurasi(Request $request): JsonResponse
     {
-        if (!auth()->check()) {
+        if (!Auth::check()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Akses ditolak. Wajib login sebagai administrator.',
@@ -236,7 +237,7 @@ class PetaController extends Controller
         // Jalankan kalkulasi resmi
         $hasil = $this->dbscanService->run($dataset, $epsKm, $minPts, $epsMeter);
 
-        $userId = auth()->user()->id_user ?? 1;
+        $userId = Auth::id() ?? 1;
         $namaKonfig = $request->nama_konfigurasi ?: ('Zonasi Resmi Dinas Pariwisata (Eps: ' . (int)$epsMeter . 'm, MinPts: ' . $minPts . ')');
 
         DB::beginTransaction();
