@@ -129,7 +129,7 @@
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-[#741D29] px-4 pt-3 pb-4 space-y-2">
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-ampera-900 px-4 pt-3 pb-4 space-y-2">
             <a href="{{ route('beranda') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('beranda') ? 'bg-white/20 text-white font-semibold' : 'text-white/80 hover:bg-white/10' }}">
                 Beranda
             </a>

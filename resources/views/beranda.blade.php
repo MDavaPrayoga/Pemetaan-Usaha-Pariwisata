@@ -4,7 +4,7 @@
 
 @section('content')
 <!-- Section 1: Hero Banner (Ampera Maroon Theme) -->
-<section class="relative bg-gradient-to-br from-[#8B1E2D] via-[#741D29] to-[#410B12] text-white py-16 lg:py-20 overflow-hidden">
+<section class="relative bg-linear-to-br from-cluster-1 via-ampera-900 to-ampera-950 text-white py-16 lg:py-20 overflow-hidden">
     <!-- Subtle Background Geometric Accents -->
     <div class="absolute inset-0 opacity-10 pointer-events-none">
         <svg class="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -156,7 +156,7 @@
                 </div>
                 <p class="text-xs text-slate-500 mb-6">Jumlah tempat usaha pariwisata yang aktif dan berizin di setiap kecamatan.</p>
                 
-                <div class="relative h-[380px] w-full">
+                <div class="relative h-95 w-full">
                     <canvas id="chartKecamatan"></canvas>
                 </div>
             </div>
@@ -175,7 +175,7 @@
                 </div>
                 <p class="text-xs text-slate-500 mb-6">Pembagian proporsi bidang usaha penunjang kepariwisataan Kota Palembang.</p>
                 
-                <div class="relative h-[280px] w-full flex items-center justify-center">
+                <div class="relative h-70 w-full flex items-center justify-center">
                     <canvas id="chartSektor"></canvas>
                 </div>
 
@@ -275,7 +275,7 @@
 
 <!-- Section 5: Call to Action (Ajakan Eksplorasi Peta) -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+    <div class="bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
         <div class="max-w-xl space-y-3">
             <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Eksplorasi Interaktif</span>
             <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Siap Menemukan Pusat Usaha Wisata?</h3>
@@ -283,9 +283,9 @@
                 Gunakan panel interaktif kami untuk menyimulasikan radius jarak tetangga dan melihat bagaimana algoritma DBSCAN mengelompokkan kawasan secara otomatis.
             </p>
         </div>
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
             <a href="{{ route('peta.zonasi') }}" 
-               class="inline-flex items-center space-x-2.5 bg-[#8B1E2D] hover:bg-[#741D29] text-white font-bold px-7 py-4 rounded-xl shadow-lg transition duration-200 text-sm">
+               class="inline-flex items-center space-x-2.5 bg-cluster-1 hover:bg-ampera-900 text-white font-bold px-7 py-4 rounded-xl shadow-lg transition duration-200 text-sm">
                 <span>Buka Pusat Usaha Wisata</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
