@@ -93,6 +93,25 @@ Peta Leaflet dilarang menggunakan warna pelangi yang menyilaukan. Warna klaster 
 
 ---
 
+### Palet Status Operasional Faktual (*Tri-State Badges*)
+* **Status Buka / Aktif (1.281 Data):**
+  * Teks: `#047857` (`text-emerald-700`)
+  * Latar: `#ECFDF5` (`bg-emerald-50`)
+  * Garis Tepi: `#A7F3D0` (`border-emerald-200`)
+  * Indikator Peta: Pin Marker Berwarna Kategori Solid
+* **Status Tutup Permanen / Bangkrut (109 Data):**
+  * Teks: `#BE123C` (`text-rose-700`)
+  * Latar: `#FFF1F2` (`bg-rose-50`)
+  * Garis Tepi: `#FECDD3` (`border-rose-200`)
+  * Indikator Peta: Pin Marker Abu-abu Kemerahan dengan Ikon Peringatan
+* **Status Tutup Sementara (31 Data):**
+  * Teks: `#B45309` (`text-amber-700`)
+  * Latar: `#FFFBEB` (`bg-amber-50`)
+  * Garis Tepi: `#FDE68A` (`border-amber-200`)
+  * Indikator Peta: Pin Marker Kuning Amber
+
+---
+
 ## 3. TIPOGRAFI & SKALA HIRARKI HURUF
 
 Sistem menggunakan font Google **Plus Jakarta Sans** untuk seluruh teks antarmuka dan **Monospace** untuk angka koordinat geospasial.
@@ -188,14 +207,14 @@ Mengadopsi gaya modern portal Gastrodiplomasi Kemlu RI, tombol filter dan dropdo
 
 ### 5.3 Kartu Informasi Popup Marker (*Leaflet Popup Card*)
 Saat marker pin di peta diklik oleh pengguna:
-* **Lebar Maksimal:** `max-w-xs (280px)`
+* **Lebar Maksimal:** `max-w-xs (290px)`
 * **Gaya Popup Leaflet:** Hapus border default biru Leaflet; ganti dengan container putih bersih ber-border `border-slate-200 rounded-lg shadow-md p-3.5`.
 * **Hierarki Informasi di Dalam Popup:**
-  1. Badge Kategori Usaha (contoh: `Hotel Bintang` - badge abu-abu kecil di pojok atas).
-  2. Nama Proyek Usaha (`font-bold text-slate-900 text-sm leading-snug`).
-  3. Nama Perusahaan PT/CV (`text-xs text-slate-500`).
-  4. Alamat Lengkap (`text-xs text-slate-600 mt-1.5 leading-relaxed`).
-  5. Baris Bawah: Nomor NIB & Kode Posisi Koordinat (`font-mono text-[11px] text-slate-500 bg-slate-50 p-1.5 rounded mt-2 border border-slate-100`).
+  1. **Baris Atas (Dua Badge):** Badge Kategori KBLI (abu-abu Slate) berdampingan dengan **Badge Status Operasional** (Hijau untuk `Buka`, Merah untuk `Tutup Permanen`, Amber untuk `Tutup Sementara`).
+  2. **Nama Brand Proyek Usaha:** (`font-bold text-slate-900 text-sm leading-snug mt-1`).
+  3. **Nama Badan Hukum PT/CV:** (`text-xs text-slate-500 font-medium`).
+  4. **Alamat Lengkap & Kelurahan:** (`text-xs text-slate-600 mt-1.5 leading-relaxed`).
+  5. **Baris Bawah (Identitas OSS & Geospasial):** NIB OSS & Koordinat Presisi (`font-mono text-[11px] text-slate-500 bg-slate-50 p-1.5 rounded mt-2 border border-slate-100 flex justify-between`).
 
 ---
 

@@ -52,39 +52,45 @@ Berdasarkan hasil audit mendalam terhadap berkas perizinan `Data Pariwisata.xlsx
 
 ---
 
-### 1.3 Ruang Lingkup Data & Strategi Status Ganda (*Dual-State Data Strategy*)
-Sistem **tidak membuang** data dinas yang belum lengkap, melainkan menerapkan mekanisme **Status Verifikasi Spasial Ganda**:
+### 1.3 Ruang Lingkup Data & Strategi Status Ganda Spasial + Tri-State Operasional
+Sistem **tidak membuang** data dinas yang belum lengkap, melainkan menerapkan mekanisme klasifikasi bertingkat:
 * **Total Basis Data:** **2.809 baris data usaha perizinan dinas** disimpan ke dalam sistem database MySQL.
-* **Status Verified (1.421 data):** Data yang telah tervalidasi memiliki titik koordinat presisi di dalam Kota Palembang. Data inilah yang diproses secara aktif oleh algoritma DBSCAN dan ditampilkan pada peta publik.
-* **Status Unverified (1.388 data):** Data yang koordinatnya masih kosong tetap tersimpan rapi di database internal sebagai antrean verifikasi untuk dilengkapi bertahap oleh staf dinas.
+* **Status Spasial Verified (1.421 data):** Data yang telah tervalidasi memiliki titik koordinat presisi di dalam batas Kota Palembang.
+* **Status Spasial Unverified (1.388 data):** Data yang koordinatnya masih kosong tetap tersimpan rapi di database internal sebagai antrean verifikasi untuk dilengkapi secara berkala oleh staf dinas.
+* **Klasifikasi Faktual Operasional (Validasi Google Maps pada 1.421 Titik Terverifikasi):**
+  1. **`Buka` (Aktif Beroperasi):** **1.281 usaha (90,15%)** — Merupakan entitas bisnis yang aktif dan menjadi **fokus utama komputasi klasterisasi DBSCAN** agar klaster yang terbentuk benar-benar mencerminkan sentra ekonomi riil yang hidup (*active economic agglomeration*).
+  2. **`Tutup Permanen` (Bangkrut / Gulung Tikar):** **109 usaha (7,67%)** — Usaha yang gedungnya sudah tutup permanen. Usaha ini dipisahkan dari klasterisasi utama agar tidak memicu terbentuknya **klaster semu (*phantom clusters*)**.
+  3. **`Tutup Sementara` (Renovasi / Musiman):** **31 usaha (2,18%)** — Usaha yang sedang berhenti sementara.
 
-#### Rincian Data Terverifikasi per Kategori KBLI (1.421 Titik):
-| Kode KBLI | Kategori Usaha | Jumlah Titik Siap Klaster |
-| :---: | :--- | :---: |
-| 56101 | Restoran | 709 |
-| 56303 | Rumah Minum / Kafe | 307 |
-| 79121 | Aktivitas Biro Perjalanan Wisata | 113 |
-| 79122 | Aktivitas Biro Perjalanan Umroh | 107 |
-| 55110 | Hotel Bintang | 60 |
-| 55120 | Hotel Melati | 35 |
-| 56301 | Bar | 27 |
-| 93292 | Karaoke | 21 |
-| 55191 | Penginapan Remaja (Youth Hostel) | 20 |
-| 93293 | Usaha Arena Permainan | 20 |
-| 93291 | Klub Malam | 2 |
-| **TOTAL** | **Seluruh Usaha Pariwisata Siap Klaster** | **1.421 Titik** |
+#### Rincian Data Terverifikasi per Kategori KBLI & Status Operasional:
+| Kode KBLI | Kategori Usaha | Buka (Aktif) | Tutup Permanen | Tutup Sementara | Total Titik Terverifikasi |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| 55110 | Hotel Bintang | 60 | 0 | 0 | 60 |
+| 55120 | Hotel Melati | 34 | 1 | 0 | 35 |
+| 55191 | Penginapan Remaja (Youth Hostel) | 19 | 0 | 1 | 20 |
+| 56101 | Restoran | 627 | 66 | 16 | 709 |
+| 56301 | Bar | 22 | 5 | 0 | 27 |
+| 56303 | Rumah Minum/Kafe | 269 | 27 | 11 | 307 |
+| 79121 | Aktivitas Biro Perjalanan Wisata | 106 | 5 | 2 | 113 |
+| 79122 | Aktivitas Biro Perjalanan Ibadah Umroh | 104 | 2 | 1 | 107 |
+| 93291 | Klub Malam | 2 | 0 | 0 | 2 |
+| 93292 | Karaoke | 21 | 0 | 0 | 21 |
+| 93293 | Usaha Arena Permainan | 17 | 3 | 0 | 20 |
+| **TOTAL** | **Seluruh Usaha Pariwisata** | **1.281** | **109** | **31** | **1.421** |
 
 ---
 
 ### 1.4 Tujuan Produk (Product Objectives)
 Sistem Informasi Geografis Berbasis Web (WebGIS) ini dibangun dengan 3 tujuan utama:
 
-1. **Pemetaan Sebaran Usaha Pariwisata Multi-Mode:**
+1. **Pemetaan Sebaran Usaha Pariwisata Multi-Mode & Multi-Status:**
    * **Mode Administratif (Choropleth):** Menampilkan visualisasi batas 18 kecamatan Kota Palembang dengan gradasi warna berdasarkan kepadatan total izin usaha per kecamatan.
-   * **Mode Spasial Interaktif:** Memetakan 1.421 titik usaha berkoordinat ke atas peta digital (Leaflet.js) yang dilengkapi filter multi-kategori (KBLI) dan fitur pencarian nama usaha.
+   * **Mode Spasial Interaktif:** Memetakan 1.421 titik usaha berkoordinat ke atas peta digital (Leaflet.js) yang dilengkapi filter status operasional (`Buka`, `Tutup Permanen`, `Tutup Sementara`), filter kategori KBLI, serta fitur pencarian nama usaha dengan efek animasi *auto-pan/zoom*.
 2. **Klasterisasi Zona Konsentrasi Menggunakan Algoritma DBSCAN:**
-   * Menerapkan algoritma DBSCAN dengan matriks jarak *Haversine* untuk mengekstrak zona-zona konsentrasi (aglomerasi) usaha pariwisata secara organik tanpa terikat batas birokrasi kecamatan.
-   * Menampilkan poligon area konsentrasi kawasan pariwisata dan secara otomatis memisahkan usaha-usaha terpencil di pinggiran sebagai titik *noise*.
+   * Menerapkan algoritma DBSCAN dengan matriks jarak *Haversine* untuk mengekstrak zona konsentrasi (aglomerasi) secara organik tanpa terikat batas birokrasi kecamatan.
+   * **Aturan Klasterisasi Utama (Default):** Komputasi dijalankan secara terfokus pada **1.281 Usaha Aktif (`Buka`)** agar zona konsentrasi yang dihasilkan benar-benar merepresentasikan pusat aktivitas ekonomi pariwisata yang aktif bagi wisatawan dan investor.
+   * **Mode Analisis Riwayat (Opsional):** Menyediakan opsi simulasi lanjutan mencakup seluruh 1.421 titik untuk kebutuhan evaluasi kebijakan dinas mengenai riwayat kegagalan usaha (*business churn analysis*).
+   * Menampilkan poligon pembungkus area konsentrasi (*Convex Hull*) dan secara otomatis memisahkan usaha terpencil di pinggiran sebagai titik *noise*.
 3. **Pengelolaan Data Terintegrasi (CRUD Mandiri & Validasi):**
    * Menyediakan formulir penambahan dan pembaruan data usaha berstandar OSS yang dilengkapi **Interactive Map Picker (Pin Marker Drag-and-Drop)** agar penambahan data baru memiliki koordinat presisi instan tanpa biaya API.
    * Menyediakan modul impor data Excel berkala dari DPMPTSP dengan pemilahan status otomatis.
@@ -244,24 +250,32 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 ### Modul 1: Dashboard & Statistik (FR-01)
 * **Deskripsi:** Halaman beranda pertama sistem yang menyajikan ringkasan eksekutif aset usaha pariwisata.
 * **Komponen Antarmuka:**
-  1. **4 Kartu Metrik Ringkasan:** Menampilkan angka besar: Total Usaha Terverifikasi (1.421), Sektor Kuliner (1.016), Sektor Akomodasi (115), Sektor Rekreasi & Jasa (290).
+  1. **Kartu Metrik Ringkasan Operasional:**
+     * Total Usaha Terdaftar (OSS DPMPTSP): **2.809 Usaha**
+     * Terverifikasi Geospasial: **1.421 Titik**
+     * Usaha Aktif Beroperasi (`Buka`): **1.281 Usaha (90,15%)**
+     * Usaha Non-Aktif / Gulung Tikar (`Tutup Permanen`): **109 Usaha (7,67%)**
+     * Usaha Berhenti Sementara (`Tutup Sementara`): **31 Usaha (2,18%)**
   2. **Diagram Batang (Distribusi per Kecamatan):** Menampilkan perbandingan jumlah usaha di 18 kecamatan Kota Palembang secara terurut dari terpadat (Ilir Barat I) hingga tersepi (Gandus).
-  3. **Diagram Donat (Proporsi Kategori):** Menampilkan persentase pembagian usaha (71,5% Kuliner, 15,5% Biro Travel, 8,1% Akomodasi, 4,9% Hiburan).
-* **Perbedaan Role:** Publik hanya melihat angka 1.421 terverifikasi; Admin melihat kartu tambahan mutu data internal (2.809 total data vs 1.388 data antrean).
+  3. **Diagram Donat (Proporsi Kategori):** Menampilkan persentase pembagian usaha (Kuliner, Biro Travel, Akomodasi, Hiburan & Rekreasi).
+* **Perbedaan Role:** Publik melihat statistik sebaran usaha aktif (1.281); Admin melihat statistik mutu data lengkap (2.809 total data vs 1.388 data antrean).
 
 ---
 
 ### Modul 2: Peta Sebaran & Choropleth (FR-02)
-* **Deskripsi:** Modul pemetaan multi-mode untuk menjawab fungsi "Pemetaan" pada judul.
+* **Deskripsi:** Modul pemetaan multi-mode untuk menjawab fungsi "Pemetaan" pada judul penelitian.
 * **Fitur Sub-Modul:**
   1. **Tab 1: Peta Sebaran Usaha (Katalog Spasial):**
-     * Menampilkan 1.421 marker pin dengan warna berbeda per sektor (Hotel = Biru, Kuliner = Oranye, Travel = Hijau, Hiburan = Ungu).
-     * Panel Filter Checklist Kategori: Pengguna dapat mencentang/menonaktifkan kategori tertentu.
-     * Kolom Pencarian (*Search Bar*): Fitur *auto-zoom* ke lokasi tempat usaha yang dicari.
-     * *Popup Information Card:* Mengklik pin membuka informasi lengkap (Nama Proyek, Nama Perusahaan, Alamat, Kategori KBLI, NIB, Skala Usaha, TKI).
+     * Menampilkan marker pin dengan visual pembeda status operasional:
+       * **Buka (Aktif):** Marker pin solid berwarna cerah per sektor (Hotel = Biru, Kuliner = Oranye, Travel = Hijau, Hiburan = Ungu).
+       * **Tutup Permanen:** Marker dengan penanda warna merah redup / border tegas.
+       * **Tutup Sementara:** Marker dengan penanda warna kuning amber.
+     * Panel Filter Sidebar: Pilihan filter status operasional (`Hanya Buka`, `Semua Termasuk Tutup`, `Hanya Tutup Permanen`) dan filter kategori KBLI.
+     * Kolom Pencarian (*Search Bar*): Fitur pencarian nama usaha dengan animasi *auto-pan & auto-zoom* langsung ke titik lokasi.
+     * *Popup Information Card:* Memuat informasi lengkap: Nama Proyek Usaha, Nama Badan Hukum (PT/CV), Nomor Induk Berusaha (NIB), Kategori KBLI, Alamat, Kelurahan, Kecamatan, dan **Badge Status Operasional**.
   2. **Tab 2: Peta Tematik Kepadatan per Kecamatan (Choropleth):**
      * Menyembunyikan seluruh pin usaha dan menampilkan batas poligon 18 kecamatan dari file `palembang.geojson`.
-     * Mewarnai setiap kecamatan secara otomatis menggunakan gradasi warna kepadatan (Hijau = Sepi $<30$ usaha, Kuning/Oranye = Sedang $30-150$ usaha, Merah Tua = Sangat Padat $>200$ usaha).
+     * Mewarnai setiap kecamatan secara otomatis menggunakan gradasi warna kepadatan (Hijau = Sepi $<30$ usaha, Kuning/Oranye = Sedang $30-150$ usaha, Merah Marun = Sangat Padat $>200$ usaha).
      * *Hover & Tooltip:* Mengarahkan kursor mouse ke poligon kecamatan menampilkan ringkasan jumlah usaha di wilayah tersebut.
 
 ---
@@ -270,20 +284,21 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 * **Deskripsi:** Modul komputasi data mining spasial untuk menemukan zona konsentrasi dan menyaring noise.
 * **Alur Operasional:**
   1. **Panel Kontrol Parameter (Kiri):**
-     * Dropdown Cakupan Data: Pilihan klasterisasi *"Semua Usaha (1.421)"* atau per sektor spesifik (*"Khusus Kuliner"*, *"Khusus Hotel"*, dll).
-     * Input Parameter $\varepsilon$ (*Epsilon*): Input angka jarak radius dalam satuan meter (default: `500`).
-     * Input Parameter *MinPts*: Input angka minimal kerapatan usaha bertetangga (default: `5`).
+     * Dropdown Cakupan Data: Pilihan klasterisasi **"Hanya Usaha Aktif / Buka (1.281)"** (*Default* - Sentra Ekonomi Hidup) atau *"Semua Usaha Termasuk Tutup (1.421)"* (Analisis Riwayat).
+     * Filter Sektor Usaha: Pilihan klasterisasi seluruh kategori atau sektor spesifik (*"Khusus Kuliner"*, *"Khusus Hotel"*, dll).
+     * Input Parameter $\varepsilon$ (*Epsilon*): Input angka jarak radius dalam satuan meter (rentang uji: `200` s/d `500` meter).
+     * Input Parameter *MinPts*: Input angka minimal kerapatan usaha bertetangga (default: `4` atau `5` titik).
      * Tombol: `[ PROSES KLASTERISASI ]`.
   2. **Proses Komputasi Backend (Laravel):**
      * Menghitung matriks jarak antar titik koordinat menggunakan formula **Haversine Distance**.
      * Mengklasifikasikan titik ke dalam status **Core Point**, **Border Point**, atau **Noise**.
-     * Membentuk poligon pembungkus area konsentrasi (*Convex Hull*) untuk setiap klaster yang terbentuk.
-     * Menghitung nilai validitas klaster secara matematis menggunakan **Silhouette Coefficient**.
+     * Membentuk poligon pembungkus area konsentrasi (**Convex Hull**) untuk setiap klaster yang terbentuk.
+     * Menghitung nilai validitas kualitas klaster secara matematis menggunakan **Silhouette Coefficient**.
   3. **Visualisasi Hasil Peta (Kanan):**
-     * Titik-titik marker otomatis berubah warna sesuai kelompok klasternya (Klaster 1 = Merah, Klaster 2 = Biru, Klaster 3 = Hijau, dst).
+     * Titik-titik marker otomatis berubah warna sesuai kelompok klasternya (Klaster 1 = Ampera Maroon, Klaster 2 = Royal Blue, Klaster 3 = Emerald Green, dst).
      * Lapisan poligon area transparan membungkus titik-titik dalam klaster yang sama.
-     * Usaha yang terisolasi di pinggiran secara otomatis diwarnai **Abu-Abu Redup (*Noise*)**.
-     * Menampilkan panel kartu ringkasan: Total klaster yang terbentuk, jumlah usaha per klaster, jumlah titik noise, dan nilai *Silhouette Score*.
+     * Usaha yang terisolasi di pinggiran secara otomatis diwarnai **Abu-Abu Slate (*Noise*)**.
+     * Menampilkan panel kartu ringkasan: Total klaster yang terbentuk, jumlah usaha per klaster, jumlah titik noise, waktu eksekusi (ms), dan nilai *Silhouette Score*.
   4. **Wewenang Admin:** Tombol khusus `[ Simpan sebagai Klaster Resmi Dinas ]` untuk mengunci kombinasi parameter optimal ke database.
 
 ---
@@ -291,11 +306,11 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 ### Modul 4: Manajemen Data Usaha & Verifikasi (FR-04)
 * **Deskripsi:** Modul operasional internal dinas untuk pemeliharaan data (*Back-Office CRUD*).
 * **Fitur Sub-Modul:**
-  1. **Tabel DataTables Pintar dengan 4 Tab Filter:**
+  1. **Tabel DataTables Pintar dengan Tab Filter:**
      * Tab `Semua Data (2.809)`
      * Tab `Terverifikasi / Ada Titik (1.421)`
      * Tab `Belum Ada Titik / Antrean (1.388)`
-     * Tab `Indikasi Duplikasi (NIB / Nama Sama)`
+     * Tab `Indikasi Duplikasi (NIB Sama)`
   2. **Form Input/Edit dengan "Interactive Map Picker":**
      * Kolom input atribut lengkap sesuai standar OSS.
      * Di samping form terdapat peta interaktif Leaflet. Staf dinas dapat mengetik alamat atau langsung **menggeser pin marker (*drag-and-drop*)** tepat di atas atap bangunan ruko usahanya.
@@ -312,7 +327,7 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 * **Fitur Sub-Modul:**
   1. **Impor Berkas Excel DPMPTSP:**
      * Admin mengunggah berkas `.xlsx` hasil ekspor berkala DPMPTSP.
-     * Sistem memvalidasi dan memilah otomatis: baris yang sudah memiliki koordinat masuk sebagai `Verified`, baris tanpa koordinat masuk antrean `Unverified`, dan baris yang NIB + Namanya sudah terdaftar ditolak (*skip duplicate*).
+     * Sistem memvalidasi dan memilah otomatis: baris yang sudah memiliki koordinat masuk sebagai `Verified`, baris tanpa koordinat masuk antrean `Unverified`, dan baris yang NIB-nya sudah terdaftar ditolak (*skip duplicate*).
      * Sistem menampilkan log ringkasan impor.
   2. **Ekspor Laporan Resmi Eksekutif (PDF):**
      * Menggunakan library `barryvdh/laravel-dompdf` untuk mencetak dokumen format A4 berstandar instansi pemerintah (dilengkapi Kop Surat Dinas Pariwisata Kota Palembang).
@@ -321,28 +336,59 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 
 ---
 
-### 4.6 Kamus Data Atribut Formulir OSS & Aturan Validasi Laravel (*Data Dictionary*)
+### 4.6 Kamus Data Atribut Formulir OSS & Skema Basis Data (*Data Dictionary*)
 
-Tabel basis data utama adalah `usaha_pariwisata` dengan skema atribut berikut:
+Seluruh atribut angka pada basis data MySQL menggunakan tipe data standar **`INT(11)`** (tanpa modifier unsigned) agar mudah dijelaskan dan dipertanggungjawabkan dalam pengujian sidang skripsi.
 
+#### A. Tabel Utama: `usaha_pariwisata`
 | Nama Kolom SQL | Tipe Data MySQL | Aturan Validasi Laravel | Deskripsi & Contoh Nilai |
 | :--- | :--- | :--- | :--- |
-| `id` | `BIGINT UNSIGNED AUTO_INCREMENT` | `primary_key` | Identifier unik baris data usaha. |
+| `id_usaha` | `INT(11) AUTO_INCREMENT` | `primary_key` | Identifier unik baris data usaha. |
+| `id_kbli` | `INT(11)` | `required\|integer` | Foreign key merujuk ke tabel `kbli(id_kbli)`. |
+| `id_kecamatan` | `INT(11)` | `required\|integer` | Foreign key merujuk ke tabel `kecamatan(id_kecamatan)`. |
 | `nib` | `VARCHAR(30)` | `required\|string\|max:30` | Nomor Induk Berusaha OSS (contoh: `9120205132935`). |
 | `nama_perusahaan` | `VARCHAR(255)` | `required\|string\|max:255` | Nama badan hukum pemilik izin (contoh: `PT. Permata Surya Abadi`). |
 | `nama_proyek` | `VARCHAR(255)` | `required\|string\|max:255` | Nama brand komersial usaha (contoh: `Hotel Permata Palembang`). |
-| `kbli` | `VARCHAR(10)` | `required\|string\|max:10` | Kode Klasifikasi Baku Lapangan Usaha (contoh: `55110`). |
-| `judul_kbli` | `VARCHAR(150)` | `required\|string\|max:150` | Nomenklatur kategori usaha (contoh: `Hotel Bintang`). |
-| `skala_usaha` | `ENUM(...)` | `required\|in:Usaha Mikro,Usaha Kecil,Usaha Menengah,Usaha Besar` | Skala investasi usaha berbasis modal kerja. |
-| `uraian_risiko` | `VARCHAR(50)` | `nullable\|string\|max:50` | Tingkat risiko proyek (Rendah, Menengah Rendah, Menengah Tinggi, Tinggi). |
-| `alamat_usaha` | `TEXT` | `required\|string` | Alamat fisik lokasi operasional usaha. |
-| `kecamatan` | `VARCHAR(100)` | `required\|string\|max:100` | Wilayah administratif kecamatan di Kota Palembang. |
-| `kelurahan` | `VARCHAR(100)` | `required\|string\|max:100` | Wilayah administratif kelurahan di Kota Palembang. |
-| `tki` | `INT UNSIGNED` | `nullable\|integer\|min:0` | Jumlah Tenaga Kerja Indonesia yang terserap. |
+| `skala_usaha` | `VARCHAR(50)` | `nullable\|string\|max:50` | Skala investasi (Usaha Mikro, Usaha Kecil, Menengah, Besar). |
+| `uraian_risiko` | `VARCHAR(50)` | `nullable\|string\|max:50` | Tingkat risiko OSS (Rendah, Menengah Rendah, Menengah Tinggi, Tinggi). |
+| `alamat` | `TEXT` | `required\|string` | Alamat fisik lokasi operasional usaha. |
+| `kelurahan` | `VARCHAR(100)` | `nullable\|string\|max:100` | Wilayah administratif kelurahan di Kota Palembang. |
+| `tki` | `INT(11)` | `nullable\|integer\|min:0` | Jumlah Tenaga Kerja Indonesia yang terserap (contoh: `26`). |
+| `tanggal_pengajuan` | `VARCHAR(50)` | `nullable\|string\|max:50` | Tanggal penerbitan/pengajuan izin usaha di OSS. |
 | `latitude` | `DECIMAL(10, 8)` | `nullable\|numeric\|between:-3.3,-2.7` | Titik koordinat lintang bumi (wajib dalam batas Palembang). |
 | `longitude` | `DECIMAL(11, 8)` | `nullable\|numeric\|between:104.5,105.1` | Titik koordinat bujur bumi (wajib dalam batas Palembang). |
-| `status_spasial` | `ENUM('verified','unverified')`| `required\|in:verified,unverified` | Penanda kelayakan data untuk perhitungan DBSCAN. |
+| `status_spasial` | `ENUM('verified','unverified')`| `required\|in:verified,unverified` | Penanda ketersediaan koordinat untuk DBSCAN. |
+| `status_operasional` | `ENUM('Buka','Tutup Permanen','Tutup Sementara')`| `nullable\|in:Buka,Tutup Permanen,Tutup Sementara` | Kondisi operasional faktual hasil validasi lapangan Google Maps. |
+| `sumber_data` | `VARCHAR(100)` | `required\|string` | Asal data (default: `DPMPTSP Kota Palembang`). |
 | `created_at` / `updated_at` | `TIMESTAMP` | `nullable` | Jejak waktu pencatatan sistem Laravel. |
+
+#### B. Tabel Master: `kbli`
+| Nama Kolom SQL | Tipe Data MySQL | Deskripsi |
+| :--- | :--- | :--- |
+| `id_kbli` | `INT(11) AUTO_INCREMENT` | Primary key kategori KBLI. |
+| `kode_kbli` | `VARCHAR(10) UNIQUE` | 5 digit kode KBLI resmi (contoh: `55110`). |
+| `judul_kbli` | `VARCHAR(150)` | Nomenklatur kategori (contoh: `Hotel Bintang`). |
+| `deskripsi` | `TEXT NULL` | Keterangan rincian bidang usaha. |
+
+#### C. Tabel Master: `kecamatan`
+| Nama Kolom SQL | Tipe Data MySQL | Deskripsi |
+| :--- | :--- | :--- |
+| `id_kecamatan` | `INT(11) AUTO_INCREMENT` | Primary key kecamatan. |
+| `nama_kecamatan` | `VARCHAR(100) UNIQUE` | Nama 18 kecamatan di Kota Palembang. |
+| `geojson_polygon` | `TEXT NULL` | Vektor koordinat poligon batas wilayah. |
+
+#### D. Tabel Konfigurasi & Hasil Klaster: `konfigurasi_klaster` & `anggota_klaster`
+| Tabel | Kolom Utama | Tipe Data | Deskripsi |
+| :--- | :--- | :--- | :--- |
+| `konfigurasi_klaster` | `id_konfigurasi` | `INT(11) AUTO_INCREMENT` | Primary key konfigurasi. |
+| `konfigurasi_klaster` | `parameter_eps` | `DECIMAL(8, 2)` | Nilai radius jarak Epsilon dalam satuan meter (contoh: `300.00`). |
+| `konfigurasi_klaster` | `parameter_minpts` | `INT(11)` | Nilai kerapatan titik minimum bertetangga. |
+| `konfigurasi_klaster` | `cakupan_data` | `ENUM('buka_saja','semua_data')` | Pilihan basis data usaha yang diproses. |
+| `konfigurasi_klaster` | `silhouette_score` | `DECIMAL(4, 3)` | Nilai koefisien Silhouette hasil evaluasi (rentang: -1.000 s/d +1.000). |
+| `konfigurasi_klaster` | `is_active` | `TINYINT(1)` | Penanda konfigurasi resmi acuan dinas (1 = aktif, 0 = arsip). |
+| `anggota_klaster` | `id_anggota` | `INT(11) AUTO_INCREMENT` | Primary key anggota klaster. |
+| `anggota_klaster` | `cluster_label` | `INT(11)` | Nomor kelompok klaster (1, 2, 3...) atau -1 untuk noise. |
+| `anggota_klaster` | `tipe_titik` | `ENUM('core','border','noise')` | Klasifikasi status titik spasial DBSCAN. |
 
 ---
 
@@ -473,7 +519,7 @@ Rata-rata seluruh $s(i)$ menghasilkan **Silhouette Score Global (SC)** yang berk
 | **TC-03** | **Peta Sebaran** | Filter multi-kategori KBLI | Mematikan checklist "Biro Perjalanan" | Seluruh marker hijau biro travel hilang seketika dari peta; kategori lain tetap tampil. | **VALID** |
 | **TC-04** | **Peta Sebaran** | Pencarian nama usaha | Mengetik teks *"Aryaduta"* pada search bar | Peta otomatis melakukan *pan & zoom* mengarah tepat ke marker Hotel Aryaduta. | **VALID** |
 | **TC-05** | **Peta Choropleth** | Hover kursor pada poligon kecamatan | Mengarahkan kursor ke Kec. Ilir Barat I | Muncul tooltip popover: *"Kecamatan Ilir Barat I: Total 412 Usaha Terdaftar"*. | **VALID** |
-| **TC-06** | **DBSCAN Simulation** | Eksekusi parameter standar | $\varepsilon = 500\text{ m}, MinPts = 5$, Sektor: Semua | Peta menghasilkan marker berwarna klaster, poligon area terbentuk, titik noise abu-abu, dan skor Silhouette tampil. | **VALID** |
+| **TC-06** | **DBSCAN Simulation** | Eksekusi parameter standar | $\varepsilon = 300\text{ m}, MinPts = 4$, Cakupan: Usaha Buka | Peta menghasilkan marker berwarna klaster, poligon area Convex Hull terbentuk, titik noise abu-abu, dan skor Silhouette $\ge 0.50$ tampil. | **VALID** |
 | **TC-07** | **DBSCAN Simulation** | Eksekusi parameter ekstrim kecil | $\varepsilon = 10\text{ m}, MinPts = 20$ | Tidak ada error 500; sistem menampilkan pesan ramah bahwa semua titik menjadi noise. | **VALID** |
 | **TC-08** | **CRUD Usaha** | Tambah data via Map Picker | Menggeser pin ke atap gedung ruko | Input Latitude & Longitude otomatis terisi angka presisi; data tersimpan berstatus verified. | **VALID** |
 | **TC-09** | **CRUD Usaha** | Validasi koordinat luar wilayah | Menginput Lat: `-6.2088` (Jakarta) | Sistem menolak simpan dengan pesan: *"Koordinat berada di luar wilayah Palembang."* | **VALID** |

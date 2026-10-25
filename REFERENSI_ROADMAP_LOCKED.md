@@ -31,25 +31,27 @@
 * **Sumber Data:** Data Perizinan Berusaha Berbasis Risiko (OSS) Dinas Pariwisata Kota Palembang.
 * **File Rujukan Bersih:** `Final Data Terupdate.xlsx` (Sheet: `Gabungan`).
 * **Total Data Mentah:** 2.809 baris.
-* **Data Siap Pakai (Berkoordinat Valid):** **1.421 titik (50,6%)**.
-* **Data Dieliminasi (Preprocessing / Alamat Tidak Spesifik):** **1.388 baris (49,4%)**.
-* **Karakteristik Spasial:** 100% berada di dalam batas Kota Palembang; terdiri dari **1.169 titik lokasi fisik unik** dan **214 titik bertumpuk (*co-located*)** karena satu gedung/mall menampung beberapa izin usaha.
+* **Data Berkoordinat Valid (`verified`):** **1.421 titik (50,6%)**.
+  * **`Buka` (Aktif / Fokus Utama Klaster):** **1.281 titik (90,15%)**
+  * **`Tutup Permanen` (Gulung Tikar):** **109 titik (7,67%)**
+  * **`Tutup Sementara`:** **31 titik (2,18%)**
+* **Data Antrean Tanpa Koordinat (`unverified`):** **1.388 baris (49,4%)**.
 
-### Rincian 1.421 Titik Berkoordinat per Sektor KBLI:
-| Kode KBLI | Kategori Usaha | Jumlah Titik Siap Klaster |
-| :---: | :--- | :---: |
-| 56101 | Restoran | 709 |
-| 56303 | Rumah Minum / Kafe | 307 |
-| 79121 | Aktivitas Biro Perjalanan Wisata | 113 |
-| 79122 | Aktivitas Biro Perjalanan Umroh | 107 |
-| 55110 | Hotel Bintang | 60 |
-| 55120 | Hotel Melati | 35 |
-| 56301 | Bar | 27 |
-| 93292 | Karaoke | 21 |
-| 55191 | Penginapan Remaja (Youth Hostel) | 20 |
-| 93293 | Usaha Arena Permainan | 20 |
-| 93291 | Klub Malam | 2 |
-| **TOTAL** | **Seluruh Usaha Pariwisata** | **1.421 Titik** |
+### Rincian 1.421 Titik Berkoordinat per Sektor KBLI & Status Operasional:
+| Kode KBLI | Kategori Usaha | Buka (Aktif) | Tutup Permanen | Tutup Sementara | Total Titik Terverifikasi |
+| :---: | :--- | :---: | :---: | :---: | :---: |
+| 55110 | Hotel Bintang | 60 | 0 | 0 | 60 |
+| 55120 | Hotel Melati | 34 | 1 | 0 | 35 |
+| 55191 | Penginapan Remaja (Youth Hostel) | 19 | 0 | 1 | 20 |
+| 56101 | Restoran | 627 | 66 | 16 | 709 |
+| 56301 | Bar | 22 | 5 | 0 | 27 |
+| 56303 | Rumah Minum/Kafe | 269 | 27 | 11 | 307 |
+| 79121 | Aktivitas Biro Perjalanan Wisata | 106 | 5 | 2 | 113 |
+| 79122 | Aktivitas Biro Perjalanan Ibadah Umroh | 104 | 2 | 1 | 107 |
+| 93291 | Klub Malam | 2 | 0 | 0 | 2 |
+| 93292 | Karaoke | 21 | 0 | 0 | 21 |
+| 93293 | Usaha Arena Permainan | 17 | 3 | 0 | 20 |
+| **TOTAL** | **Seluruh Usaha Pariwisata** | **1.281** | **109** | **31** | **1.421** |
 
 ---
 

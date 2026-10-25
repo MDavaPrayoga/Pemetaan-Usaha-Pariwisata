@@ -17,8 +17,10 @@ class KonfigurasiKlaster extends Model
         'nama_konfigurasi',
         'parameter_eps',
         'parameter_minpts',
+        'cakupan_data',
         'total_cluster',
         'total_noise',
+        'silhouette_score',
         'execution_time_ms',
         'is_active',
     ];
@@ -30,6 +32,7 @@ class KonfigurasiKlaster extends Model
             'parameter_minpts' => 'integer',
             'total_cluster' => 'integer',
             'total_noise' => 'integer',
+            'silhouette_score' => 'float',
             'execution_time_ms' => 'integer',
             'is_active' => 'boolean',
         ];

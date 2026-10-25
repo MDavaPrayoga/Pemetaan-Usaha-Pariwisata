@@ -15,11 +15,19 @@ class UsahaPariwisata extends Model
     protected $fillable = [
         'id_kbli',
         'id_kecamatan',
-        'nama_usaha',
+        'nib',
+        'nama_perusahaan',
+        'nama_proyek',
+        'skala_usaha',
+        'uraian_risiko',
         'alamat',
+        'kelurahan',
+        'tki',
+        'tanggal_pengajuan',
         'latitude',
         'longitude',
         'status_spasial',
+        'status_operasional',
         'sumber_data',
     ];
 
@@ -28,7 +36,16 @@ class UsahaPariwisata extends Model
         return [
             'latitude' => 'float',
             'longitude' => 'float',
+            'tki' => 'integer',
         ];
+    }
+
+    /**
+     * Accessor untuk nama usaha (kompatibilitas dengan view lama).
+     */
+    public function getNamaUsahaAttribute(): string
+    {
+        return $this->nama_proyek ?: ($this->nama_perusahaan ?: 'Usaha Tanpa Nama');
     }
 
     public function kbli(): BelongsTo
@@ -46,13 +63,43 @@ class UsahaPariwisata extends Model
         return $this->hasMany(AnggotaKlaster::class, 'id_usaha', 'id_usaha');
     }
 
+    /**
+     * Scope data yang koordinatnya valid (1.421 titik)
+     */
     public function scopeVerified(Builder $query): Builder
     {
         return $query->where('status_spasial', 'verified');
     }
 
+    /**
+     * Scope data antrean tanpa koordinat (1.388 data)
+     */
     public function scopeUnverified(Builder $query): Builder
     {
         return $query->where('status_spasial', 'unverified');
+    }
+
+    /**
+     * Scope hanya usaha yang berstatus aktif/buka di Google Maps (1.281 titik)
+     */
+    public function scopeBuka(Builder $query): Builder
+    {
+        return $query->where('status_operasional', 'Buka');
+    }
+
+    /**
+     * Scope usaha yang berstatus tutup permanen (109 titik)
+     */
+    public function scopeTutupPermanen(Builder $query): Builder
+    {
+        return $query->where('status_operasional', 'Tutup Permanen');
+    }
+
+    /**
+     * Scope usaha yang berstatus tutup sementara (31 titik)
+     */
+    public function scopeTutupSementara(Builder $query): Builder
+    {
+        return $query->where('status_operasional', 'Tutup Sementara');
     }
 }
