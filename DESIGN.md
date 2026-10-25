@@ -233,37 +233,190 @@ Modal form tambah/edit data terbagi menjadi dua kolom proporsional pada layar de
 
 ### 6.1 Layout Navbar Utama (Desktop)
 ```text
-+-----------------------------------------------------------------------------------------+
-| [LOGO PALEMBANG] SIG USAHA PARIWISATA PALEMBANG  | Dashboard  Peta Sebaran  DBSCAN  [LOGIN] |
-+-----------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------------+
+| [LOGO PALEMBANG] SIG PARIWISATA PALEMBANG  |  Beranda   Peta Sebaran   Sentra Pariwisata      [Masuk Admin] |
++-------------------------------------------------------------------------------------------------------------+
 ```
-* **Kelas Tailwind Navbar:** `sticky top-0 z-50 bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6`
+* **Kelas Tailwind Navbar:** `sticky top-0 z-50 bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shadow-sm`
 * **Elemen Kiri:** Logo Pemkot Palembang (`h-9 w-auto`), garis pembatas vertikal 1px tipis, dan judul sistem tebal (`text-sm font-bold text-slate-900`).
-* **Elemen Tengah:** Navigasi teks dengan penanda tautan aktif menggunakan garis bawah Ampera Maroon (`border-b-2 border-[#8B1E2D] text-[#8B1E2D] font-semibold`).
-* **Elemen Kanan:** Tombol Login Admin / Profil User.
+* **Elemen Tengah:** Navigasi teks ramah pengguna dengan penanda tautan aktif garis bawah Ampera Maroon (`border-b-2 border-[#8B1E2D] text-[#8B1E2D] font-semibold`). Menghilangkan istilah kaku teknis agar mudah dipahami masyarakat umum dan dewan penguji.
+* **Elemen Kanan:** Tombol Masuk Administrator Dinas.
 
 ---
 
-### 6.2 Layout Halaman Analisis Spasial DBSCAN
+### 6.2 Layout Halaman 1: Beranda & Statistik Pariwisata (`/`)
 ```text
-+-----------------------------------------------------------------------------------------+
-| NAVBAR UTAMA (Tinggi: 64px)                                                             |
-+-----------------------------------------------------------------------------------------+
-| SIDEBAR KONTROL (Lebar: 360px)      | CONTAINER PETA SPASIAL LEAFLET (Sisa Lebar Layar) |
-| * bg-white border-r border-slate-200| * Tinggi: calc(100vh - 64px)                      |
-|                                     | * Basemap: CartoDB Positron                       |
-| 1. Cakupan Data Usaha:              |                                                   |
-|    [ Dropdown Kategori KBLI ]       |   (POLIGON KLASTER BIRU)    (POLIGON HIJAU)       |
-|                                     |         * * * *                   * * *           |
-| 2. Parameter Jarak Epsilon:         |                                                   |
-|    Input Angka: [ 500 ] meter       |                        o (Noise: Titik Abu-abu)   |
-|                                     |                                                   |
-| 3. Parameter Kerapatan MinPts:      |   +---------------------------------------------+ |
-|    Input Angka: [ 5 ] usaha         |   | KARTU RINGKASAN MENGAMBANG DI BAWAH PETA:   | |
-|                                     |   | Klaster: 3 Kawasan | Noise: 241 Usaha       | |
-| [ TOMBOL: PROSES KLASTERISASI ]     |   | Nilai Silhouette Score: 0.62 (Kategori Baik)| |
-| (bg-[#8B1E2D] text-white w-full)    |   +---------------------------------------------+ |
-+-----------------------------------------------------------------------------------------+
++-------------------------------------------------------------------------------------------------------------+
+| HERO SECTION: Selamat Datang di Portal SIG Usaha Pariwisata Kota Palembang (Ampera Maroon Banner)           |
+| Subtitle: Pemetaan Geospasial & Pemantauan Sebaran Ekonomi Pariwisata Daerah Berbasis Data Resmi OSS-RBA   |
+| [ Jelajahi Peta Sebaran ]   [ Lihat Sentra Pariwisata ]                                                     |
++-------------------------------------------------------------------------------------------------------------+
+| 4 KARTU METRIK EKSEKUTIF:                                                                                   |
+| [ Total Izin OSS: 2.809 ]  [ Titik Terpetakan: 1.421 ]  [ Usaha Aktif: 1.281 ]  [ Gulung Tikar: 109 ]       |
++-------------------------------------------------------------------------------------------------------------+
+| DIAGRAM ANALITIK:                                                                                           |
+| +-------------------------------------------------------+ +-----------------------------------------------+ |
+| | DIAGRAM BATANG: Sebaran Kepadatan Usaha di 18 Wilayah | | DIAGRAM DONAT: Proporsi Sektor Usaha Pariwisata| |
+| | (Ilir Barat I, Ilir Timur I, Kemuning, Sukarami...)   | | (Kuliner 70%, Kafe 21%, Biro Travel, Hotel...) | |
+| +-------------------------------------------------------+ +-----------------------------------------------+ |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 6.3 Layout Halaman 2: Peta Sebaran Usaha (`/peta`)
+```text
++-------------------------------------------------------------------------------------------------------------+
+| NAVBAR UTAMA                                                                                                |
++-------------------------------------------------------------------------------------------------------------+
+| PETA LEAFLET LAYAR PENUH DENGAN KONTROL MENGAMBANG:                                                         |
+|                                                                                                             |
+|    +------------------------------------+---------------------------------------+                          |
+|    | [•] TAB 1: SEBARAN TEMPAT USAHA    | [ ] TAB 2: KEPADATAN PER KECAMATAN    | <-- Tab Switcher         |
+|    +------------------------------------+---------------------------------------+                          |
+|                                                                                                             |
+|  +-------------------------------------------------------------------------------------------------------+  |
+|  | FILTER: Status: [ Usaha Buka v ]  Kategori: [ Semua Sektor v ]   Cari: [ Ketik nama tempat... ][ CARI]|  |
+|  +-------------------------------------------------------------------------------------------------------+  |
+|                                                                                                             |
+|                                 +-------------------------------------+                                     |
+|                                 | [KULINER]  [STATUS: BUKA]           | <-- Popup Card saat marker diklik   |
+|                                 | RM Sederhana Sudirman               |                                     |
+|                                 | PT. Sederhana Musi Jaya             |                                     |
+|                                 | Jl. Jend. Sudirman No. 128          |                                     |
+|                                 | NIB: 9120205132935 | -2.983, 104.75 |                                     |
+|                                 +------------------v------------------+                                     |
+|                                                   * (Pin Marker Solid)                                      |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 6.4 Layout Halaman 3: Sentra Pariwisata (`/zonasi`)
+```text
++-------------------------------------------------------------------------------------------------------------+
+| NAVBAR UTAMA                                                                                                |
++-------------------------------------------------------------------------------------------------------------+
+| PETA LEAFLET LAYAR PENUH (FULL BLEED) DENGAN FLOATING WORKBENCH:                                            |
+|                                                                                                             |
+|  +---------------------------------------------------+                                                      |
+|  | PENGATURAN SENTRA WISATA                  [_] [X]  | <-- Floating Glassmorphism Workbench                 |
+|  +---------------------------------------------------+     (Bisa diminimalkan / dilipat)                    |
+|  | Cakupan Basis Data:                               |                                                      |
+|  |   (•) Hanya Usaha Aktif / Buka (1.281) [Default]  |               (AREA BATAS KAWASAN SENTRA 1)          |
+|  |   ( ) Seluruh Usaha Termasuk Tutup (1.421)        |                     *  *  *  *                       |
+|  |                                                   |                    * PUSAT SENTRA *                  |
+|  | Bidang Usaha: [ Semua Sektor Usaha       v ]      |                     *  *  *  *                       |
+|  |                                                   |                                                      |
+|  | Jarak Maksimal Antar Tempat:                      |                                                      |
+|  | [============O===================] 300 Meter     |                                (AREA BATAS SENTRA 2) |
+|  | (Radius pencarian / Epsilon)                      |                                    *   *   *         |
+|  |                                                   |                                   *  SENTRA *        |
+|  | Minimal Tempat Berkumpul:                         |                                    *   *   *         |
+|  | [=======O========================] 4 Usaha        |          o (Usaha Tersebar/Noise)                    |
+|  | (Batas minimal sentra / MinPts)                   |                                                      |
+|  |                                                   |                                                      |
+|  | [ TEMUKAN SENTRA WISATA ] (Tombol Ampera Maroon)  |                                                      |
+|  +---------------------------------------------------+                                                      |
+|                                                                                                             |
+|                                                                                                             |
+|                +-----------------------------------------------------------------------+                    |
+|                | HASIL PENEMUAN SENTRA (FLOATING BOTTOM DOCK):                         |                    |
+|                | Ditemukan: 36 Sentra Kawasan | Di Luar Sentra: 257 Usaha | 812 ms     |                    |
+|                | Kerapihan Kawasan (Silhouette Score): 0.58 [ Terpisah Sangat Rapi ]   |                    |
+|                +-----------------------------------------------------------------------+                    |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 6.5 Layout Halaman 4: Dashboard Eksekutif & Statistik Mutu Data (`/admin`)
+```text
++-------------------------------------------------------------------------------------------------------------+
+| NAVBAR ADMIN: [LOGO] SIG PARIWISATA | Beranda  Peta Sebaran  Sentra Pariwisata | [Dashboard] [Data Usaha]  |
++-------------------------------------------------------------------------------------------------------------+
+| HEADER: Dashboard Eksekutif Pemantauan Usaha Pariwisata Kota Palembang                                      |
+| Subtitle: Laporan Kinerja Perizinan, Kesiapan Geospasial, & Analisis Sektoral     [ Unduh Laporan PDF ]     |
++-------------------------------------------------------------------------------------------------------------+
+| 4 KARTU METRIK MUTU DATA:                                                                                   |
+| [ Total Izin OSS: 2.809 ]  [ Terpetakan: 1.421 (50,6%) ]  [ Antrean: 1.388 (49,4%) ]  [ Aktif: 1.281 ]     |
++-------------------------------------------------------------------------------------------------------------+
+| BARIS 1: 2 GRAFIK ANALITIS                                                                                  |
+| +-----------------------------------------------------+ +-------------------------------------------------+ |
+| | GRAFIK 1: Kesiapan Data Geospasial (Donut Chart)    | | GRAFIK 2: Ketahanan Usaha per Sektor (Bar Chart)| |
+| | (50,6% Terverifikasi Spasial vs 49,4% Antrean)      | | (Buka vs Tutup Permanen di Resto, Kafe, Hotel..)| |
+| +-----------------------------------------------------+ +-------------------------------------------------+ |
++-------------------------------------------------------------------------------------------------------------+
+| BARIS 2: TREN PERTUMBUHAN IZIN TAHUNAN                                                                      |
+| +---------------------------------------------------------------------------------------------------------+ |
+| | GRAFIK 3: Tren Pendaftaran Izin Usaha Baru per Tahun (Line Chart: 2019 - 2024 dari Tanggal Pengajuan OSS)| |
+| +---------------------------------------------------------------------------------------------------------+ |
++-------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 6.6 Layout Halaman 5: Meja Kerja Kelola Data Usaha (`/admin/usaha`)
+```text
++-------------------------------------------------------------------------------------------------------------+
+| NAVBAR ADMIN                                                                                                |
++-------------------------------------------------------------------------------------------------------------+
+| HEADER: Meja Kerja Pemeliharaan Data Usaha Pariwisata                                                       |
+|                                                                                                             |
+| TOMBOL AKSI CEPAT (POJOK KANAN ATAS):                                                                       |
+| [ + Tambah Usaha Baru ] (Maroon)     [ Impor Berkas Excel DPMPTSP ]     [ Cetak Rekapitulasi PDF ]          |
++-------------------------------------------------------------------------------------------------------------+
+| SMART TABS FILTER DATA:                                                                                     |
+| [ Semua Data (2.809) ]  [ Terverifikasi (1.421) ]  [ (!) Antrean Verifikasi (1.388) ]  [ Duplikat NIB ]     |
++-------------------------------------------------------------------------------------------------------------+
+| FILTER & PENCARIAN:                                                                                         |
+| Cari Nama / NIB: [.....................]  Kecamatan: [ Semua v ]  KBLI: [ Semua v ]  [ FILTER ]  [ RESET ]  |
++-------------------------------------------------------------------------------------------------------------+
+| TABEL DATA USAHA LENGKAP (DATATABLES):                                                                      |
+| No | NIB / Nama Usaha        | Kategori Usaha | Kecamatan  | Koordinat Lat/Long     | Status   | Aksi     |
+|----+-------------------------+----------------+------------+------------------------+----------+----------|
+| 1  | 9120205132935           | Restoran       | IB I       | -2.983596, 104.754145  | [Buka]   | [Ubah]   |
+|    | RM Sederhana Sudirman   | (56101)        |            | Terverifikasi          |          | [Hapus]  |
+|----+-------------------------+----------------+------------+------------------------+----------+----------|
+| 2  | 0220108741221           | Rumah Minum    | IT I       | Belum Ada Titik        | [Antrean]| [+ Pasang|
+|    | Kafe Musi Kopi          | (56303)        |            | (Perlu Verifikasi)     |          |   Titik] |
++-------------------------------------------------------------------------------------------------------------+
+| PAGINASI: Menampilkan 1 - 15 dari 2.809 data                                       [< Prev] [1] [2] [Next >]|
++-------------------------------------------------------------------------------------------------------------+
+```
+
+---
+
+### 6.7 Wireframe Modal Tambah Usaha Manual + Interactive Map Picker
+```text
++-------------------------------------------------------------------------------------------------------------+
+| MODAL: TAMBAH DATA USAHA BARU SECARA MANUAL                                                            [X]  |
++-------------------------------------------------------------------------------------------------------------+
+| FORMULIR ISIAN MANUAL OSS (KOLOM KIRI 50%)          | INTERACTIVE MAP PICKER (KOLOM KANAN 50%)              |
+|                                                     |                                                       |
+| Nomor Induk Berusaha (NIB):                         | Cari Alamat / Jalan:                                  |
+| [ 9120205132935                                 ]   | [ Jl. Jenderal Sudirman Palembang...          ][CARI] |
+|                                                     | +---------------------------------------------------+ |
+| Nama Perusahaan (PT / CV / Pemilik):                | | PETA LEAFLET INTERAKTIF (KOTAK 380px)             | |
+| [ PT. Sederhana Musi Abadi                      ]   | |                                                   | |
+|                                                     | |                 * [PIN MARKER MERAH]              | |
+| Nama Komersial / Brand Proyek Usaha:                | |                   (Bisa digeser bebas / Drag)     | |
+| [ Restoran Sederhana Sudirman                   ]   | |                   tepat di atap ruko gedung       | |
+|                                                     | |                                                   | |
+| Kategori Usaha (KBLI):                              | +---------------------------------------------------+ |
+| [ 56101 - Restoran                              v ] |                                                       |
+|                                                     | Titik Koordinat Hasil Geser Pin (Read-Only/Ketik):    |
+| Skala Usaha:          Status Operasional:           | Latitude:              Longitude:                     |
+| [ Usaha Kecil   v ]   [ Buka (Aktif)            v ] | [ -2.98359600      ]   [ 104.75414500       ]         |
+|                                                     |                                                       |
+| Alamat Lengkap & Kelurahan:                         | Petunjuk Teknis:                                      |
+| [ Jl. Jend. Sudirman No. 128, Kel. 20 Ilir D. IV]   | Geser pin marker merah di peta tepat ke lokasi gedung |
+|                                                     | atau ketikkan angka koordinat manual jika sudah ada.  |
+| Kecamatan:            Jumlah Tenaga Kerja (TKI):    |                                                       |
+| [ Ilir Timur I  v ]   [ 12 Orang                ]   |                                                       |
++-------------------------------------------------------------------------------------------------------------+
+| TOMBOL AKSI MODAL:                                          [ Batal ]   [ Simpan Data Usaha Baru ] (Maroon) |
++-------------------------------------------------------------------------------------------------------------+
 ```
 
 ---

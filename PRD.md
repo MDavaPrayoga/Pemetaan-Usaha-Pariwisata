@@ -80,20 +80,48 @@ Sistem **tidak membuang** data dinas yang belum lengkap, melainkan menerapkan me
 
 ---
 
-### 1.4 Tujuan Produk (Product Objectives)
-Sistem Informasi Geografis Berbasis Web (WebGIS) ini dibangun dengan 3 tujuan utama:
+### 1.4 Tujuan Produk (Product Objectives) & Arsitektur 3 Halaman Utama
+Sistem Informasi Geografis Berbasis Web (WebGIS) ini dirancang dengan antarmuka portal modern yang **ramah pengguna (*user-friendly*)** dan membumi. Pengunjung masyarakat umum, calon investor, maupun pimpinan instansi tidak dibebani oleh istilah teknis matematika yang membingungkan (*intimidating technical jargon*). 
 
-1. **Pemetaan Sebaran Usaha Pariwisata Multi-Mode & Multi-Status:**
-   * **Mode Administratif (Choropleth):** Menampilkan visualisasi batas 18 kecamatan Kota Palembang dengan gradasi warna berdasarkan kepadatan total izin usaha per kecamatan.
-   * **Mode Spasial Interaktif:** Memetakan 1.421 titik usaha berkoordinat ke atas peta digital (Leaflet.js) yang dilengkapi filter status operasional (`Buka`, `Tutup Permanen`, `Tutup Sementara`), filter kategori KBLI, serta fitur pencarian nama usaha dengan efek animasi *auto-pan/zoom*.
-2. **Klasterisasi Zona Konsentrasi Menggunakan Algoritma DBSCAN:**
-   * Menerapkan algoritma DBSCAN dengan matriks jarak *Haversine* untuk mengekstrak zona konsentrasi (aglomerasi) secara organik tanpa terikat batas birokrasi kecamatan.
-   * **Aturan Klasterisasi Utama (Default):** Komputasi dijalankan secara terfokus pada **1.281 Usaha Aktif (`Buka`)** agar zona konsentrasi yang dihasilkan benar-benar merepresentasikan pusat aktivitas ekonomi pariwisata yang aktif bagi wisatawan dan investor.
-   * **Mode Analisis Riwayat (Opsional):** Menyediakan opsi simulasi lanjutan mencakup seluruh 1.421 titik untuk kebutuhan evaluasi kebijakan dinas mengenai riwayat kegagalan usaha (*business churn analysis*).
-   * Menampilkan poligon pembungkus area konsentrasi (*Convex Hull*) dan secara otomatis memisahkan usaha terpencil di pinggiran sebagai titik *noise*.
-3. **Pengelolaan Data Terintegrasi (CRUD Mandiri & Validasi):**
-   * Menyediakan formulir penambahan dan pembaruan data usaha berstandar OSS yang dilengkapi **Interactive Map Picker (Pin Marker Drag-and-Drop)** agar penambahan data baru memiliki koordinat presisi instan tanpa biaya API.
-   * Menyediakan modul impor data Excel berkala dari DPMPTSP dengan pemilahan status otomatis.
+#### Prinsip Penamaan Antarmuka (User-Centric UI Terminology) vs. Mesin Algoritmik Backend:
+Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif, sedangkan di balik layar sistem tetap mengeksekusi algoritma data mining spasial ilmiah secara murni untuk keperluan pengujian sidang skripsi D4:
+
+| Istilah Teknis Asli (Backend / Skripsi) | Penamaan di Tampilan Web (Bahasa Biasa & Ramah Pengguna) | Alasan Perubahan Bahasa |
+| :--- | :--- | :--- |
+| **Analisis Spasial DBSCAN** | **Sentra Pariwisata** (atau **Zonasi Sentra Wisata**) | Publik tidak tahu kepanjangan/makna DBSCAN. "Sentra Pariwisata" langsung menjelaskan manfaat nyata: melihat kawasan wisata yang mengelompok di Palembang. |
+| **Choropleth Map** | **Kepadatan per Kecamatan** (Tab ke-2 di Peta Sebaran) | "Choropleth" adalah istilah kartografi asing. "Kepadatan per Kecamatan" langsung dipahami siapa saja dalam 1 detik. |
+| **Katalog Titik Spasial** | **Sebaran Tempat Usaha** (Tab ke-1 di Peta Sebaran) | Lebih natural dan to the point untuk mencari lokasi hotel, resto, kafe, atau travel. |
+| **Parameter Radius $\varepsilon$ (Epsilon)** | **Jarak Maksimal Antar Tempat (Meter)** | Pengguna awam tahu jarak dalam meter (misal: 300 meter), bukan simbol Yunani $\varepsilon$. *Subketerangan kecil tetap dicantumkan: (Radius pencarian / Epsilon).* |
+| **Parameter Titik Minimum (*MinPts*)** | **Minimal Tempat Berkumpul** | Menjelaskan secara gamblang berapa titik usaha yang harus berdekatan agar diakui sebagai satu sentra/kawasan. |
+| **Tombol Eksekusi DBSCAN** | **`[ Temukan Sentra Wisata ]`** | Lebih komunikatif dan berorientasi aksi daripada tombol kaku bertuliskan `[ Proses Klasterisasi ]`. |
+| **Poligon Convex Hull** | **Area Batas Sentra** | Garis batas dan poligon warna transparan yang melingkupi tempat-tempat usaha dalam satu kelompok sentra. |
+| **Titik Noise / Outlier** | **Usaha Tersebar (Di Luar Sentra)** | Menggantikan konotasi kata "Noise/Sampah" dengan istilah netral: usaha mandiri yang lokasinya berada di luar kawasan sentra. |
+| **Silhouette Coefficient / Score** | **Tingkat Kerapihan Kawasan** (atau **Ketepatan Zonasi**) | Menampilkan status kualitatif yang jelas (*Sangat Rapi / Terpisah Baik / Tumpang Tindih*) disertai angka metrik ilmiah (0.58) untuk validasi sidang. |
+
+---
+
+#### Arsitektur Halaman Sistem (3 Halaman Publik + 2 Halaman Internal Admin):
+
+##### A. Halaman Publik (Akses Terbuka / Tanpa Login):
+1. **Halaman 1: Beranda & Statistik Pariwisata (`/`):**
+   * Menyajikan ringkasan eksekutif makro perkembangan usaha pariwisata Kota Palembang secara visual dan komunikatif.
+   * Menampilkan kartu ringkasan kondisi operasional (Buka, Tutup, Antrean), diagram peringkat kepadatan usaha di 18 kecamatan, serta diagram proporsi sektor pariwisata.
+2. **Halaman 2: Peta Sebaran Usaha (`/peta`):**
+   * Menyediakan eksplorasi spasial katalog usaha pariwisata dengan dua pilihan tab yang intuitif:
+     * **Tab 1: Sebaran Tempat Usaha:** Menampilkan 1.421 pin sebaran tempat usaha lengkap dengan filter status operasional (`Buka`, `Tutup`), filter kategori KBLI, serta kotak pencarian nama tempat dengan efek otomatis mendekat (*auto-pan/zoom*).
+     * **Tab 2: Kepadatan per Kecamatan:** Menampilkan visualisasi batas 18 wilayah kecamatan dengan gradasi warna kepadatan wilayah (berbasis `palembang.geojson`).
+3. **Halaman 3: Sentra Pariwisata (`/zonasi`):**
+   * Menemukan dan memetakan kawasan konsentrasi sentra pariwisata di Kota Palembang secara otomatis menggunakan algoritma spasial DBSCAN.
+   * Menggunakan tata letak modern **Peta Penuh (*Full-Bleed Map*)** dengan **Panel Pengaturan Sentra (*Floating Workbench*)** yang fleksibel dan dapat dilipat/diminimalkan (`[_] [X]`).
+   * Menampilkan poligon area pembungkus sentra kawasan (*Convex Hull*), memisahkan usaha mandiri di pinggiran sebagai titik tersebar (*noise*), menyajikan skor kerapihan kawasan (*Silhouette Score*).
+
+##### B. Halaman Internal Administrator (Wajib Login):
+4. **Halaman 4: Dashboard Eksekutif & Statistik Mutu Data (`/admin`):**
+   * Khusus Pimpinan / Kepala Dinas & Penguji Sidang: Menyajikan 4 kartu metrik data izin, 3 grafik analitis mendalam (Mutu Geospasial, Ketahanan Usaha Buka vs Tutup Permanen, dan Tren Pengajuan Izin Tahunan OSS), serta tombol cepat cetak dokumen eksekutif PDF.
+5. **Halaman 5: Kelola Data Usaha & Verifikasi Spasial (`/admin/usaha`):**
+   * Khusus Staf Teknis / Operator Data Dinas: Meja kerja terpadu (*Single Integrated Workbench*) untuk pemeliharaan 2.809 data izin, verifikasi kilat data antrean, penambahan usaha manual lengkap dengan peta interaktif (*Map Picker*), dan modal impor berkas Excel DPMPTSP.
+* **Fitur Penguncian Terintegrasi (Tanpa Menambah Halaman Baru):**
+  * Di halaman **Sentra Pariwisata (`/zonasi`)**, saat sistem mendeteksi admin sedang login, otomatis muncul tombol eksklusif **`[ Kunci sebagai Sentra Resmi Dinas ]`** di panel *Floating Workbench*.
 
 ---
 
@@ -102,12 +130,12 @@ Sistem Informasi Geografis Berbasis Web (WebGIS) ini dibangun dengan 3 tujuan ut
 ### 2.1 Definisi Aktor Sistem
 1. **Publik / Tamu (*Public Guest*):**
    * **Sifat Akses:** Tanpa Login (*Unauthenticated* / Akses Terbuka).
-   * **Fungsi:** Masyarakat, calon investor, akademisi, dan dewan penguji sidang yang mengakses portal untuk melihat informasi sebaran usaha, peta tematik kecamatan, dan melakukan simulasi klaster DBSCAN secara interaktif.
+   * **Fungsi:** Masyarakat, calon investor, akademisi, dan dewan penguji sidang yang mengakses portal untuk melihat informasi sebaran usaha, peta kepadatan kecamatan, dan melakukan simulasi penemuan sentra wisata secara interaktif.
    * **Batasan:** Bersifat *stateless* (hanya baca). Simulasi parameter hanya berjalan di layar browser sendiri dan tidak dapat mengubah basis data dinas.
-2. **Administrator (Staf Teknis Dinas Pariwisata):**
+2. **Administrator (Staf Teknis & Pimpinan Dinas Pariwisata):**
    * **Sifat Akses:** Wajib Login (*Authenticated* via Email & Password terenkripsi).
    * **Fungsi:** Pengelola resmi data perizinan pariwisata Kota Palembang.
-   * **Wewenang:** Memegang kendali penuh atas basis data (CRUD), verifikasi koordinat, impor berkas DPMPTSP, penetapan klaster resmi dinas, dan pencetakan laporan PDF.
+   * **Wewenang:** Memegang kendali penuh atas basis data (CRUD manual + Map Picker), verifikasi koordinat antrean, impor berkas DPMPTSP, penetapan sentra resmi dinas, dan pencetakan laporan PDF.
 
 ### 2.2 Kebijakan Privasi & Citra Publik (*Data Governance*)
 * **Halaman Publik:** Hanya menampilkan data bersih yang telah terverifikasi (**1.421 Usaha**). Angka 1.388 data kosong disembunyikan untuk menjaga reputasi kinerja instansi pemerintah dari tudingan publik mengenai data perizinan yang tidak lengkap.
@@ -115,21 +143,22 @@ Sistem Informasi Geografis Berbasis Web (WebGIS) ini dibangun dengan 3 tujuan ut
 
 ### 2.3 Matriks Hak Akses (Access Control Matrix)
 
-| No | Modul / Fitur Sistem | Publik / Tamu (Tanpa Login) | Admin Dinas (Wajib Login) | Keterangan & Batasan Hak Akses |
-| :-: | :--- | :---: | :---: | :--- |
-| **1** | **Dashboard Statistik Publik** | ✅ Ya | ✅ Ya | Menampilkan 1.421 data terverifikasi (angka 1.388 disembunyikan dari publik). |
-| **2** | **Dashboard Mutu Data Internal** | ❌ **Dilarang** | ✅ **Ya** | Khusus Admin: Menampilkan rasio kelengkapan data (Total: 2.809 \| Verified: 1.421 \| Unverified: 1.388). |
-| **3** | **Peta Sebaran Usaha (Katalog)** | ✅ Ya | ✅ Ya | Menampilkan 1.421 marker usaha, filter multi-kategori KBLI, pencarian nama/alamat, dan popup detail info. |
-| **4** | **Peta Tematik Kecamatan (Choropleth)** | ✅ Ya | ✅ Ya | Menampilkan batas 18 kecamatan Palembang dengan gradasi warna berdasarkan kepadatan total usaha. |
-| **5** | **Simulasi DBSCAN Interaktif** | ✅ Ya | ✅ Ya | Bebas mengubah parameter $\varepsilon$ (meter), $MinPts$, serta filter sektor untuk simulasi *on-the-fly*. |
-| **6** | **Melihat Metrik *Silhouette Score*** | ✅ Ya | ✅ Ya | Nilai validitas kualitas klaster tampil *real-time* saat simulasi dijalankan (keperluan uji sidang). |
-| **7** | **Kunci Klaster Resmi Dinas** | ❌ **Dilarang** | ✅ **Ya** | Menyimpan parameter optimal ke database sebagai standar klaster acuan resmi dinas. |
-| **8** | **Kelola Data Usaha (CRUD)** | ❌ **Dilarang** | ✅ **Ya** | Tambah usaha baru, edit atribut usaha, dan hapus data (form berstandar atribut OSS). |
-| **9** | **Map Picker (Drag-and-Drop Pin)** | ❌ **Dilarang** | ✅ **Ya** | Menentukan titik koordinat presisi langsung di atas peta Leaflet saat input/edit (bebas biaya API). |
-| **10**| **Verifikasi Data Spasial** | ❌ **Dilarang** | ✅ **Ya** | Melengkapi koordinat 1.388 data antrean (*unverified*) agar statusnya naik menjadi *verified*. |
-| **11**| **Filter Deteksi Duplikasi** | ❌ **Dilarang** | ✅ **Ya** | Menyaring data ganda (NIB sama / nama identik) akibat riwayat pendaftaran berulang di OSS. |
-| **12**| **Import Berkas Excel DPMPTSP** | ❌ **Dilarang** | ✅ **Ya** | Mengunggah file rekapitulasi baru dari DPMPTSP dengan pemilahan otomatis (*verified* vs *unverified*). |
-| **13**| **Cetak Laporan Resmi (PDF)** | ❌ **Dilarang** | ✅ **Ya** | Menghasilkan dokumen laporan formal hasil klasterisasi dan rekapitulasi untuk pimpinan dinas. |
+| No | Modul / Halaman Sistem | Publik / Tamu (Tanpa Login) | Admin Dinas (Wajib Login) | Keterangan & Batasan Hak Akses |
+| :-: | :--- | :--- :--- | :---: | :--- |
+| **1** | **Beranda & Statistik Pariwisata (`/`)** | ✅ Ya | ✅ Ya | Menampilkan statistik sebaran 1.421 usaha terverifikasi, peringkat kecamatan, dan proporsi sektor. |
+| **2** | **Peta Sebaran: Sebaran Tempat Usaha (`/peta`)** | ✅ Ya | ✅ Ya | Menampilkan 1.421 pin sebaran tempat usaha, filter status (Buka/Tutup), filter KBLI, pencarian nama, dan popup info. |
+| **3** | **Peta Sebaran: Kepadatan per Kecamatan (`/peta`)** | ✅ Ya | ✅ Ya | Menampilkan batas 18 kecamatan Palembang dengan gradasi warna kepadatan wilayah (peta tematik interaktif). |
+| **4** | **Sentra Pariwisata (`/zonasi`)** | ✅ Ya | ✅ Ya | Mengatur jarak maksimal antar tempat (meter) & minimal tempat berkumpul via *Floating Workbench* untuk simulasi sentra. |
+| **5** | **Melihat Tingkat Kerapihan Kawasan** | ✅ Ya | ✅ Ya | Skor kerapihan kawasan (*Silhouette Score*) tampil *real-time* saat simulasi dijalankan (keperluan uji sidang). |
+| **6** | **Kunci Sentra Resmi Dinas** | ❌ **Dilarang** | ✅ **Ya** | Tombol khusus di `/zonasi` (hanya muncul saat login) untuk mengunci parameter resmi ke database. |
+| **7** | **Dashboard Eksekutif & Mutu Data (`/admin`)** | ❌ **Dilarang** | ✅ **Ya** | Khusus Admin: Menampilkan 3 grafik analitis internal (mutu spasial, survival rate, tren tahunan) dan tombol cetak PDF. |
+| **8** | **Kelola Data Usaha & Workbench (`/admin/usaha`)**| ❌ **Dilarang** | ✅ **Ya** | Meja kerja staf: tabel 2.809 data dengan tab filter status (Semua, Terverifikasi, Antrean, Duplikat). |
+| **9** | **Tambah Usaha Manual (CRUD)** | ❌ **Dilarang** | ✅ **Ya** | Input mandiri data usaha baru (NIB, PT/CV, alamat, status) lengkap dengan ketik koordinat manual. |
+| **10**| **Penentuan Titik di Peta (Map Picker)** | ❌ **Dilarang** | ✅ **Ya** | Geser pin marker (*drag-and-drop*) di atas peta Leaflet saat tambah/edit data agar Lat/Long otomatis terisi. |
+| **11**| **Verifikasi Kilat Antrean Data** | ❌ **Dilarang** | ✅ **Ya** | Tombol `[+ Pasang Titik]` pada baris data antrean untuk menentukan lokasi dan menaikkan status ke *verified*. |
+| **12**| **Penyaringan Duplikasi Data** | ❌ **Dilarang** | ✅ **Ya** | Menyaring dan menghapus data ganda (NIB sama / nama identik) akibat riwayat pendaftaran berulang di OSS. |
+| **13**| **Impor Berkas Excel DPMPTSP** | ❌ **Dilarang** | ✅ **Ya** | Modal upload file rekapitulasi `.xlsx` baru dari DPMPTSP dengan pemilahan otomatis (*verified* vs *unverified*). |
+| **14**| **Cetak Laporan Resmi (PDF)** | ❌ **Dilarang** | ✅ **Ya** | Menghasilkan dokumen laporan formal A4 berkop surat Dinas Pariwisata untuk pimpinan dinas. |
 
 ---
 
@@ -140,22 +169,22 @@ Sistem Informasi Geografis Berbasis Web (WebGIS) ini dibangun dengan 3 tujuan ut
 ```mermaid
 flowchart LR
     subgraph Aktor
-        Guest["Publik / Tamu (Unauthenticated)"]
-        Admin["Administrator Dinas (Authenticated)"]
+        Guest["Publik / Tamu (Tanpa Login)"]
+        Admin["Administrator Dinas (Login)"]
     end
 
-    subgraph WebGIS Usaha Pariwisata Palembang
-        UC01["UC-01: Melihat Dashboard & Statistik Publik"]
-        UC02["UC-02: Mengeksplorasi Peta Sebaran & Filter Kategori"]
-        UC03["UC-03: Melihat Peta Tematik Choropleth Kecamatan"]
-        UC04["UC-04: Menjalankan Simulasi Klaster DBSCAN"]
-        UC05["UC-05: Otentikasi Login Admin"]
+    subgraph Portal WebGIS Usaha Pariwisata Palembang
+        UC01["UC-01: Melihat Beranda & Statistik Pariwisata"]
+        UC02["UC-02: Mengeksplorasi Peta Sebaran & Filter Status"]
+        UC03["UC-03: Melihat Peta Kepadatan per Kecamatan"]
+        UC04["UC-04: Menjalankan Simulasi Zonasi Sentra Wisata"]
+        UC05["UC-05: Otentikasi Login Administrator"]
         UC06["UC-06: Mengelola Data Usaha (CRUD + Map Picker)"]
-        UC07["UC-07: Verifikasi Titik Spasial Antrean Unverified"]
-        UC08["UC-08: Menyaring & Menghapus Data Duplikasi"]
-        UC09["UC-09: Menyimpan Konfigurasi Klaster Resmi Dinas"]
-        UC10["UC-10: Mengimpor Berkas Excel DPMPTSP"]
-        UC11["UC-11: Mengunduh Laporan Eksekutif PDF"]
+        UC07["UC-07: Verifikasi Lokasi Fisik Data Antrean"]
+        UC08["UC-08: Menyaring Data Permohonan Duplikat"]
+        UC09["UC-09: Menyimpan Zonasi Klaster Resmi Dinas"]
+        UC10["UC-10: Mengimpor Berkas Rekapitulasi Excel"]
+        UC11["UC-11: Mengunduh Laporan Resmi Eksekutif PDF"]
     end
 
     Guest --> UC01
@@ -247,92 +276,103 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 
 ---
 
-### Modul 1: Dashboard & Statistik (FR-01)
-* **Deskripsi:** Halaman beranda pertama sistem yang menyajikan ringkasan eksekutif aset usaha pariwisata.
-* **Komponen Antarmuka:**
-  1. **Kartu Metrik Ringkasan Operasional:**
-     * Total Usaha Terdaftar (OSS DPMPTSP): **2.809 Usaha**
-     * Terverifikasi Geospasial: **1.421 Titik**
-     * Usaha Aktif Beroperasi (`Buka`): **1.281 Usaha (90,15%)**
-     * Usaha Non-Aktif / Gulung Tikar (`Tutup Permanen`): **109 Usaha (7,67%)**
-     * Usaha Berhenti Sementara (`Tutup Sementara`): **31 Usaha (2,18%)**
-  2. **Diagram Batang (Distribusi per Kecamatan):** Menampilkan perbandingan jumlah usaha di 18 kecamatan Kota Palembang secara terurut dari terpadat (Ilir Barat I) hingga tersepi (Gandus).
-  3. **Diagram Donat (Proporsi Kategori):** Menampilkan persentase pembagian usaha (Kuliner, Biro Travel, Akomodasi, Hiburan & Rekreasi).
-* **Perbedaan Role:** Publik melihat statistik sebaran usaha aktif (1.281); Admin melihat statistik mutu data lengkap (2.809 total data vs 1.388 data antrean).
+### Modul 1: Beranda Publik (`/`) & Dashboard Eksekutif Admin (`/admin`) (FR-01)
+* **Deskripsi:** Modul penyajian statistik dan indikator kinerja pariwisata yang dibedakan secara tegas antara kebutuhan publik dan evaluasi internal dinas.
+* **A. Tampilan Beranda Publik (`/`):**
+  1. **Kartu Ringkasan Pariwisata Daerah:** Menampilkan total tempat usaha terpetakan (**1.421 Titik**), jumlah usaha aktif beroperasi (**1.281 Usaha**), dan jumlah kecamatan terlayani (18 Kecamatan). Data antrean 1.388 disembunyikan untuk menjaga citra positif pemerintah.
+  2. **Diagram Batang (Peringkat Kepadatan 18 Kecamatan):** Menampilkan perbandingan jumlah usaha di 18 kecamatan Kota Palembang secara terurut dari terpadat (Ilir Barat I, Ilir Timur I, Kemuning) hingga tersepi (Gandus).
+  3. **Diagram Donat (Proporsi Bidang Usaha):** Menampilkan persentase pembagian sektor (Kuliner/Restoran/Kafe 71,5%, Biro Perjalanan Wisata & Umroh 15,5%, Hotel & Akomodasi 6,7%, Arena Permainan & Rekreasi 6,3%).
+* **B. Tampilan Dashboard Eksekutif Admin (`/admin`):**
+  1. **4 Kartu Metrik Mutu & Status Operasional:**
+     * Total Izin Terdaftar (OSS DPMPTSP): **2.809 Usaha**
+     * Terverifikasi Geospasial (Ada Titik): **1.421 Titik (50,6%)**
+     * Antrean Verifikasi (Belum Ada Titik): **1.388 Usaha (49,4%)**
+     * Validasi Faktual Lapangan: **1.281 Buka \| 109 Tutup Permanen \| 31 Tutup Sementara**
+  2. **Grafik 1: Mutu Kesiapan Data Geospasial (*Donut Chart*):**
+     * Menampilkan rasio kelengkapan koordinat (50,6% Terpetakan vs 49,4% Antrean) sebagai instrumen evaluasi kebijakan pendaftaran perizinan mandiri OSS hulu.
+  3. **Grafik 2: Ketahanan Usaha per Sektor KBLI / *Survival Rate* (*Grouped Bar Chart*):**
+     * Menampilkan perbandingan jumlah usaha yang aktif `Buka` vs `Tutup Permanen` di setiap sektor KBLI. Membuktikan temuan lapangan bahwa sektor Restoran (66 tutup) dan Kafe (27 tutup) merupakan sektor paling rentan gulung tikar.
+  4. **Grafik 3: Tren Pendaftaran Izin Usaha Tahunan (*Line Chart*):**
+     * Menampilkan kurva pertumbuhan izin baru dari tahun 2019 hingga 2024 (bersumber dari kolom `tanggal_pengajuan` OSS) untuk memantau tren pemulihan ekonomi wisata pasca-pandemi.
+  5. **Tombol Dokumen Formal:**
+     * Tombol `[ Cetak Laporan Eksekutif (PDF) ]` untuk mengunduh rekapitulasi data dan peta kawasan sentra dalam format A4 resmi instansi pemerintah.
 
 ---
 
-### Modul 2: Peta Sebaran & Choropleth (FR-02)
-* **Deskripsi:** Modul pemetaan multi-mode untuk menjawab fungsi "Pemetaan" pada judul penelitian.
+### Modul 2: Peta Sebaran Usaha (FR-02)
+* **Deskripsi:** Modul pemetaan multi-tampilan interaktif untuk menjawab fungsi "Pemetaan" pada judul penelitian dengan bahasa yang ramah pengguna.
 * **Fitur Sub-Modul:**
-  1. **Tab 1: Peta Sebaran Usaha (Katalog Spasial):**
-     * Menampilkan marker pin dengan visual pembeda status operasional:
+  1. **Tab 1: Sebaran Tempat Usaha (Katalog Peta Interaktif):**
+     * Menampilkan marker pin dengan visual pembeda status operasional yang mudah dibedakan:
        * **Buka (Aktif):** Marker pin solid berwarna cerah per sektor (Hotel = Biru, Kuliner = Oranye, Travel = Hijau, Hiburan = Ungu).
-       * **Tutup Permanen:** Marker dengan penanda warna merah redup / border tegas.
+       * **Tutup Permanen:** Marker dengan penanda warna merah tegas.
        * **Tutup Sementara:** Marker dengan penanda warna kuning amber.
-     * Panel Filter Sidebar: Pilihan filter status operasional (`Hanya Buka`, `Semua Termasuk Tutup`, `Hanya Tutup Permanen`) dan filter kategori KBLI.
-     * Kolom Pencarian (*Search Bar*): Fitur pencarian nama usaha dengan animasi *auto-pan & auto-zoom* langsung ke titik lokasi.
-     * *Popup Information Card:* Memuat informasi lengkap: Nama Proyek Usaha, Nama Badan Hukum (PT/CV), Nomor Induk Berusaha (NIB), Kategori KBLI, Alamat, Kelurahan, Kecamatan, dan **Badge Status Operasional**.
-  2. **Tab 2: Peta Tematik Kepadatan per Kecamatan (Choropleth):**
-     * Menyembunyikan seluruh pin usaha dan menampilkan batas poligon 18 kecamatan dari file `palembang.geojson`.
-     * Mewarnai setiap kecamatan secara otomatis menggunakan gradasi warna kepadatan (Hijau = Sepi $<30$ usaha, Kuning/Oranye = Sedang $30-150$ usaha, Merah Marun = Sangat Padat $>200$ usaha).
+     * Panel Filter: Pilihan filter status operasional (`Hanya Buka`, `Semua Termasuk Tutup`, `Hanya Tutup Permanen`) dan filter kategori usaha.
+     * Kolom Pencarian (*Search Bar*): Fitur pencarian nama tempat usaha dengan animasi *auto-pan & auto-zoom* langsung mendekat ke lokasi.
+     * *Popup Information Card:* Memuat informasi lengkap: Nama Brand Usaha, Nama Badan Hukum (PT/CV), Nomor Induk Berusaha (NIB), Kategori Bidang Usaha, Alamat, Kelurahan, Kecamatan, dan **Badge Status Operasional**.
+  2. **Tab 2: Kepadatan per Kecamatan (Peta Tematik Wilayah):**
+     * Menyembunyikan pin tempat usaha dan menampilkan batas wilayah 18 kecamatan dari file `palembang.geojson`.
+     * Mewarnai setiap kecamatan secara otomatis menggunakan gradasi warna kepadatan (Hijau = Tenang $<30$ usaha, Kuning/Oranye = Sedang $30-150$ usaha, Merah Marun = Sangat Padat $>200$ usaha).
      * *Hover & Tooltip:* Mengarahkan kursor mouse ke poligon kecamatan menampilkan ringkasan jumlah usaha di wilayah tersebut.
 
 ---
 
-### Modul 3: Analisis Spasial DBSCAN (FR-03) - *Jantung Sistem*
-* **Deskripsi:** Modul komputasi data mining spasial untuk menemukan zona konsentrasi dan menyaring noise.
-* **Alur Operasional:**
-  1. **Panel Kontrol Parameter (Kiri):**
-     * Dropdown Cakupan Data: Pilihan klasterisasi **"Hanya Usaha Aktif / Buka (1.281)"** (*Default* - Sentra Ekonomi Hidup) atau *"Semua Usaha Termasuk Tutup (1.421)"* (Analisis Riwayat).
-     * Filter Sektor Usaha: Pilihan klasterisasi seluruh kategori atau sektor spesifik (*"Khusus Kuliner"*, *"Khusus Hotel"*, dll).
-     * Input Parameter $\varepsilon$ (*Epsilon*): Input angka jarak radius dalam satuan meter (rentang uji: `200` s/d `500` meter).
-     * Input Parameter *MinPts*: Input angka minimal kerapatan usaha bertetangga (default: `4` atau `5` titik).
-     * Tombol: `[ PROSES KLASTERISASI ]`.
-  2. **Proses Komputasi Backend (Laravel):**
-     * Menghitung matriks jarak antar titik koordinat menggunakan formula **Haversine Distance**.
-     * Mengklasifikasikan titik ke dalam status **Core Point**, **Border Point**, atau **Noise**.
-     * Membentuk poligon pembungkus area konsentrasi (**Convex Hull**) untuk setiap klaster yang terbentuk.
-     * Menghitung nilai validitas kualitas klaster secara matematis menggunakan **Silhouette Coefficient**.
-  3. **Visualisasi Hasil Peta (Kanan):**
-     * Titik-titik marker otomatis berubah warna sesuai kelompok klasternya (Klaster 1 = Ampera Maroon, Klaster 2 = Royal Blue, Klaster 3 = Emerald Green, dst).
-     * Lapisan poligon area transparan membungkus titik-titik dalam klaster yang sama.
-     * Usaha yang terisolasi di pinggiran secara otomatis diwarnai **Abu-Abu Slate (*Noise*)**.
-     * Menampilkan panel kartu ringkasan: Total klaster yang terbentuk, jumlah usaha per klaster, jumlah titik noise, waktu eksekusi (ms), dan nilai *Silhouette Score*.
-  4. **Wewenang Admin:** Tombol khusus `[ Simpan sebagai Klaster Resmi Dinas ]` untuk mengunci kombinasi parameter optimal ke database.
+### Modul 3: Sentra Pariwisata / Zonasi Kawasan (FR-03) - *Jantung Sistem*
+* **Deskripsi:** Modul cerdas untuk menemukan kawasan konsentrasi sentra pariwisata secara otomatis dan memisahkan usaha mandiri yang terpencil (*noise filtering*).
+* **Alur Operasional Antarmuka Ramah Pengguna:**
+  1. **Panel Pengaturan Sentra Mengambang (*Floating Workbench* di Kiri Atas Peta):**
+     * Dapat diminimalkan/dilipat dengan tombol `[_]` dan `[X]` agar tidak menghalangi pemandangan peta.
+     * Pilihan Cakupan Data: **"Hanya Usaha Aktif / Buka (1.281)"** (*Default* - Sentra Ekonomi Hidup) atau *"Semua Usaha Termasuk Tutup (1.421)"* (Riwayat Historis).
+     * Filter Bidang Usaha: Pilihan penemuan sentra untuk seluruh kategori atau spesifik (*"Khusus Kuliner"*, *"Khusus Hotel"*, dll).
+     * Input **"Jarak Maksimal Antar Tempat (Meter)"**: Slider / input angka meter (jarak radius pencarian tetangga / $\varepsilon$ Epsilon, rentang uji: `200` s/d `500` meter).
+     * Input **"Minimal Tempat Berkumpul"**: Slider / input angka minimal usaha bertetangga (ambang batas sentra / *MinPts*, default: `4` atau `5` titik).
+     * Tombol Aksi: **`[ Temukan Sentra Wisata ]`** (Tombol utama Ampera Maroon).
+  2. **Proses Komputasi Mesin di Balik Layar (Laravel Backend):**
+     * Menghitung matriks jarak antar titik koordinat menggunakan formula **Haversine Distance** (dalam kilometer, dikonversi dari input meter).
+     * Mengklasifikasikan titik ke dalam status **Core Point**, **Border Point**, atau **Noise** menggunakan algoritma **DBSCAN**.
+     * Membentuk poligon pembungkus area konsentrasi (**Convex Hull**) untuk setiap sentra yang terbentuk.
+     * Menghitung nilai validitas kualitas pengelompokan secara matematis menggunakan **Silhouette Coefficient**.
+  3. **Visualisasi Hasil Peta (Layar Penuh):**
+     * Titik-titik tempat usaha otomatis dikelompokkan dengan warna khas per kawasan sentra (Sentra 1 = Biru, Sentra 2 = Hijau, Sentra 3 = Cokelat Amber, dst).
+     * Lapisan poligon transparan membungkus area batas luar tempat usaha yang berada dalam satu sentra (**Area Batas Sentra**).
+     * Usaha yang mandiri dan terpisah jauh di pinggiran secara otomatis diwarnai **Abu-Abu Slate ("Usaha Tersebar / Di Luar Sentra")**.
+     * **Floating Bottom Dock (Ringkasan Hasil Bawah):** Menampilkan ringkasan hasil yang komunikatif: Total Sentra yang Terbentuk, Jumlah Usaha per Sentra, Jumlah Usaha Tersebar di Luar Sentra, Waktu Eksekusi (ms), dan **Tingkat Kerapihan Kawasan (*Silhouette Score*)** dengan label interpretasi (*Sangat Rapi / Terpisah Baik / Kurang Sesuai*).
+  4. **Wewenang Khusus Admin Dinas:** Tombol `[ Kunci sebagai Sentra Resmi Dinas ]` untuk menyimpan konfigurasi parameter terbaik ke database sebagai acuan perencanaan kota.
 
 ---
 
-### Modul 4: Manajemen Data Usaha & Verifikasi (FR-04)
-* **Deskripsi:** Modul operasional internal dinas untuk pemeliharaan data (*Back-Office CRUD*).
+### Modul 4: Kelola Data Usaha & Verifikasi Spasial (`/admin/usaha`) (FR-04)
+* **Deskripsi:** Meja kerja operasional internal dinas (*Single Integrated Workbench*) untuk pemeliharaan 2.809 data izin, pengayaan koordinat, dan penjaminan mutu data.
 * **Fitur Sub-Modul:**
-  1. **Tabel DataTables Pintar dengan Tab Filter:**
-     * Tab `Semua Data (2.809)`
-     * Tab `Terverifikasi / Ada Titik (1.421)`
-     * Tab `Belum Ada Titik / Antrean (1.388)`
-     * Tab `Indikasi Duplikasi (NIB Sama)`
-  2. **Form Input/Edit dengan "Interactive Map Picker":**
-     * Kolom input atribut lengkap sesuai standar OSS.
-     * Di samping form terdapat peta interaktif Leaflet. Staf dinas dapat mengetik alamat atau langsung **menggeser pin marker (*drag-and-drop*)** tepat di atas atap bangunan ruko usahanya.
-     * Kolom `Latitude` dan `Longitude` otomatis terisi angka koordinat presisi begitu pin digeser.
-  3. **Alur Verifikasi Cepat Data Antrean:**
-     * Staf membuka tab *Belum Ada Titik (1.388)* $\rightarrow$ klik tombol `[ Tentukan Titik ]` $\rightarrow$ klik posisi di peta $\rightarrow$ klik simpan. Status data otomatis berubah menjadi *Verified* dan langsung aktif masuk ke perhitungan DBSCAN berikutnya.
-  4. **Pembersihan Data Duplikat:**
-     * Tombol filter duplikasi mendeteksi riwayat permohonan ganda ber-NIB sama, memungkinkan staf dinas menghapus entri usang dengan aman.
+  1. **Fitur Tambah Usaha Manual (CRUD Penuh):**
+     * Staf dinas dapat menambahkan data tempat usaha baru secara manual melalui tombol **`[ + Tambah Usaha Baru ]`**.
+     * Membuka modal formulir *split-screen*:
+       * **Sisi Kiri (Form Atribut OSS):** Input NIB, Nama Perusahaan (PT/CV), Nama Brand Proyek, Kategori KBLI, Skala Usaha (Mikro/Kecil/Menengah/Besar), Alamat Lengkap, Kecamatan, Kelurahan, Jumlah TKI, dan Status Operasional (`Buka`, `Tutup Permanen`, `Tutup Sementara`).
+       * **Sisi Kanan (Interactive Map Picker):** Staf dapat mengetikkan angka Latitude & Longitude secara manual (jika sudah punya titik GPS), ATAU menggeser pin marker (*drag-and-drop*) langsung di atas peta Leaflet tepat di atap gedung tempat usahanya.
+     * Begitu disimpan, data baru otomatis berstatus **`verified`**, langsung tampil di katalog peta publik, dan siap dihitung dalam proses pembentukan sentra DBSCAN berikutnya.
+  2. **Tabel DataTables Pintar dengan Tab Filter Cepat (*Smart Tabs*):**
+     * Tab `Semua Data (2.809)`: Menampilkan seluruh basis data perizinan OSS DPMPTSP.
+     * Tab `Terverifikasi / Ada Titik (1.421)`: Data yang aktif tampil di peta publik.
+     * Tab `Antrean Belum Ada Titik (1.388)`: Data yang belum memiliki koordinat (dilengkapi badge kuning peringatan).
+     * Tab `Indikasi Duplikasi (NIB Sama)`: Mendeteksi riwayat permohonan ganda ber-NIB sama akibat registrasi berulang di OSS.
+  3. **Aksi Verifikasi Kilat Data Antrean (*Quick Geocoding Action*):**
+     * Pada baris data di tab *Antrean (1.388)*, terdapat tombol aksi cepat **`[ + Pasang Titik ]`**.
+     * Sekali klik, peta mini Leaflet muncul $\rightarrow$ staf mengklik posisi bangunan di peta $\rightarrow$ klik simpan $\rightarrow$ status otomatis berubah menjadi *Verified* dan langsung keluar dari antrean menuju basis data aktif.
+  4. **Pembersihan Data Duplikat & Hapus Data:**
+     * Aksi penghapusan data usang atau merger permohonan ganda dengan konfirmasi modal demi integritas data.
 
 ---
 
-### Modul 5: Impor Excel & Laporan Resmi PDF (FR-05)
-* **Deskripsi:** Modul integrasi berkas eksternal dan pencetakan dokumen formal dinas.
+### Modul 5: Impor Berkas Excel & Laporan Resmi PDF (FR-05)
+* **Deskripsi:** Modul integrasi berkas eksternal dan pencetakan dokumen formal dinas yang terhubung langsung di meja kerja admin.
 * **Fitur Sub-Modul:**
-  1. **Impor Berkas Excel DPMPTSP:**
-     * Admin mengunggah berkas `.xlsx` hasil ekspor berkala DPMPTSP.
+  1. **Modal Impor Berkas Excel DPMPTSP:**
+     * Tombol `[ Impor Berkas Excel ]` membuka modal unggah berkas `.xlsx` rekapitulasi berkala dari DPMPTSP.
      * Sistem memvalidasi dan memilah otomatis: baris yang sudah memiliki koordinat masuk sebagai `Verified`, baris tanpa koordinat masuk antrean `Unverified`, dan baris yang NIB-nya sudah terdaftar ditolak (*skip duplicate*).
-     * Sistem menampilkan log ringkasan impor.
+     * Sistem menampilkan log ringkasan hasil impor (jumlah sukses, antrean, dan duplikat).
   2. **Ekspor Laporan Resmi Eksekutif (PDF):**
-     * Menggunakan library `barryvdh/laravel-dompdf` untuk mencetak dokumen format A4 berstandar instansi pemerintah (dilengkapi Kop Surat Dinas Pariwisata Kota Palembang).
-     * Opsi cetak: *Laporan Hasil Klasterisasi Spasial DBSCAN* dan *Laporan Rekapitulasi Usaha per Kecamatan*.
-     * Memuat kolom tanda tangan resmi Kepala Dinas / Pembina Teknis.
+     * Menggunakan library `barryvdh/laravel-dompdf` untuk mencetak dokumen format A4 berstandar instansi pemerintah (dilengkapi Kop Surat Resmi Dinas Pariwisata Kota Palembang).
+     * Memuat ringkasan rekapitulasi izin per kecamatan, hasil pembagian sentra pariwisata DBSCAN, nilai Silhouette Score, dan kolom tanda tangan resmi Kepala Dinas.
 
 ---
 
