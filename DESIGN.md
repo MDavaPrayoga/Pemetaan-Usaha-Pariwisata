@@ -234,7 +234,7 @@ Modal form tambah/edit data terbagi menjadi dua kolom proporsional pada layar de
 ### 6.1 Layout Navbar Utama (Desktop)
 ```text
 +-------------------------------------------------------------------------------------------------------------+
-| [LOGO PALEMBANG] SIG PARIWISATA PALEMBANG  |  Beranda   Peta Sebaran   Sentra Pariwisata      [Masuk Admin] |
+| [LOGO PALEMBANG] SIG PARIWISATA PALEMBANG  |  Beranda   Peta Sebaran   Pusat Usaha Wisata     [Masuk Admin] |
 +-------------------------------------------------------------------------------------------------------------+
 ```
 * **Kelas Tailwind Navbar:** `sticky top-0 z-50 bg-white border-b border-slate-200 h-16 flex items-center justify-between px-6 shadow-sm`
@@ -249,7 +249,7 @@ Modal form tambah/edit data terbagi menjadi dua kolom proporsional pada layar de
 +-------------------------------------------------------------------------------------------------------------+
 | HERO SECTION: Selamat Datang di Portal SIG Usaha Pariwisata Kota Palembang (Ampera Maroon Banner)           |
 | Subtitle: Pemetaan Geospasial & Pemantauan Sebaran Ekonomi Pariwisata Daerah Berbasis Data Resmi OSS-RBA   |
-| [ Jelajahi Peta Sebaran ]   [ Lihat Sentra Pariwisata ]                                                     |
+| [ Jelajahi Peta Sebaran ]   [ Lihat Pusat Usaha Wisata ]                                                    |
 +-------------------------------------------------------------------------------------------------------------+
 | 4 KARTU METRIK EKSEKUTIF:                                                                                   |
 | [ Total Izin OSS: 2.809 ]  [ Titik Terpetakan: 1.421 ]  [ Usaha Aktif: 1.281 ]  [ Gulung Tikar: 109 ]       |
@@ -292,7 +292,7 @@ Modal form tambah/edit data terbagi menjadi dua kolom proporsional pada layar de
 
 ---
 
-### 6.4 Layout Halaman 3: Sentra Pariwisata (`/zonasi`)
+### 6.4 Layout Halaman 3: Pusat Usaha Wisata (`/zonasi`)
 ```text
 +-------------------------------------------------------------------------------------------------------------+
 | NAVBAR UTAMA                                                                                                |
@@ -300,29 +300,29 @@ Modal form tambah/edit data terbagi menjadi dua kolom proporsional pada layar de
 | PETA LEAFLET LAYAR PENUH (FULL BLEED) DENGAN FLOATING WORKBENCH:                                            |
 |                                                                                                             |
 |  +---------------------------------------------------+                                                      |
-|  | PENGATURAN SENTRA WISATA                  [_] [X]  | <-- Floating Glassmorphism Workbench                 |
+|  | PENGATURAN PUSAT USAHA WISATA             [_] [X]  | <-- Floating Glassmorphism Workbench                 |
 |  +---------------------------------------------------+     (Bisa diminimalkan / dilipat)                    |
 |  | Cakupan Basis Data:                               |                                                      |
-|  |   (•) Hanya Usaha Aktif / Buka (1.281) [Default]  |               (AREA BATAS KAWASAN SENTRA 1)          |
+|  |   (•) Hanya Usaha Aktif / Buka (1.281) [Default]  |               (AREA BATAS PUSAT USAHA 1)             |
 |  |   ( ) Seluruh Usaha Termasuk Tutup (1.421)        |                     *  *  *  *                       |
-|  |                                                   |                    * PUSAT SENTRA *                  |
+|  |                                                   |                    * TITIK INTI *                    |
 |  | Bidang Usaha: [ Semua Sektor Usaha       v ]      |                     *  *  *  *                       |
 |  |                                                   |                                                      |
 |  | Jarak Maksimal Antar Tempat:                      |                                                      |
-|  | [============O===================] 300 Meter     |                                (AREA BATAS SENTRA 2) |
+|  | [============O===================] 300 Meter     |                                (AREA BATAS PUSAT 2)  |
 |  | (Radius pencarian / Epsilon)                      |                                    *   *   *         |
-|  |                                                   |                                   *  SENTRA *        |
+|  |                                                   |                                   * PUSAT *          |
 |  | Minimal Tempat Berkumpul:                         |                                    *   *   *         |
 |  | [=======O========================] 4 Usaha        |          o (Usaha Tersebar/Noise)                    |
-|  | (Batas minimal sentra / MinPts)                   |                                                      |
+|  | (Batas minimal pembentukan / MinPts)              |                                                      |
 |  |                                                   |                                                      |
-|  | [ TEMUKAN SENTRA WISATA ] (Tombol Ampera Maroon)  |                                                      |
+|  | [ TEMUKAN PUSAT USAHA WISATA ] (Tombol Maroon)    |                                                      |
 |  +---------------------------------------------------+                                                      |
 |                                                                                                             |
 |                                                                                                             |
 |                +-----------------------------------------------------------------------+                    |
-|                | HASIL PENEMUAN SENTRA (FLOATING BOTTOM DOCK):                         |                    |
-|                | Ditemukan: 36 Sentra Kawasan | Di Luar Sentra: 257 Usaha | 812 ms     |                    |
+|                | HASIL PENEMUAN PUSAT USAHA (FLOATING BOTTOM DOCK):                    |                    |
+|                | Ditemukan: 42 Pusat Usaha | Di Luar Pusat: 202 Usaha | Waktu: 812 ms  |                    |
 |                | Kerapihan Kawasan (Silhouette Score): 0.58 [ Terpisah Sangat Rapi ]   |                    |
 |                +-----------------------------------------------------------------------+                    |
 +-------------------------------------------------------------------------------------------------------------+
@@ -333,7 +333,7 @@ Modal form tambah/edit data terbagi menjadi dua kolom proporsional pada layar de
 ### 6.5 Layout Halaman 4: Dashboard Eksekutif & Statistik Mutu Data (`/admin`)
 ```text
 +-------------------------------------------------------------------------------------------------------------+
-| NAVBAR ADMIN: [LOGO] SIG PARIWISATA | Beranda  Peta Sebaran  Sentra Pariwisata | [Dashboard] [Data Usaha]  |
+| NAVBAR ADMIN: [LOGO] SIG PARIWISATA | Beranda  Peta Sebaran  Pusat Usaha Wisata | [Dashboard] [Data Usaha]  |
 +-------------------------------------------------------------------------------------------------------------+
 | HEADER: Dashboard Eksekutif Pemantauan Usaha Pariwisata Kota Palembang                                      |
 | Subtitle: Laporan Kinerja Perizinan, Kesiapan Geospasial, & Analisis Sektoral     [ Unduh Laporan PDF ]     |

@@ -88,14 +88,14 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
 
 | Istilah Teknis Asli (Backend / Skripsi) | Penamaan di Tampilan Web (Bahasa Biasa & Ramah Pengguna) | Alasan Perubahan Bahasa |
 | :--- | :--- | :--- |
-| **Analisis Spasial DBSCAN** | **Sentra Pariwisata** (atau **Zonasi Sentra Wisata**) | Publik tidak tahu kepanjangan/makna DBSCAN. "Sentra Pariwisata" langsung menjelaskan manfaat nyata: melihat kawasan wisata yang mengelompok di Palembang. |
+| **Analisis Spasial DBSCAN** | **Pusat Usaha Wisata** (atau **Zonasi Pusat Usaha**) | Publik tidak tahu kepanjangan/makna DBSCAN. "Pusat Usaha Wisata" langsung menjelaskan manfaat nyata: melihat lokasi di mana restoran, kafe, hotel, dan biro travel berpusat mengelompok di Palembang. |
 | **Choropleth Map** | **Kepadatan per Kecamatan** (Tab ke-2 di Peta Sebaran) | "Choropleth" adalah istilah kartografi asing. "Kepadatan per Kecamatan" langsung dipahami siapa saja dalam 1 detik. |
 | **Katalog Titik Spasial** | **Sebaran Tempat Usaha** (Tab ke-1 di Peta Sebaran) | Lebih natural dan to the point untuk mencari lokasi hotel, resto, kafe, atau travel. |
 | **Parameter Radius $\varepsilon$ (Epsilon)** | **Jarak Maksimal Antar Tempat (Meter)** | Pengguna awam tahu jarak dalam meter (misal: 300 meter), bukan simbol Yunani $\varepsilon$. *Subketerangan kecil tetap dicantumkan: (Radius pencarian / Epsilon).* |
-| **Parameter Titik Minimum (*MinPts*)** | **Minimal Tempat Berkumpul** | Menjelaskan secara gamblang berapa titik usaha yang harus berdekatan agar diakui sebagai satu sentra/kawasan. |
-| **Tombol Eksekusi DBSCAN** | **`[ Temukan Sentra Wisata ]`** | Lebih komunikatif dan berorientasi aksi daripada tombol kaku bertuliskan `[ Proses Klasterisasi ]`. |
-| **Poligon Convex Hull** | **Area Batas Sentra** | Garis batas dan poligon warna transparan yang melingkupi tempat-tempat usaha dalam satu kelompok sentra. |
-| **Titik Noise / Outlier** | **Usaha Tersebar (Di Luar Sentra)** | Menggantikan konotasi kata "Noise/Sampah" dengan istilah netral: usaha mandiri yang lokasinya berada di luar kawasan sentra. |
+| **Parameter Titik Minimum (*MinPts*)** | **Minimal Tempat Berkumpul** | Menjelaskan secara gamblang berapa titik usaha yang harus berdekatan agar diakui sebagai satu titik pusat usaha/kawasan. |
+| **Tombol Eksekusi DBSCAN** | **`[ Temukan Pusat Usaha Wisata ]`** | Lebih komunikatif dan berorientasi aksi daripada tombol kaku bertuliskan `[ Proses Klasterisasi ]`. |
+| **Poligon Convex Hull** | **Area Batas Pusat Usaha** | Garis batas dan poligon warna transparan yang melingkupi tempat-tempat usaha dalam satu kelompok pusat usaha. |
+| **Titik Noise / Outlier** | **Usaha Tersebar (Di Luar Pusat Usaha)** | Menggantikan konotasi kata "Noise/Sampah" dengan istilah netral: usaha mandiri yang lokasinya berada di luar pusat konsentrasi usaha. |
 | **Silhouette Coefficient / Score** | **Tingkat Kerapihan Kawasan** (atau **Ketepatan Zonasi**) | Menampilkan status kualitatif yang jelas (*Sangat Rapi / Terpisah Baik / Tumpang Tindih*) disertai angka metrik ilmiah (0.58) untuk validasi sidang. |
 
 ---
@@ -110,10 +110,10 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
    * Menyediakan eksplorasi spasial katalog usaha pariwisata dengan dua pilihan tab yang intuitif:
      * **Tab 1: Sebaran Tempat Usaha:** Menampilkan 1.421 pin sebaran tempat usaha lengkap dengan filter status operasional (`Buka`, `Tutup`), filter kategori KBLI, serta kotak pencarian nama tempat dengan efek otomatis mendekat (*auto-pan/zoom*).
      * **Tab 2: Kepadatan per Kecamatan:** Menampilkan visualisasi batas 18 wilayah kecamatan dengan gradasi warna kepadatan wilayah (berbasis `palembang.geojson`).
-3. **Halaman 3: Sentra Pariwisata (`/zonasi`):**
-   * Menemukan dan memetakan kawasan konsentrasi sentra pariwisata di Kota Palembang secara otomatis menggunakan algoritma spasial DBSCAN.
-   * Menggunakan tata letak modern **Peta Penuh (*Full-Bleed Map*)** dengan **Panel Pengaturan Sentra (*Floating Workbench*)** yang fleksibel dan dapat dilipat/diminimalkan (`[_] [X]`).
-   * Menampilkan poligon area pembungkus sentra kawasan (*Convex Hull*), memisahkan usaha mandiri di pinggiran sebagai titik tersebar (*noise*), menyajikan skor kerapihan kawasan (*Silhouette Score*).
+3. **Halaman 3: Pusat Usaha Wisata (`/zonasi`):**
+   * Menemukan dan memetakan pusat-pusat konsentrasi usaha pariwisata di Kota Palembang secara otomatis menggunakan algoritma spasial DBSCAN.
+   * Menggunakan tata letak modern **Peta Penuh (*Full-Bleed Map*)** dengan **Panel Pengaturan Pusat Usaha (*Floating Workbench*)** yang fleksibel dan dapat dilipat/diminimalkan (`[_] [X]`).
+   * Menampilkan poligon area pembungkus kelompok usaha (*Convex Hull*), memisahkan usaha mandiri di pinggiran sebagai titik tersebar (*noise*), menyajikan skor kerapihan kawasan (*Silhouette Score*).
 
 ##### B. Halaman Internal Administrator (Wajib Login):
 4. **Halaman 4: Dashboard Eksekutif & Statistik Mutu Data (`/admin`):**
@@ -121,7 +121,7 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
 5. **Halaman 5: Kelola Data Usaha & Verifikasi Spasial (`/admin/usaha`):**
    * Khusus Staf Teknis / Operator Data Dinas: Meja kerja terpadu (*Single Integrated Workbench*) untuk pemeliharaan 2.809 data izin, verifikasi kilat data antrean, penambahan usaha manual lengkap dengan peta interaktif (*Map Picker*), dan modal impor berkas Excel DPMPTSP.
 * **Fitur Penguncian Terintegrasi (Tanpa Menambah Halaman Baru):**
-  * Di halaman **Sentra Pariwisata (`/zonasi`)**, saat sistem mendeteksi admin sedang login, otomatis muncul tombol eksklusif **`[ Kunci sebagai Sentra Resmi Dinas ]`** di panel *Floating Workbench*.
+  * Di halaman **Pusat Usaha Wisata (`/zonasi`)**, saat sistem mendeteksi admin sedang login, otomatis muncul tombol eksklusif **`[ Kunci sebagai Pusat Usaha Resmi Dinas ]`** di panel *Floating Workbench*.
 
 ---
 
@@ -130,12 +130,12 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
 ### 2.1 Definisi Aktor Sistem
 1. **Publik / Tamu (*Public Guest*):**
    * **Sifat Akses:** Tanpa Login (*Unauthenticated* / Akses Terbuka).
-   * **Fungsi:** Masyarakat, calon investor, akademisi, dan dewan penguji sidang yang mengakses portal untuk melihat informasi sebaran usaha, peta kepadatan kecamatan, dan melakukan simulasi penemuan sentra wisata secara interaktif.
+   * **Fungsi:** Masyarakat, calon investor, akademisi, dan dewan penguji sidang yang mengakses portal untuk melihat informasi sebaran usaha, peta kepadatan kecamatan, dan melakukan simulasi penemuan pusat usaha wisata secara interaktif.
    * **Batasan:** Bersifat *stateless* (hanya baca). Simulasi parameter hanya berjalan di layar browser sendiri dan tidak dapat mengubah basis data dinas.
 2. **Administrator (Staf Teknis & Pimpinan Dinas Pariwisata):**
    * **Sifat Akses:** Wajib Login (*Authenticated* via Email & Password terenkripsi).
    * **Fungsi:** Pengelola resmi data perizinan pariwisata Kota Palembang.
-   * **Wewenang:** Memegang kendali penuh atas basis data (CRUD manual + Map Picker), verifikasi koordinat antrean, impor berkas DPMPTSP, penetapan sentra resmi dinas, dan pencetakan laporan PDF.
+   * **Wewenang:** Memegang kendali penuh atas basis data (CRUD manual + Map Picker), verifikasi koordinat antrean, impor berkas DPMPTSP, penetapan pusat usaha resmi dinas, dan pencetakan laporan PDF.
 
 ### 2.2 Kebijakan Privasi & Citra Publik (*Data Governance*)
 * **Halaman Publik:** Hanya menampilkan data bersih yang telah terverifikasi (**1.421 Usaha**). Angka 1.388 data kosong disembunyikan untuk menjaga reputasi kinerja instansi pemerintah dari tudingan publik mengenai data perizinan yang tidak lengkap.
@@ -148,9 +148,9 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
 | **1** | **Beranda & Statistik Pariwisata (`/`)** | ✅ Ya | ✅ Ya | Menampilkan statistik sebaran 1.421 usaha terverifikasi, peringkat kecamatan, dan proporsi sektor. |
 | **2** | **Peta Sebaran: Sebaran Tempat Usaha (`/peta`)** | ✅ Ya | ✅ Ya | Menampilkan 1.421 pin sebaran tempat usaha, filter status (Buka/Tutup), filter KBLI, pencarian nama, dan popup info. |
 | **3** | **Peta Sebaran: Kepadatan per Kecamatan (`/peta`)** | ✅ Ya | ✅ Ya | Menampilkan batas 18 kecamatan Palembang dengan gradasi warna kepadatan wilayah (peta tematik interaktif). |
-| **4** | **Sentra Pariwisata (`/zonasi`)** | ✅ Ya | ✅ Ya | Mengatur jarak maksimal antar tempat (meter) & minimal tempat berkumpul via *Floating Workbench* untuk simulasi sentra. |
+| **4** | **Pusat Usaha Wisata (`/zonasi`)** | ✅ Ya | ✅ Ya | Mengatur jarak maksimal antar tempat (meter) & minimal tempat berkumpul via *Floating Workbench* untuk simulasi pusat usaha. |
 | **5** | **Melihat Tingkat Kerapihan Kawasan** | ✅ Ya | ✅ Ya | Skor kerapihan kawasan (*Silhouette Score*) tampil *real-time* saat simulasi dijalankan (keperluan uji sidang). |
-| **6** | **Kunci Sentra Resmi Dinas** | ❌ **Dilarang** | ✅ **Ya** | Tombol khusus di `/zonasi` (hanya muncul saat login) untuk mengunci parameter resmi ke database. |
+| **6** | **Kunci Pusat Usaha Resmi Dinas** | ❌ **Dilarang** | ✅ **Ya** | Tombol khusus di `/zonasi` (hanya muncul saat login) untuk mengunci parameter resmi ke database. |
 | **7** | **Dashboard Eksekutif & Mutu Data (`/admin`)** | ❌ **Dilarang** | ✅ **Ya** | Khusus Admin: Menampilkan 3 grafik analitis internal (mutu spasial, survival rate, tren tahunan) dan tombol cetak PDF. |
 | **8** | **Kelola Data Usaha & Workbench (`/admin/usaha`)**| ❌ **Dilarang** | ✅ **Ya** | Meja kerja staf: tabel 2.809 data dengan tab filter status (Semua, Terverifikasi, Antrean, Duplikat). |
 | **9** | **Tambah Usaha Manual (CRUD)** | ❌ **Dilarang** | ✅ **Ya** | Input mandiri data usaha baru (NIB, PT/CV, alamat, status) lengkap dengan ketik koordinat manual. |
@@ -317,27 +317,27 @@ Estetika antarmuka mengadopsi standar modern portal pemerintah (*clean, spacious
 
 ---
 
-### Modul 3: Sentra Pariwisata / Zonasi Kawasan (FR-03) - *Jantung Sistem*
-* **Deskripsi:** Modul cerdas untuk menemukan kawasan konsentrasi sentra pariwisata secara otomatis dan memisahkan usaha mandiri yang terpencil (*noise filtering*).
+### Modul 3: Pusat Usaha Wisata / Zonasi Kawasan (FR-03) - *Jantung Sistem*
+* **Deskripsi:** Modul cerdas untuk menemukan pusat-pusat konsentrasi usaha pariwisata secara otomatis dan memisahkan usaha mandiri yang terpencil (*noise filtering*).
 * **Alur Operasional Antarmuka Ramah Pengguna:**
-  1. **Panel Pengaturan Sentra Mengambang (*Floating Workbench* di Kiri Atas Peta):**
+  1. **Panel Pengaturan Pusat Usaha Mengambang (*Floating Workbench* di Kiri Atas Peta):**
      * Dapat diminimalkan/dilipat dengan tombol `[_]` dan `[X]` agar tidak menghalangi pemandangan peta.
-     * Pilihan Cakupan Data: **"Hanya Usaha Aktif / Buka (1.281)"** (*Default* - Sentra Ekonomi Hidup) atau *"Semua Usaha Termasuk Tutup (1.421)"* (Riwayat Historis).
-     * Filter Bidang Usaha: Pilihan penemuan sentra untuk seluruh kategori atau spesifik (*"Khusus Kuliner"*, *"Khusus Hotel"*, dll).
+     * Pilihan Cakupan Data: **"Hanya Usaha Aktif / Buka (1.281)"** (*Default* - Pusat Usaha Aktif) atau *"Semua Usaha Termasuk Tutup (1.421)"* (Riwayat Historis).
+     * Filter Bidang Usaha: Pilihan penemuan pusat usaha untuk seluruh kategori atau spesifik (*"Khusus Kuliner"*, *"Khusus Hotel"*, dll).
      * Input **"Jarak Maksimal Antar Tempat (Meter)"**: Slider / input angka meter (jarak radius pencarian tetangga / $\varepsilon$ Epsilon, rentang uji: `200` s/d `500` meter).
-     * Input **"Minimal Tempat Berkumpul"**: Slider / input angka minimal usaha bertetangga (ambang batas sentra / *MinPts*, default: `4` atau `5` titik).
-     * Tombol Aksi: **`[ Temukan Sentra Wisata ]`** (Tombol utama Ampera Maroon).
+     * Input **"Minimal Tempat Berkumpul"**: Slider / input angka minimal usaha bertetangga (ambang batas pusat usaha / *MinPts*, default: `4` atau `5` titik).
+     * Tombol Aksi: **`[ Temukan Pusat Usaha Wisata ]`** (Tombol utama Ampera Maroon).
   2. **Proses Komputasi Mesin di Balik Layar (Laravel Backend):**
      * Menghitung matriks jarak antar titik koordinat menggunakan formula **Haversine Distance** (dalam kilometer, dikonversi dari input meter).
      * Mengklasifikasikan titik ke dalam status **Core Point**, **Border Point**, atau **Noise** menggunakan algoritma **DBSCAN**.
-     * Membentuk poligon pembungkus area konsentrasi (**Convex Hull**) untuk setiap sentra yang terbentuk.
+     * Membentuk poligon pembungkus area konsentrasi (**Convex Hull**) untuk setiap kelompok pusat usaha yang terbentuk.
      * Menghitung nilai validitas kualitas pengelompokan secara matematis menggunakan **Silhouette Coefficient**.
   3. **Visualisasi Hasil Peta (Layar Penuh):**
-     * Titik-titik tempat usaha otomatis dikelompokkan dengan warna khas per kawasan sentra (Sentra 1 = Biru, Sentra 2 = Hijau, Sentra 3 = Cokelat Amber, dst).
-     * Lapisan poligon transparan membungkus area batas luar tempat usaha yang berada dalam satu sentra (**Area Batas Sentra**).
-     * Usaha yang mandiri dan terpisah jauh di pinggiran secara otomatis diwarnai **Abu-Abu Slate ("Usaha Tersebar / Di Luar Sentra")**.
-     * **Floating Bottom Dock (Ringkasan Hasil Bawah):** Menampilkan ringkasan hasil yang komunikatif: Total Sentra yang Terbentuk, Jumlah Usaha per Sentra, Jumlah Usaha Tersebar di Luar Sentra, Waktu Eksekusi (ms), dan **Tingkat Kerapihan Kawasan (*Silhouette Score*)** dengan label interpretasi (*Sangat Rapi / Terpisah Baik / Kurang Sesuai*).
-  4. **Wewenang Khusus Admin Dinas:** Tombol `[ Kunci sebagai Sentra Resmi Dinas ]` untuk menyimpan konfigurasi parameter terbaik ke database sebagai acuan perencanaan kota.
+     * Titik-titik tempat usaha otomatis dikelompokkan dengan warna khas per kelompok pusat usaha (Pusat Usaha 1 = Biru, Pusat Usaha 2 = Hijau, Pusat Usaha 3 = Cokelat Amber, dst).
+     * Lapisan poligon transparan membungkus area batas luar tempat usaha yang berada dalam satu kelompok (**Area Batas Pusat Usaha**).
+     * Usaha yang mandiri dan terpisah jauh di pinggiran secara otomatis diwarnai **Abu-Abu Slate ("Usaha Tersebar / Di Luar Pusat Usaha")**.
+     * **Floating Bottom Dock (Ringkasan Hasil Bawah):** Menampilkan ringkasan hasil yang komunikatif: Total Pusat Usaha yang Ditemukan, Jumlah Usaha per Kelompok, Jumlah Usaha Tersebar di Luar Pusat Usaha, Waktu Eksekusi (ms), dan **Tingkat Kerapihan Kawasan (*Silhouette Score*)** dengan label interpretasi (*Sangat Rapi / Terpisah Baik / Kurang Sesuai*).
+  4. **Wewenang Khusus Admin Dinas:** Tombol `[ Kunci sebagai Pusat Usaha Resmi Dinas ]` untuk menyimpan konfigurasi parameter terbaik ke database sebagai acuan perencanaan kota.
 
 ---
 
