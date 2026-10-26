@@ -330,13 +330,54 @@
                 <span>Sinkronisasi data spasial...</span>
             </div>
 
+            <!-- Floating Visualization Style Switcher (Top Right on Map) -->
+            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-xl rounded-xl p-1 z-20 flex items-center space-x-1 text-xs pointer-events-auto">
+                <!-- Style 1: Klaster Rapi (Default) -->
+                <button type="button" 
+                        id="btn-style-klaster"
+                        data-style="klaster"
+                        title="Tampilkan titik dalam klaster bernomor per zona wilayah"
+                        class="btn-vis-style px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span>Klaster Rapi</span>
+                </button>
+
+                <!-- Style 2: Titik Halus (Circle Dot Glow) -->
+                <button type="button" 
+                        id="btn-style-titik"
+                        data-style="titik"
+                        title="Tampilkan titik lingkaran halus minimalis (tanpa pin besar menumpuk)"
+                        class="btn-vis-style px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="7" stroke-width="2" />
+                        <circle cx="12" cy="12" r="2.5" fill="currentColor" />
+                    </svg>
+                    <span>Titik Halus</span>
+                </button>
+
+                <!-- Style 3: Heatmap (Peta Panas) -->
+                <button type="button" 
+                        id="btn-style-heatmap"
+                        data-style="heatmap"
+                        title="Peta panas densitas konsentrasi tempat usaha pariwisata"
+                        class="btn-vis-style px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
+                    </svg>
+                    <span>Peta Panas</span>
+                </button>
+            </div>
+
             <!-- Map Floating Legend (Bottom Right) -->
             <div class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm border border-slate-200/90 shadow-xl rounded-xl p-3 z-20 text-xs text-slate-700 max-w-xs pointer-events-auto">
                 <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
                     <span class="font-bold text-[11px] uppercase tracking-wider text-slate-800">Legenda Peta</span>
-                    <span class="text-[10px] text-slate-400 font-mono">OSS-RBA</span>
+                    <span id="legend-style-badge" class="text-[10px] bg-ampera-900/10 text-ampera-900 font-bold px-1.5 py-0.5 rounded">Klaster</span>
                 </div>
-                <div class="space-y-1.5 text-[11px]">
+                <div id="legend-sebaran-content" class="space-y-1.5 text-[11px]">
                     <div class="flex items-center space-x-2">
                         <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shadow-sm shrink-0"></span>
                         <span class="text-slate-700">Buka / Aktif Beroperasi</span>
@@ -351,7 +392,7 @@
                     </div>
                     <div class="flex items-center space-x-2 pt-1 border-t border-slate-100">
                         <span class="w-4 h-4 rounded-full bg-ampera-900 border border-white flex items-center justify-center text-[8px] text-white font-bold shrink-0">N</span>
-                        <span class="text-slate-500">Klaster Titik Terpusat (Klik untuk melebarkan)</span>
+                        <span class="text-slate-500">Klaster Dinamis (Klik untuk zoom)</span>
                     </div>
                 </div>
             </div>
@@ -470,6 +511,8 @@
 @section('scripts')
 <!-- Leaflet MarkerCluster Plugin JS -->
 <script src="{{ asset('vendor/leaflet/leaflet.markercluster.js') }}"></script>
+<!-- Leaflet Heatmap Plugin JS -->
+<script src="{{ asset('vendor/leaflet/leaflet-heat.js') }}"></script>
 
 <script>
     // Palembang default geodetic center & initial zoom
@@ -500,15 +543,18 @@
     let dataTerfilter = [];
     let mapSebaran = null;
     let clusterGroup = null;
+    let circleDotLayer = null;
+    let heatLayer = null;
     let markersById = {};
     let activeTab = 'sebaran';
+    let gayaVisualisasiAktif = 'klaster'; // 'klaster' | 'titik' | 'heatmap'
 
     // Choropleth Map State
     let mapChoropleth = null;
     let geojsonLayer = null;
     let rawGeojsonData = null;
 
-    // SVG Marker Icons Generator
+    // SVG Marker Icons Generator (Compact & Sharp)
     function createCustomMarkerIcon(status) {
         let color = '#10B981'; // Emerald for Buka
         if (status === 'Tutup Sementara') {
@@ -518,18 +564,18 @@
         }
 
         const svgHtml = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.35));">
-                <path fill="${color}" stroke="#FFFFFF" stroke-width="1.5" d="M12 0C5.37 0 0 5.37 0 12c0 8.5 12 20 12 20s12-11.5 12-20c0-6.63-5.37-12-12-12z"/>
-                <circle cx="12" cy="12" r="4.5" fill="#FFFFFF"/>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 28" width="20" height="28" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+                <path fill="${color}" stroke="#FFFFFF" stroke-width="1.5" d="M10 0C4.48 0 0 4.48 0 10c0 7 10 18 10 18s10-11 10-18c0-5.52-4.48-10-10-10z"/>
+                <circle cx="10" cy="10" r="3.5" fill="#FFFFFF"/>
             </svg>
         `;
 
         return L.divIcon({
             html: svgHtml,
             className: 'custom-pin-marker',
-            iconSize: [24, 32],
-            iconAnchor: [12, 32],
-            popupAnchor: [0, -30]
+            iconSize: [20, 28],
+            iconAnchor: [10, 28],
+            popupAnchor: [0, -26]
         });
     }
 
@@ -551,11 +597,11 @@
             maxZoom: 19
         }).addTo(mapSebaran);
 
-        // Marker Cluster Group with custom radius & safe fallback
+        // 1. Marker Cluster Group (Radius 80 agar di level kota tampil rapi berangka per zona)
         if (typeof L.markerClusterGroup === 'function') {
             clusterGroup = L.markerClusterGroup({
                 showCoverageOnHover: false,
-                maxClusterRadius: 50,
+                maxClusterRadius: 80,
                 spiderfyOnMaxZoom: true,
                 zoomToBoundsOnClick: true,
                 chunkedLoading: true
@@ -564,6 +610,11 @@
             console.warn('L.markerClusterGroup tidak tersedia, menggunakan L.layerGroup() biasa.');
             clusterGroup = L.layerGroup();
         }
+
+        // 2. Layer Group untuk Titik Halus (Circle Marker Glow)
+        circleDotLayer = L.layerGroup();
+
+        // Layer bawaan aktif awal adalah klaster
         mapSebaran.addLayer(clusterGroup);
 
         setTimeout(() => {
@@ -572,6 +623,101 @@
         setTimeout(() => {
             if (mapSebaran) mapSebaran.invalidateSize();
         }, 500);
+    }
+
+    // Switch visualization style (Klaster Rapi / Titik Halus / Heatmap)
+    function gantiGayaVisualisasi(gaya) {
+        if (!mapSebaran) return;
+        gayaVisualisasiAktif = gaya;
+
+        // Update button states
+        document.querySelectorAll('.btn-vis-style').forEach(btn => {
+            if (btn.dataset.style === gaya) {
+                btn.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
+                btn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            } else {
+                btn.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
+                btn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            }
+        });
+
+        // Remove all layers first
+        if (mapSebaran.hasLayer(clusterGroup)) mapSebaran.removeLayer(clusterGroup);
+        if (mapSebaran.hasLayer(circleDotLayer)) mapSebaran.removeLayer(circleDotLayer);
+        if (heatLayer && mapSebaran.hasLayer(heatLayer)) mapSebaran.removeLayer(heatLayer);
+
+        // Add active layer
+        if (gaya === 'klaster') {
+            mapSebaran.addLayer(clusterGroup);
+        } else if (gaya === 'titik') {
+            mapSebaran.addLayer(circleDotLayer);
+        } else if (gaya === 'heatmap') {
+            if (heatLayer) mapSebaran.addLayer(heatLayer);
+        }
+
+        updateLegendaSebaran(gaya);
+    }
+
+    // Dynamic Legend Updater
+    function updateLegendaSebaran(gaya) {
+        const badge = document.getElementById('legend-style-badge');
+        const content = document.getElementById('legend-sebaran-content');
+        if (!content) return;
+
+        if (gaya === 'heatmap') {
+            if (badge) badge.textContent = 'Peta Panas';
+            content.innerHTML = `
+                <div class="space-y-2 text-[11px]">
+                    <div class="text-[10px] text-slate-500">Tingkat Kepadatan Usaha:</div>
+                    <div class="h-3 w-full rounded-full shadow-inner border border-black/10" style="background: linear-gradient(to right, #2563EB, #10B981, #FBBF24, #F97316, #8B1E2D);"></div>
+                    <div class="flex justify-between text-[10px] text-slate-600 font-medium">
+                        <span>Rendah</span>
+                        <span>Sedang</span>
+                        <span class="text-ampera-900 font-bold">Paling Padat</span>
+                    </div>
+                </div>
+            `;
+        } else if (gaya === 'titik') {
+            if (badge) badge.textContent = 'Titik Halus';
+            content.innerHTML = `
+                <div class="space-y-1.5 text-[11px]">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shadow-sm shrink-0"></span>
+                        <span class="text-slate-700">Buka / Aktif Beroperasi</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shadow-sm shrink-0"></span>
+                        <span class="text-slate-700">Tutup Sementara</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-rose-500 border border-white shadow-sm shrink-0"></span>
+                        <span class="text-slate-700">Tutup Permanen</span>
+                    </div>
+                </div>
+            `;
+        } else {
+            if (badge) badge.textContent = 'Klaster';
+            content.innerHTML = `
+                <div class="space-y-1.5 text-[11px]">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 border border-white shadow-sm shrink-0"></span>
+                        <span class="text-slate-700">Buka / Aktif Beroperasi</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 border border-white shadow-sm shrink-0"></span>
+                        <span class="text-slate-700">Tutup Sementara</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="w-3 h-3 rounded-full bg-rose-500 border border-white shadow-sm shrink-0"></span>
+                        <span class="text-slate-700">Tutup Permanen</span>
+                    </div>
+                    <div class="flex items-center space-x-2 pt-1 border-t border-slate-100">
+                        <span class="w-4 h-4 rounded-full bg-ampera-900 border border-white flex items-center justify-center text-[8px] text-white font-bold shrink-0">N</span>
+                        <span class="text-slate-500">Klaster Dinamis (Klik untuk zoom)</span>
+                    </div>
+                </div>
+            `;
+        }
     }
 
     // Initialize Map Choropleth (Tab 2)
@@ -914,25 +1060,40 @@
         renderDaftarTempatUsaha();
     }
 
-    // Render Markers into ClusterGroup
+    // Render Markers into Layers (Cluster, Circle Dots, and Heatmap)
     function renderMarkersPeta() {
-        if (!clusterGroup) return;
+        if (!clusterGroup || !circleDotLayer) return;
 
         clusterGroup.clearLayers();
+        circleDotLayer.clearLayers();
         markersById = {};
 
-        const markers = [];
+        const clusterMarkers = [];
+        const heatPoints = [];
 
         dataTerfilter.forEach(item => {
             const icon = createCustomMarkerIcon(item.status_operasional);
             const marker = L.marker([item.latitude, item.longitude], { icon: icon });
 
+            let dotColor = '#10B981'; // Emerald
             let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Buka</span>';
             if (item.status_operasional === 'Tutup Sementara') {
+                dotColor = '#F59E0B';
                 statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Tutup Sementara</span>';
             } else if (item.status_operasional === 'Tutup Permanen') {
+                dotColor = '#EF4444';
                 statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Tutup Permanen</span>';
             }
+
+            // Circle marker for minimal dot density mode
+            const circleMarker = L.circleMarker([item.latitude, item.longitude], {
+                radius: 6,
+                fillColor: dotColor,
+                color: '#FFFFFF',
+                weight: 1.5,
+                opacity: 1,
+                fillOpacity: 0.9
+            });
 
             const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${item.latitude},${item.longitude}`;
 
@@ -976,18 +1137,49 @@
             `;
 
             marker.bindPopup(popupHtml);
-            markers.push(marker);
-            markersById[item.id_usaha] = marker;
+            circleMarker.bindPopup(popupHtml);
+
+            clusterMarkers.push(marker);
+            circleDotLayer.addLayer(circleMarker);
+            heatPoints.push([item.latitude, item.longitude, 0.85]);
+
+            markersById[item.id_usaha] = {
+                marker: marker,
+                circle: circleMarker
+            };
         });
 
         if (typeof clusterGroup.addLayers === 'function') {
-            clusterGroup.addLayers(markers);
+            clusterGroup.addLayers(clusterMarkers);
         } else {
-            markers.forEach(m => clusterGroup.addLayer(m));
+            clusterMarkers.forEach(m => clusterGroup.addLayer(m));
         }
 
+        // Rebuild Heatmap Layer
+        if (heatLayer && mapSebaran.hasLayer(heatLayer)) {
+            mapSebaran.removeLayer(heatLayer);
+        }
+        if (typeof L.heatLayer === 'function') {
+            heatLayer = L.heatLayer(heatPoints, {
+                radius: 25,
+                blur: 16,
+                maxZoom: 15,
+                max: 1.0,
+                gradient: {
+                    0.2: '#2563EB',
+                    0.4: '#10B981',
+                    0.6: '#FBBF24',
+                    0.8: '#F97316',
+                    1.0: '#8B1E2D'
+                }
+            });
+        }
+
+        // Apply active layer on map
+        gantiGayaVisualisasi(gayaVisualisasiAktif);
+
         // Fit map bounds to markers (on initial load and whenever filtered)
-        if (clusterGroup && clusterGroup.getLayers().length > 0 && mapSebaran) {
+        if (dataTerfilter.length > 0 && mapSebaran) {
             try {
                 const bounds = clusterGroup.getBounds();
                 if (bounds && bounds.isValid()) {
@@ -1099,19 +1291,32 @@
         const item = semuaDataTitik.find(x => x.id_usaha == idUsaha);
         if (!item || !mapSebaran) return;
 
+        // Jika sedang di mode heatmap, beralih ke titik halus agar marker terlihat
+        if (gayaVisualisasiAktif === 'heatmap') {
+            gantiGayaVisualisasi('titik');
+        }
+
         mapSebaran.flyTo([item.latitude, item.longitude], 17, {
             duration: 1.2
         });
 
         setTimeout(() => {
-            const marker = markersById[idUsaha];
-            if (marker) {
+            const mObj = markersById[idUsaha];
+            if (!mObj) return;
+
+            if (gayaVisualisasiAktif === 'klaster') {
+                const marker = mObj.marker || mObj;
                 if (clusterGroup && typeof clusterGroup.zoomToShowLayer === 'function') {
                     clusterGroup.zoomToShowLayer(marker, () => {
                         marker.openPopup();
                     });
                 } else {
                     marker.openPopup();
+                }
+            } else {
+                const circle = mObj.circle || mObj;
+                if (circle && typeof circle.openPopup === 'function') {
+                    circle.openPopup();
                 }
             }
         }, 1300);
@@ -1128,6 +1333,14 @@
         // 3. Setel lebar bar kepadatan kecamatan secara dinamis
         document.querySelectorAll('.bar-kepadatan').forEach(el => {
             el.style.width = (el.dataset.pct || 0) + '%';
+        });
+
+        // Style Switcher Buttons (Klaster Rapi / Titik Halus / Heatmap)
+        document.querySelectorAll('.btn-vis-style').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const style = this.dataset.style;
+                gantiGayaVisualisasi(style);
+            });
         });
 
         // 4. Pastikan peta menghitung ulang ukuran kanvas setelah DOM stabil
