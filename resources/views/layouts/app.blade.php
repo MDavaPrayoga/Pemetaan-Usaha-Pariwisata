@@ -189,11 +189,11 @@
                     <div class="space-y-2 text-xs text-white/80 leading-relaxed">
                         <p class="font-semibold text-white">Dinas Pariwisata Kota Palembang</p>
                         <p class="text-white/70">
-                            Jl. Dr. Wahidin No. 3, Talang Semut, Kec. Bukit Kecil, Kota Palembang, Sumatera Selatan 30135
+                            Jl. Gubernur H. A Bastari, 15 Ulu, Kecamatan Seberang Ulu I, Kota Palembang, Sumatera Selatan 30267
                         </p>
                         <div class="pt-1 space-y-0.5 text-white/70">
                             <p>Surel: <span class="text-white/90">pariwisata@palembang.go.id</span></p>
-                            <p>Situs: <span class="text-white/90">charmingpalembang.id</span></p>
+                            <p>Situs: <a href="https://charming-palembang.com/" target="_blank" rel="noopener noreferrer" class="text-white/90 hover:text-white underline decoration-white/30 hover:decoration-white transition duration-150">charming-palembang.com</a></p>
                         </div>
                     </div>
                 </div>
