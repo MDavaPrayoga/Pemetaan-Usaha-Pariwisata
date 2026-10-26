@@ -39,7 +39,6 @@ class BerandaController extends Controller
         $chartKecamatanData = $kecamatanList->pluck('total_usaha')->toArray();
 
         // 3. Komposisi Sektor Usaha Pariwisata (untuk Grafik Donat)
-        // Dikelompokkan ke dalam kategori strategis pariwisata Palembang
         $sektorKuliner = UsahaPariwisata::verified()
             ->whereHas('kbli', function ($q) {
                 $q->where('judul_kbli', 'like', '%Restoran%')
@@ -74,6 +73,42 @@ class BerandaController extends Controller
             'data' => [$sektorKuliner, $sektorPerjalanan, $sektorAkomodasi, $sektorLainnya],
         ];
 
+        // 4. Tren Pertumbuhan Izin Usaha Pariwisata Tahunan (Grafik Garis / Area Chart)
+        $trenTahunan = DB::table('usaha_pariwisata')
+            ->where('status_spasial', 'verified')
+            ->selectRaw("RIGHT(TRIM(tanggal_pengajuan), 4) as tahun, count(*) as total")
+            ->whereNotNull('tanggal_pengajuan')
+            ->where('tanggal_pengajuan', '!=', '')
+            ->groupBy('tahun')
+            ->orderBy('tahun', 'asc')
+            ->get();
+
+        $chartTahunLabels = $trenTahunan->pluck('tahun')->toArray();
+        $chartTahunData = $trenTahunan->pluck('total')->toArray();
+
+        // 5. Sampel Ragam Tempat Usaha untuk Mini Katalog Direktori
+        $sampelKuliner = UsahaPariwisata::verified()->buka()
+            ->whereHas('kbli', fn($q) => $q->where('judul_kbli', 'like', '%Restoran%')->orWhere('judul_kbli', 'like', '%Kafe%'))
+            ->with(['kbli', 'kecamatan'])
+            ->take(4)
+            ->get();
+
+        $sampelHotel = UsahaPariwisata::verified()->buka()
+            ->whereHas('kbli', fn($q) => $q->where('judul_kbli', 'like', '%Hotel%'))
+            ->with(['kbli', 'kecamatan'])
+            ->take(4)
+            ->get();
+
+        $sampelPerjalanan = UsahaPariwisata::verified()->buka()
+            ->whereHas('kbli', fn($q) => $q->where('judul_kbli', 'like', '%Perjalanan%')->orWhere('judul_kbli', 'like', '%Wisata%'))
+            ->with(['kbli', 'kecamatan'])
+            ->take(4)
+            ->get();
+
+        $sampelUsaha = $sampelKuliner->concat($sampelHotel)->concat($sampelPerjalanan);
+
+        $daftarKecamatan = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
+
         return view('beranda', compact(
             'totalVerified',
             'totalBuka',
@@ -84,7 +119,11 @@ class BerandaController extends Controller
             'kecamatanTerpadat',
             'chartKecamatanLabels',
             'chartKecamatanData',
-            'chartSektor'
+            'chartSektor',
+            'chartTahunLabels',
+            'chartTahunData',
+            'sampelUsaha',
+            'daftarKecamatan'
         ));
     }
 }
