@@ -305,7 +305,7 @@
                                     <div class="text-[11px] text-slate-400 leading-tight mt-0.5 truncate max-w-xs">{{ $usaha->nama_perusahaan ?: $usaha->nama_proyek }}</div>
                                 </td>
                                 <td class="py-3.5 px-4">
-                                    <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-[200px]" title="{{ $usaha->kbli?->judul_kbli }}">
+                                    <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-50" title="{{ $usaha->kbli?->judul_kbli }}">
                                         {{ $usaha->kbli?->judul_kbli ?? 'Pariwisata' }}
                                     </span>
                                 </td>
@@ -348,7 +348,10 @@
                 </div>
 
                 <!-- Kontrol Navigasi Halaman -->
-                <div id="pagination-controls" class="flex items-center space-x-1 text-xs">
+                <div id="pagination-controls" 
+                     data-current="{{ $tabelUsaha->currentPage() }}" 
+                     data-last="{{ $tabelUsaha->lastPage() }}" 
+                     class="flex items-center space-x-1 text-xs">
                     <!-- Tombol Halaman digenerate secara dinamis oleh JavaScript -->
                 </div>
             </div>
@@ -654,7 +657,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <div class="text-[11px] text-slate-400 leading-tight mt-0.5 truncate max-w-xs">${u.nama_perusahaan}</div>
                             </td>
                             <td class="py-3.5 px-4">
-                                <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-[200px]" title="${u.kbli}">
+                                <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-50" title="${u.kbli}">
                                     ${u.kbli}
                                 </span>
                             </td>
@@ -780,8 +783,10 @@ document.addEventListener('DOMContentLoaded', function () {
         kecamatanSelect.addEventListener('change', () => loadTableData(1));
     }
 
-    // Inisialisasi tombol paginasi untuk data pertama dari server
-    renderPagination({{ $tabelUsaha->currentPage() }}, {{ $tabelUsaha->lastPage() }});
+    // Inisialisasi tombol paginasi untuk data pertama dari server (tanpa curly braces blade di script)
+    const initCurrent = parseInt(pagControls ? (pagControls.getAttribute('data-current') || '1') : '1', 10);
+    const initLast = parseInt(pagControls ? (pagControls.getAttribute('data-last') || '1') : '1', 10);
+    renderPagination(initCurrent, initLast);
 });
 </script>
 @endsection
