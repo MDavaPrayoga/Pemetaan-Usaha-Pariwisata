@@ -356,19 +356,6 @@
                     </svg>
                     <span>Titik Halus</span>
                 </button>
-
-                <!-- Style 3: Heatmap (Peta Panas) -->
-                <button type="button" 
-                        id="btn-style-heatmap"
-                        data-style="heatmap"
-                        title="Peta panas densitas konsentrasi tempat usaha pariwisata"
-                        class="btn-vis-style px-3 py-1.5 rounded-lg font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z" />
-                    </svg>
-                    <span>Peta Panas</span>
-                </button>
             </div>
 
             <!-- Map Floating Legend (Bottom Right) -->
@@ -511,8 +498,6 @@
 @section('scripts')
 <!-- Leaflet MarkerCluster Plugin JS -->
 <script src="{{ asset('vendor/leaflet/leaflet.markercluster.js') }}"></script>
-<!-- Leaflet Heatmap Plugin JS -->
-<script src="{{ asset('vendor/leaflet/leaflet-heat.js') }}"></script>
 
 <script>
     // Palembang default geodetic center & initial zoom
@@ -544,10 +529,9 @@
     let mapSebaran = null;
     let clusterGroup = null;
     let circleDotLayer = null;
-    let heatLayer = null;
     let markersById = {};
     let activeTab = 'sebaran';
-    let gayaVisualisasiAktif = 'klaster'; // 'klaster' | 'titik' | 'heatmap'
+    let gayaVisualisasiAktif = 'klaster'; // 'klaster' | 'titik'
 
     // Choropleth Map State
     let mapChoropleth = null;
@@ -625,7 +609,7 @@
         }, 500);
     }
 
-    // Switch visualization style (Klaster Rapi / Titik Halus / Heatmap)
+    // Switch visualization style (Klaster Rapi / Titik Halus)
     function gantiGayaVisualisasi(gaya) {
         if (!mapSebaran) return;
         gayaVisualisasiAktif = gaya;
@@ -644,21 +628,12 @@
         // Remove all layers first
         if (mapSebaran.hasLayer(clusterGroup)) mapSebaran.removeLayer(clusterGroup);
         if (mapSebaran.hasLayer(circleDotLayer)) mapSebaran.removeLayer(circleDotLayer);
-        if (heatLayer && mapSebaran.hasLayer(heatLayer)) mapSebaran.removeLayer(heatLayer);
 
         // Add active layer
-        if (gaya === 'klaster') {
-            mapSebaran.addLayer(clusterGroup);
-        } else if (gaya === 'titik') {
+        if (gaya === 'titik') {
             mapSebaran.addLayer(circleDotLayer);
-        } else if (gaya === 'heatmap') {
-            if (heatLayer) {
-                mapSebaran.addLayer(heatLayer);
-                heatLayer.redraw();
-                setTimeout(() => {
-                    if (heatLayer) heatLayer.redraw();
-                }, 80);
-            }
+        } else {
+            mapSebaran.addLayer(clusterGroup);
         }
 
         updateLegendaSebaran(gaya);
@@ -670,20 +645,7 @@
         const content = document.getElementById('legend-sebaran-content');
         if (!content) return;
 
-        if (gaya === 'heatmap') {
-            if (badge) badge.textContent = 'Peta Panas';
-            content.innerHTML = `
-                <div class="space-y-2 text-[11px]">
-                    <div class="text-[10px] text-slate-500">Tingkat Kepadatan Usaha:</div>
-                    <div class="h-3 w-full rounded-full shadow-inner border border-black/10" style="background: linear-gradient(to right, #2563EB, #10B981, #FBBF24, #F97316, #8B1E2D);"></div>
-                    <div class="flex justify-between text-[10px] text-slate-600 font-medium">
-                        <span>Rendah</span>
-                        <span>Sedang</span>
-                        <span class="text-ampera-900 font-bold">Paling Padat</span>
-                    </div>
-                </div>
-            `;
-        } else if (gaya === 'titik') {
+        if (gaya === 'titik') {
             if (badge) badge.textContent = 'Titik Halus';
             content.innerHTML = `
                 <div class="space-y-1.5 text-[11px]">
@@ -1066,7 +1028,7 @@
         renderDaftarTempatUsaha();
     }
 
-    // Render Markers into Layers (Cluster, Circle Dots, and Heatmap)
+    // Render Markers into Layers (Cluster and Circle Dots)
     function renderMarkersPeta() {
         if (!clusterGroup || !circleDotLayer) return;
 
@@ -1075,7 +1037,6 @@
         markersById = {};
 
         const clusterMarkers = [];
-        const heatPoints = [];
 
         dataTerfilter.forEach(item => {
             const icon = createCustomMarkerIcon(item.status_operasional);
@@ -1147,7 +1108,6 @@
 
             clusterMarkers.push(marker);
             circleDotLayer.addLayer(circleMarker);
-            heatPoints.push([item.latitude, item.longitude, 1.0]);
 
             markersById[item.id_usaha] = {
                 marker: marker,
@@ -1159,28 +1119,6 @@
             clusterGroup.addLayers(clusterMarkers);
         } else {
             clusterMarkers.forEach(m => clusterGroup.addLayer(m));
-        }
-
-        // Initialize or Update Heatmap Layer
-        if (typeof L.heatLayer === 'function') {
-            if (!heatLayer) {
-                heatLayer = L.heatLayer(heatPoints, {
-                    radius: 28,
-                    blur: 18,
-                    maxZoom: 12,
-                    max: 0.5,
-                    minOpacity: 0.35,
-                    gradient: {
-                        0.15: '#2563EB',
-                        0.35: '#10B981',
-                        0.55: '#FBBF24',
-                        0.75: '#F97316',
-                        1.0:  '#8B1E2D'
-                    }
-                });
-            } else {
-                heatLayer.setLatLngs(heatPoints);
-            }
         }
 
         // Apply active layer on map
@@ -1299,11 +1237,6 @@
         const item = semuaDataTitik.find(x => x.id_usaha == idUsaha);
         if (!item || !mapSebaran) return;
 
-        // Jika sedang di mode heatmap, beralih ke titik halus agar marker terlihat
-        if (gayaVisualisasiAktif === 'heatmap') {
-            gantiGayaVisualisasi('titik');
-        }
-
         mapSebaran.flyTo([item.latitude, item.longitude], 17, {
             duration: 1.2
         });
@@ -1343,7 +1276,7 @@
             el.style.width = (el.dataset.pct || 0) + '%';
         });
 
-        // Style Switcher Buttons (Klaster Rapi / Titik Halus / Heatmap)
+        // Style Switcher Buttons (Klaster Rapi / Titik Halus)
         document.querySelectorAll('.btn-vis-style').forEach(btn => {
             btn.addEventListener('click', function() {
                 const style = this.dataset.style;
