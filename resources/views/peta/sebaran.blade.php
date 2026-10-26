@@ -203,19 +203,19 @@
 </div>
 
 <!-- Main Interactive Split View Container -->
-<div class="flex-1 flex relative overflow-hidden h-[calc(100vh-117px)]">
+<div class="flex-1 min-h-0 flex relative overflow-hidden w-full">
 
     <!-- ============================================================== -->
     <!-- PANEL TAB 1: SEBARAN TITIK USAHA (Sidebar & Cluster Map)       -->
     <!-- ============================================================== -->
-    <div id="view-tab-sebaran" class="flex-1 flex w-full h-full">
+    <div id="view-tab-sebaran" class="flex-1 flex w-full h-full min-h-0 overflow-hidden">
         
         <!-- Left Sidebar: Filter & Interactive Directory List -->
         <aside id="sidebar-sebaran" 
-               class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full z-20 shrink-0 shadow-sm transition-all duration-200">
+               class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full min-h-0 z-20 shrink-0 shadow-sm transition-all duration-200">
             
             <!-- Top Controls Box -->
-            <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 space-y-2.5">
+            <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 space-y-2.5 shrink-0">
                 
                 <!-- Live Search Box -->
                 <div class="relative">
@@ -304,7 +304,7 @@
             </div>
 
             <!-- Scrollable Results Place Directory -->
-            <div id="container-daftar-usaha" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+            <div id="container-daftar-usaha" class="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-3 space-y-2">
                 <div id="loading-daftar-usaha" class="py-12 text-center text-slate-400">
                     <svg class="animate-spin w-6 h-6 mx-auto mb-2 text-ampera-900" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -317,7 +317,7 @@
         </aside>
 
         <!-- Right: Leaflet Map Canvas -->
-        <main class="flex-1 relative w-full h-full bg-slate-100 overflow-hidden">
+        <main class="flex-1 relative w-full h-full min-h-0 bg-slate-100 overflow-hidden">
             <div id="map-sebaran"></div>
 
             <!-- Loading overlay for map operations -->
@@ -361,11 +361,11 @@
     <!-- ============================================================== -->
     <!-- PANEL TAB 2: KEPADATAN PER KECAMATAN (Choropleth Peta Tematik) -->
     <!-- ============================================================== -->
-    <div id="view-tab-choropleth" class="hidden flex-1 w-full h-full">
+    <div id="view-tab-choropleth" class="hidden flex-1 w-full h-full min-h-0 overflow-hidden">
         
         <!-- Left Sidebar: Ranking Kepadatan 18 Wilayah -->
-        <aside class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full z-20 shrink-0 shadow-sm">
-            <div class="p-3.5 border-b border-slate-200 bg-slate-50/70">
+        <aside class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full min-h-0 z-20 shrink-0 shadow-sm">
+            <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 shrink-0">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Peringkat Kepadatan Usaha</h2>
@@ -376,7 +376,7 @@
             </div>
 
             <!-- List 18 Kecamatan Ranked by Density -->
-            <div id="list-ranking-kecamatan" class="flex-1 overflow-y-auto custom-scrollbar divide-y divide-slate-100 p-2 space-y-1">
+            <div id="list-ranking-kecamatan" class="flex-1 min-h-0 overflow-y-auto custom-scrollbar divide-y divide-slate-100 p-2 space-y-1">
                 @php
                     $sortedKecamatans = collect($statistikKecamatan)->sortByDesc('total')->values();
                 @endphp
@@ -418,7 +418,7 @@
         </aside>
 
         <!-- Right: Leaflet Choropleth Map Canvas -->
-        <main class="flex-1 relative w-full h-full bg-slate-100 overflow-hidden">
+        <main class="flex-1 relative w-full h-full min-h-0 bg-slate-100 overflow-hidden">
             <div id="map-choropleth"></div>
 
             <!-- Floating Info Panel on Hover (Top Right) -->
@@ -960,12 +960,12 @@
             markers.forEach(m => clusterGroup.addLayer(m));
         }
 
-        // If filter is active and has results, zoom to fit
-        if (dataTerfilter.length > 0 && dataTerfilter.length < semuaDataTitik.length && mapSebaran) {
+        // Fit map bounds to markers (on initial load and whenever filtered)
+        if (clusterGroup && clusterGroup.getLayers().length > 0 && mapSebaran) {
             try {
                 const bounds = clusterGroup.getBounds();
                 if (bounds && bounds.isValid()) {
-                    mapSebaran.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+                    mapSebaran.fitBounds(bounds, { padding: [30, 30] });
                 }
             } catch (e) {
                 // Ignore bounds error
@@ -1073,12 +1073,6 @@
         const item = semuaDataTitik.find(x => x.id_usaha == idUsaha);
         if (!item || !mapSebaran) return;
 
-        // On mobile, collapse sidebar so user can see map
-        if (window.innerWidth < 768) {
-            const sidebar = document.getElementById('sidebar-sebaran');
-            if (sidebar) sidebar.classList.add('hidden');
-        }
-
         mapSebaran.flyTo([item.latitude, item.longitude], 17, {
             duration: 1.2
         });
@@ -1109,6 +1103,19 @@
         document.querySelectorAll('.bar-kepadatan').forEach(el => {
             el.style.width = (el.dataset.pct || 0) + '%';
         });
+
+        // 4. Pastikan peta menghitung ulang ukuran kanvas setelah DOM stabil
+        setTimeout(() => {
+            if (mapSebaran) {
+                mapSebaran.invalidateSize();
+                if (clusterGroup && clusterGroup.getLayers().length > 0) {
+                    const bounds = clusterGroup.getBounds();
+                    if (bounds && bounds.isValid()) {
+                        mapSebaran.fitBounds(bounds, { padding: [30, 30] });
+                    }
+                }
+            }
+        }, 300);
 
         // Mode Switcher Tabs
         const btnTabSebaran = document.getElementById('btn-tab-sebaran');

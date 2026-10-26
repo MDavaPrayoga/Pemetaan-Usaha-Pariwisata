@@ -158,7 +158,7 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="flex-1 flex flex-col">
+    <main class="flex-1 flex flex-col min-h-0">
         @yield('content')
     </main>
 
