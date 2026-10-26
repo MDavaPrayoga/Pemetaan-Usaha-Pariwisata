@@ -139,54 +139,73 @@
         <p class="text-sm text-slate-600 mt-1">Eksplorasi kuantitatif tempat usaha pariwisata berdasarkan wilayah, bidang usaha KBLI, dan tren waktu.</p>
     </div>
 
-    <!-- Baris 1: Kepadatan Kecamatan (7 Kolom) & Komposisi Sektor (5 Kolom) -->
+    <!-- Baris 1: Tren Pertumbuhan Izin Tahunan (7 Kolom) & Komposisi Sektor Usaha (5 Kolom) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
         
-        <!-- Grafik 1: Kepadatan Usaha per Kecamatan -->
-        <div class="lg:col-span-7 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between">
+        <!-- Grafik 1 (Kiri Atas): Tren Pertumbuhan Izin Usaha Pariwisata Tahunan -->
+        <div class="lg:col-span-7 bg-white rounded-2xl p-6 lg:p-7 shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
-                <div class="flex items-center justify-between mb-2">
-                    <h3 class="text-base font-bold text-slate-900">Peringkat Kepadatan 18 Kecamatan</h3>
-                    <span class="text-xs bg-slate-100 text-slate-600 px-2.5 py-1 rounded-md font-medium">Data Terverifikasi</span>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 class="text-base font-bold text-slate-900">Tren Pertumbuhan Izin Usaha Tahunan</h3>
+                            <span class="text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">2021 – 2026</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Dinamika penerbitan Nomor Induk Berusaha (NIB) sektor pariwisata pada sistem OSS-RBA.</p>
+                    </div>
+                    <div class="text-left sm:text-right shrink-0">
+                        <span class="text-xs font-medium text-slate-500">Puncak Izin</span>
+                        <div class="text-sm font-bold text-cluster-1">Tahun 2022 (420 Izin)</div>
+                    </div>
                 </div>
-                <p class="text-xs text-slate-500 mb-6">Jumlah tempat usaha pariwisata yang aktif dan berizin di setiap kecamatan.</p>
-                
-                <div class="relative h-95 w-full">
-                    <canvas id="chartKecamatan" 
-                            data-labels='{!! json_encode($chartKecamatanLabels) !!}' 
-                            data-values='{!! json_encode($chartKecamatanData) !!}'></canvas>
+
+                <div class="relative h-72 w-full mt-4">
+                    <canvas id="chartTahun" 
+                            data-labels='{!! json_encode($chartTahunLabels) !!}' 
+                            data-values='{!! json_encode($chartTahunData) !!}'></canvas>
                 </div>
             </div>
-            <div class="mt-4 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                <span>Sumber: Dinas Penanaman Modal & PTSP Kota Palembang</span>
-                <span class="font-semibold text-slate-700">Total: 18 Kecamatan</span>
+
+            <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-500">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-cluster-1 shrink-0"></span>
+                    <span><strong>2021:</strong> Perdana OSS-RBA</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                    <span><strong>2022:</strong> Lonjakan izin pasca-pandemi</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500 shrink-0"></span>
+                    <span><strong>2023–2026:</strong> Pertumbuhan stabil</span>
+                </div>
             </div>
         </div>
 
-        <!-- Grafik 2: Komposisi Sektor Usaha Pariwisata -->
-        <div class="lg:col-span-5 bg-white rounded-2xl p-6 shadow-sm border border-slate-200 flex flex-col justify-between">
+        <!-- Grafik 2 (Kanan Atas): Komposisi Sektor Usaha Pariwisata -->
+        <div class="lg:col-span-5 bg-white rounded-2xl p-6 lg:p-7 shadow-sm border border-slate-200 flex flex-col justify-between">
             <div>
                 <div class="flex items-center justify-between mb-2">
                     <h3 class="text-base font-bold text-slate-900">Komposisi Sektor Usaha</h3>
                     <span class="text-xs bg-ampera-50 text-cluster-1 px-2.5 py-1 rounded-md font-medium">Berdasarkan KBLI</span>
                 </div>
-                <p class="text-xs text-slate-500 mb-6">Pembagian proporsi bidang usaha penunjang kepariwisataan Kota Palembang.</p>
+                <p class="text-xs text-slate-500 mb-4">Pembagian proporsi 4 kelompok bidang usaha pariwisata Kota Palembang.</p>
                 
-                <div class="relative h-70 w-full flex items-center justify-center">
+                <div class="relative h-60 w-full flex items-center justify-center">
                     <canvas id="chartSektor" 
                             data-labels='{!! json_encode($chartSektor['labels']) !!}' 
                             data-values='{!! json_encode($chartSektor['data']) !!}'></canvas>
                 </div>
 
                 <!-- Custom Sector Legend / Summary -->
-                <div class="mt-6 space-y-2.5">
+                <div class="mt-4 space-y-2">
                     @php
                         $bgColors = ['bg-[#8B1E2D]', 'bg-[#1E40AF]', 'bg-[#047857]', 'bg-[#64748B]'];
                     @endphp
                     @foreach($chartSektor['labels'] as $index => $label)
-                        <div class="flex items-center justify-between text-xs py-1 px-2.5 rounded-lg bg-slate-50">
+                        <div class="flex items-center justify-between text-xs py-1.5 px-3 rounded-lg bg-slate-50">
                             <div class="flex items-center space-x-2">
-                                <span class="w-3 h-3 rounded-full {{ $bgColors[$index] ?? 'bg-slate-500' }}"></span>
+                                <span class="w-2.5 h-2.5 rounded-full {{ $bgColors[$index] ?? 'bg-slate-500' }}"></span>
                                 <span class="text-slate-700 font-medium">{{ $label }}</span>
                             </div>
                             <span class="font-bold text-slate-900">{{ number_format($chartSektor['data'][$index], 0, ',', '.') }} Usaha</span>
@@ -196,46 +215,39 @@
             </div>
 
             <div class="mt-4 pt-4 border-t border-slate-100 text-xs text-slate-500 text-center">
-                Didominasi oleh sektor <strong>Penyediaan Makanan & Minuman (Kuliner)</strong>
+                Didominasi sektor <strong>Penyediaan Makanan & Minuman (Kuliner 73,4%)</strong>
             </div>
         </div>
 
     </div>
 
-    <!-- Baris 2: Tren Pertumbuhan Izin Usaha Pariwisata Tahunan (Grafik Garis Penuh) -->
+    <!-- Baris 2 (Bawah): Peringkat Kepadatan 18 Kecamatan (Lebar Penuh) -->
     <div class="bg-white rounded-2xl p-6 lg:p-8 shadow-sm border border-slate-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
             <div>
                 <div class="flex items-center space-x-2">
-                    <h3 class="text-base sm:text-lg font-bold text-slate-900">Tren Pertumbuhan Izin Usaha Pariwisata Tahunan</h3>
-                    <span class="text-xs bg-emerald-50 text-emerald-700 font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">Periode 2021 – 2026</span>
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900">Peringkat Kepadatan Usaha di 18 Kecamatan</h3>
+                    <span class="text-xs bg-slate-100 text-slate-700 font-semibold px-2.5 py-0.5 rounded-full border border-slate-200">Katalog Faktual</span>
                 </div>
-                <p class="text-xs text-slate-500 mt-1">Dinamika penerbitan Nomor Induk Berusaha (NIB) sektor pariwisata pasca implementasi sistem OSS-RBA nasional.</p>
+                <p class="text-xs text-slate-500 mt-1">Distribusi sebaran tempat usaha pariwisata yang aktif dan berizin di seluruh kecamatan Kota Palembang.</p>
             </div>
-            <div class="text-left sm:text-right">
-                <span class="text-xs font-medium text-slate-500">Puncak Pendaftaran</span>
-                <div class="text-sm font-bold text-cluster-1">Tahun 2022 (420 Izin Terbit)</div>
+            <div class="text-left sm:text-right shrink-0">
+                <span class="text-xs font-medium text-slate-500">Wilayah Terbanyak</span>
+                <div class="text-sm font-bold text-cluster-1">{{ $kecamatanTerpadat->nama_kecamatan ?? '-' }} ({{ number_format($kecamatanTerpadat->total_usaha ?? 0, 0, ',', '.') }} Usaha)</div>
             </div>
         </div>
-
-        <div class="relative h-64 sm:h-72 w-full mt-6">
-            <canvas id="chartTahun" 
-                    data-labels='{!! json_encode($chartTahunLabels) !!}' 
-                    data-values='{!! json_encode($chartTahunData) !!}'></canvas>
+        
+        <div class="relative h-110 sm:h-120 w-full mt-4">
+            <canvas id="chartKecamatan" 
+                    data-labels='{!! json_encode($chartKecamatanLabels) !!}' 
+                    data-values='{!! json_encode($chartKecamatanData) !!}'></canvas>
         </div>
 
-        <div class="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs text-slate-500">
-            <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-cluster-1"></span>
-                <span><strong>2021:</strong> Peluncuran perdana regulasi OSS-RBA (PP 5/2021)</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span><strong>2022:</strong> Lonjakan pemulihan usaha pariwisata pasca-pandemi</span>
-            </div>
-            <div class="flex items-center space-x-2">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span><strong>2023–2026:</strong> Pertumbuhan stabil & kepatuhan perizinan mandiri</span>
+        <div class="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-2">
+            <span>Sumber: Dinas Penanaman Modal & Pelayanan Terpadu Satu Pintu (DPMPTSP) Kota Palembang</span>
+            <div class="flex items-center space-x-4">
+                <span>Total: <strong>18 Kecamatan</strong></span>
+                <span>Konsentrasi Terendah: <strong>Sematang Borang (2 Usaha)</strong></span>
             </div>
         </div>
     </div>

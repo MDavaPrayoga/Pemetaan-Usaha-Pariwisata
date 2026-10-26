@@ -86,11 +86,11 @@ class BerandaController extends Controller
         $chartTahunLabels = $trenTahunan->pluck('tahun')->toArray();
         $chartTahunData = $trenTahunan->pluck('total')->toArray();
 
-        // 5. Data Awal Tabel Ringkas Tempat Usaha (Paginasi 6 Baris)
+        // 5. Data Awal Tabel Ringkas Tempat Usaha (Paginasi 15 Baris)
         $tabelUsaha = UsahaPariwisata::verified()->buka()
             ->with(['kbli', 'kecamatan'])
             ->orderBy('nama_proyek', 'asc')
-            ->paginate(6);
+            ->paginate(15);
 
         $daftarKecamatan = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
 
@@ -134,7 +134,7 @@ class BerandaController extends Controller
             $query->where('id_kecamatan', $request->input('id_kecamatan'));
         }
 
-        $perPage = 6;
+        $perPage = 15;
         $total = $query->count();
         $currentPage = max(1, (int) $request->input('page', 1));
         $lastPage = max(1, (int) ceil($total / $perPage));
