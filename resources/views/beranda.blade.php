@@ -4,8 +4,9 @@
 
 @section('content')
 <!-- Section 1: Hero Banner Sinematik dengan Background Foto & Dark Ampera Overlay -->
-<section class="relative bg-cover bg-center text-white py-20 lg:py-28 overflow-hidden" 
-         style="background-image: url('{{ asset('images/mencoba.png') }}');">
+<section id="hero-banner" 
+         class="relative bg-cover bg-center text-white py-20 lg:py-28 overflow-hidden" 
+         data-bg="{{ asset('images/mencoba.png') }}">
     
     <!-- Lapisan Gelap (Overlay) Gradasi agar foto Ampera tetap artistik dan teks putih terbaca sangat kontras -->
     <div class="absolute inset-0 bg-linear-to-r from-slate-950/95 via-slate-950/85 to-[#741D29]/45 backdrop-blur-[0.5px]"></div>
@@ -259,18 +260,18 @@
 
             <!-- Filter & Search Bar Sederhana -->
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-                <div class="relative min-w-[220px]">
+                <div class="relative min-w-55">
                     <input type="text" 
                            id="filter-search-input" 
                            placeholder="Cari nama usaha..." 
-                           class="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8B1E2D] focus:border-[#8B1E2D] outline-none transition duration-150">
+                           class="w-full pl-9 pr-4 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cluster-1 focus:border-cluster-1 outline-none transition duration-150">
                     <svg class="w-4 h-4 text-slate-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
 
                 <select id="filter-kecamatan-select" 
-                        class="px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-[#8B1E2D] focus:border-[#8B1E2D] outline-none transition duration-150 text-slate-700">
+                        class="px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cluster-1 focus:border-cluster-1 outline-none transition duration-150 text-slate-700">
                     <option value="">Semua Kecamatan</option>
                     @foreach($daftarKecamatan as $kec)
                         <option value="{{ strtolower($kec->nama_kecamatan) }}">{{ $kec->nama_kecamatan }}</option>
@@ -289,7 +290,7 @@
                     <div>
                         <!-- Header Kartu: Kategori & Status Buka -->
                         <div class="flex items-center justify-between mb-3 gap-2">
-                            <span class="text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 px-2.5 py-0.5 rounded-lg truncate max-w-[170px]" title="{{ $usaha->kbli?->judul_kbli }}">
+                            <span class="text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 px-2.5 py-0.5 rounded-lg truncate max-w-42.5" title="{{ $usaha->kbli?->judul_kbli }}">
                                 {{ $usaha->kbli?->judul_kbli ?? 'Pariwisata' }}
                             </span>
                             
@@ -312,7 +313,7 @@
 
                     <!-- Footer Kartu: Kecamatan & Tombol Aksi -->
                     <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
-                        <div class="flex items-center space-x-1.5 text-slate-600 font-medium truncate max-w-[150px]">
+                        <div class="flex items-center space-x-1.5 text-slate-600 font-medium truncate max-w-37.5">
                             <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -373,6 +374,12 @@
 @section('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+    // 0. Inisialisasi gambar latar hero banner
+    const heroBanner = document.getElementById('hero-banner');
+    if (heroBanner && heroBanner.dataset.bg) {
+        heroBanner.style.backgroundImage = `url('${heroBanner.dataset.bg}')`;
+    }
+
     // 1. Data untuk Grafik Batang Kepadatan Kecamatan
     const ctxKecamatan = document.getElementById('chartKecamatan');
     if (ctxKecamatan) {
