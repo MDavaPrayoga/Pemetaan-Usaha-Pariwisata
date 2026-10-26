@@ -117,12 +117,13 @@
 </script>
 
 <!-- Subheader & Toolbar Navigasi Peta -->
-<div class="bg-slate-900 text-white border-b border-slate-800 z-30 shrink-0">
-    <div class="px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+<!-- Subheader & Toolbar Navigasi Peta: Ampera Maroon Unified Theme -->
+<div class="bg-[#741D29] text-white border-b border-black/20 shadow-inner z-30 shrink-0">
+    <div class="px-4 py-2 flex flex-wrap items-center justify-between gap-3">
         
         <!-- Left: Judul & KPI Status Cepat -->
         <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-lg bg-ampera-900 border border-white/20 flex items-center justify-center shrink-0">
+            <div class="w-8 h-8 rounded-lg bg-black/20 border border-white/20 flex items-center justify-center shrink-0">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -131,33 +132,33 @@
             <div>
                 <div class="flex items-center space-x-2">
                     <h1 class="text-sm sm:text-base font-bold text-white tracking-tight leading-none">Peta Sebaran Usaha Pariwisata</h1>
-                    <span class="text-[10px] bg-white/10 text-slate-300 px-2 py-0.5 rounded border border-white/10 font-mono hidden sm:inline-block">1.421 Titik</span>
+                    <span class="text-[10px] bg-black/25 text-white/90 px-2 py-0.5 rounded border border-white/15 font-mono hidden sm:inline-block">1.421 Titik</span>
                 </div>
-                <div class="flex items-center space-x-2 text-[11px] text-slate-300 mt-1">
+                <div class="flex items-center space-x-2 text-[11px] text-white/80 mt-1">
                     <span class="inline-flex items-center space-x-1">
                         <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                         <span class="text-white font-medium">{{ number_format($totalUsahaBuka, 0, ',', '.') }} Buka</span>
                     </span>
-                    <span class="text-slate-500">•</span>
+                    <span class="text-white/40">•</span>
                     <span class="inline-flex items-center space-x-1">
-                        <span class="w-2 h-2 rounded-full bg-rose-400"></span>
-                        <span>{{ number_format($totalUsahaTutupPermanen, 0, ',', '.') }} Tutup Permanen</span>
+                        <span class="w-2 h-2 rounded-full bg-rose-300"></span>
+                        <span class="text-white/90">{{ number_format($totalUsahaTutupPermanen, 0, ',', '.') }} Tutup Permanen</span>
                     </span>
-                    <span class="text-slate-500">•</span>
+                    <span class="text-white/40">•</span>
                     <span class="inline-flex items-center space-x-1">
-                        <span class="w-2 h-2 rounded-full bg-amber-400"></span>
-                        <span>{{ number_format($totalUsahaTutupSementara, 0, ',', '.') }} Sementara</span>
+                        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
+                        <span class="text-white/90">{{ number_format($totalUsahaTutupSementara, 0, ',', '.') }} Sementara</span>
                     </span>
                 </div>
             </div>
         </div>
 
         <!-- Center: Segmented Control Tabs (Mode Switcher) -->
-        <div class="flex items-center bg-slate-800/90 p-1 rounded-xl border border-slate-700">
+        <div class="flex items-center bg-black/25 p-1 rounded-xl border border-white/15 shadow-inner">
             <!-- Tab 1: Sebaran Titik Usaha -->
             <button id="btn-tab-sebaran" 
                     type="button" 
-                    class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow">
+                    class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-white text-ampera-900 shadow">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                 </svg>
@@ -167,7 +168,7 @@
             <!-- Tab 2: Kepadatan per Kecamatan (Choropleth) -->
             <button id="btn-tab-choropleth" 
                     type="button" 
-                    class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-300 hover:text-white hover:bg-slate-700/60">
+                    class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 text-white/80 hover:text-white hover:bg-white/10">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
@@ -180,7 +181,7 @@
             <!-- Mobile Toggle Sidebar Button -->
             <button id="btn-toggle-sidebar" 
                     type="button" 
-                    class="md:hidden px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 flex items-center space-x-1">
+                    class="md:hidden px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/20 flex items-center space-x-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
                 </svg>
@@ -191,7 +192,7 @@
             <button id="btn-recenter-map" 
                     type="button" 
                     title="Pusatkan Peta ke Kota Palembang" 
-                    class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-medium border border-slate-700 flex items-center space-x-1.5 transition">
+                    class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white hover:text-white text-xs font-medium border border-white/20 flex items-center space-x-1.5 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                 </svg>
@@ -1150,11 +1151,11 @@
 
         btnTabSebaran.addEventListener('click', function() {
             activeTab = 'sebaran';
-            btnTabSebaran.classList.add('bg-ampera-900', 'text-white', 'shadow');
-            btnTabSebaran.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/60');
+            btnTabSebaran.classList.add('bg-white', 'text-ampera-900', 'shadow');
+            btnTabSebaran.classList.remove('text-white/80', 'hover:text-white', 'hover:bg-white/10');
 
-            btnTabChoropleth.classList.remove('bg-ampera-900', 'text-white', 'shadow');
-            btnTabChoropleth.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/60');
+            btnTabChoropleth.classList.remove('bg-white', 'text-ampera-900', 'shadow');
+            btnTabChoropleth.classList.add('text-white/80', 'hover:text-white', 'hover:bg-white/10');
 
             viewTabSebaran.classList.remove('hidden');
             viewTabSebaran.classList.add('flex');
@@ -1168,11 +1169,11 @@
 
         btnTabChoropleth.addEventListener('click', function() {
             activeTab = 'choropleth';
-            btnTabChoropleth.classList.add('bg-ampera-900', 'text-white', 'shadow');
-            btnTabChoropleth.classList.remove('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/60');
+            btnTabChoropleth.classList.add('bg-white', 'text-ampera-900', 'shadow');
+            btnTabChoropleth.classList.remove('text-white/80', 'hover:text-white', 'hover:bg-white/10');
 
-            btnTabSebaran.classList.remove('bg-ampera-900', 'text-white', 'shadow');
-            btnTabSebaran.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/60');
+            btnTabSebaran.classList.remove('bg-white', 'text-ampera-900', 'shadow');
+            btnTabSebaran.classList.add('text-white/80', 'hover:text-white', 'hover:bg-white/10');
 
             viewTabChoropleth.classList.remove('hidden');
             viewTabChoropleth.classList.add('flex');
