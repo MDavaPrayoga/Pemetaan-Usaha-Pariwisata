@@ -24,9 +24,9 @@
                 Sistem Pemetaan & Klasterisasi Usaha Pariwisata Kota Palembang
             </h1>
 
-            <!-- Subtitle (Centered & Friendly) -->
-            <p class="text-base sm:text-lg text-white/90 leading-relaxed mb-8 drop-shadow-sm font-normal max-w-3xl mx-auto">
-                Selamat datang di portal informasi geospasial terpadu. Jelajahi sebaran ribuan tempat usaha kuliner, penginapan, dan perjalanan wisata, serta temukan pusat sentra usaha potensial di seluruh wilayah Kota Palembang.
+            <!-- Subtitle (1 Kalimat Ringkas & Jelas) -->
+            <p class="text-base sm:text-lg text-white/90 leading-relaxed mb-8 drop-shadow-sm font-normal max-w-2xl mx-auto">
+                Jelajahi sebaran ribuan tempat usaha kuliner, penginapan, dan perjalanan wisata resmi di 18 kecamatan Kota Palembang.
             </p>
 
             <!-- Action Buttons (Centered) -->
@@ -423,7 +423,7 @@
                 </p>
             </div>
             <div class="mt-6 pt-4 border-t border-slate-100">
-                <a href="#tabel-usaha-body" class="inline-flex items-center space-x-1.5 text-xs font-bold text-cluster-1 hover:text-[#741D29]">
+                <a href="#tabel-usaha-body" class="inline-flex items-center space-x-1.5 text-xs font-bold text-cluster-1 hover:text-ampera-900">
                     <span>Buka Katalog Tabel</span>
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
