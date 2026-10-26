@@ -10,7 +10,13 @@
 <link rel="stylesheet" href="{{ asset('vendor/leaflet/MarkerCluster.Default.css') }}">
 
 <style>
-    /* Full viewport map setup dengan posisi absolut agar selalu mengisi penuh tinggi container */
+    /* Mengunci layar agar jendela peramban tidak memiliki scrollbar ganda di luar peta */
+    html, body {
+        height: 100%;
+        overflow: hidden;
+    }
+
+    /* Peta selalu membentang penuh 100% mengikuti kontainer kanvas */
     #map-sebaran, #map-choropleth {
         position: absolute;
         top: 0;
@@ -19,7 +25,6 @@
         right: 0;
         width: 100%;
         height: 100%;
-        min-height: 450px;
         background-color: #f8fafc;
         z-index: 10;
     }
@@ -198,7 +203,7 @@
 </div>
 
 <!-- Main Interactive Split View Container -->
-<div class="flex-1 flex relative overflow-hidden h-[calc(100vh-117px)] min-h-[500px]">
+<div class="flex-1 flex relative overflow-hidden h-[calc(100vh-117px)]">
 
     <!-- ============================================================== -->
     <!-- PANEL TAB 1: SEBARAN TITIK USAHA (Sidebar & Cluster Map)       -->
@@ -312,7 +317,7 @@
         </aside>
 
         <!-- Right: Leaflet Map Canvas -->
-        <main class="flex-1 relative w-full h-full min-h-[450px] bg-slate-100">
+        <main class="flex-1 relative w-full h-full bg-slate-100 overflow-hidden">
             <div id="map-sebaran"></div>
 
             <!-- Loading overlay for map operations -->
@@ -413,7 +418,7 @@
         </aside>
 
         <!-- Right: Leaflet Choropleth Map Canvas -->
-        <main class="flex-1 relative w-full h-full min-h-[450px] bg-slate-100">
+        <main class="flex-1 relative w-full h-full bg-slate-100 overflow-hidden">
             <div id="map-choropleth"></div>
 
             <!-- Floating Info Panel on Hover (Top Right) -->
@@ -657,6 +662,18 @@
                     sektor: {}
                 };
 
+                // Tooltip interaktif
+                layer.bindTooltip(`
+                    <div class="text-xs p-0.5 font-sans leading-tight">
+                        <strong class="text-slate-900">${stats.nama_kecamatan}</strong><br>
+                        <span class="text-red-800 font-bold">${stats.total} tempat usaha</span> (${stats.persentase}%)
+                    </div>
+                `, {
+                    sticky: true,
+                    direction: 'auto',
+                    opacity: 0.95
+                });
+
                 layer.on({
                     mouseover: function(e) {
                         const l = e.target;
@@ -678,6 +695,16 @@
                 });
             }
         }).addTo(mapChoropleth);
+
+        // Otomatis pusatkan seluruh 18 kecamatan Kota Palembang
+        try {
+            const bounds = geojsonLayer.getBounds();
+            if (bounds && bounds.isValid()) {
+                mapChoropleth.fitBounds(bounds, { padding: [20, 20] });
+            }
+        } catch (e) {
+            // ignore
+        }
     }
 
     // Update floating info panel in Tab 2
