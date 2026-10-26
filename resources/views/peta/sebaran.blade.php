@@ -118,7 +118,7 @@
 
 <!-- Subheader & Toolbar Navigasi Peta -->
 <!-- Subheader & Toolbar Navigasi Peta: Ampera Maroon Unified Theme -->
-<div class="bg-[#741D29] text-white border-b border-black/20 shadow-inner z-30 shrink-0">
+<div class="bg-ampera-900 text-white border-b border-black/20 shadow-inner z-30 shrink-0">
     <div class="px-4 py-2 flex flex-wrap items-center justify-between gap-3">
         
         <!-- Left: Judul & KPI Status Cepat -->
