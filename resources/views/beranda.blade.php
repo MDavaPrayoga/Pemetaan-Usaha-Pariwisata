@@ -12,25 +12,25 @@
     <div class="absolute inset-0 bg-linear-to-r from-slate-950/95 via-slate-950/85 to-[#741D29]/45 backdrop-blur-[0.5px]"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div class="max-w-3xl">
+        <div class="max-w-4xl mx-auto text-center">
             <!-- Institutional Badge -->
-            <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 px-3.5 py-1.5 rounded-full text-xs font-semibold text-white/95 mb-6 shadow-sm">
+            <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs font-semibold text-white/95 mb-6 shadow-sm">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Sistem Informasi Geografis Resmi Kota Palembang</span>
+                <span>Portal Informasi Resmi Pariwisata Kota Palembang</span>
             </div>
 
-            <!-- Main Title -->
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-4 text-white drop-shadow-md">
-                Pemetaan & Klasterisasi Usaha Pariwisata
+            <!-- Main Title (Centered) -->
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-5 text-white drop-shadow-md">
+                Sistem Pemetaan & Klasterisasi Usaha Pariwisata Kota Palembang
             </h1>
 
-            <!-- Subtitle -->
-            <p class="text-base sm:text-lg text-white/90 leading-relaxed mb-8 drop-shadow-sm font-normal">
-                Eksplorasi geospasial terhadap <strong>{{ number_format($totalVerified, 0, ',', '.') }}</strong> tempat usaha pariwisata Kota Palembang berbasis perizinan OSS-RBA dan audit operasional Google Maps menggunakan kecerdasan buatan spasial <strong>Algoritma DBSCAN</strong>.
+            <!-- Subtitle (Centered & Friendly) -->
+            <p class="text-base sm:text-lg text-white/90 leading-relaxed mb-8 drop-shadow-sm font-normal max-w-3xl mx-auto">
+                Selamat datang di portal informasi geospasial terpadu. Jelajahi sebaran ribuan tempat usaha kuliner, penginapan, dan perjalanan wisata, serta temukan pusat sentra usaha potensial di seluruh wilayah Kota Palembang.
             </p>
 
-            <!-- Action Buttons -->
-            <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+            <!-- Action Buttons (Centered) -->
+            <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
                 <a href="{{ route('peta.sebaran') }}" 
                    class="inline-flex items-center space-x-2.5 bg-white text-[#8B1E2D] hover:bg-slate-100 font-bold px-6 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition duration-200 text-sm">
                     <svg class="w-5 h-5 text-[#8B1E2D]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,6 +289,14 @@
                         <option value="{{ $kec->id_kecamatan }}">{{ $kec->nama_kecamatan }}</option>
                     @endforeach
                 </select>
+
+                <select id="filter-status-select" 
+                        class="px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cluster-1 focus:border-cluster-1 outline-none transition duration-150 text-slate-700">
+                    <option value="buka" selected>Status: Buka (1.281)</option>
+                    <option value="semua">Semua Status (1.421)</option>
+                    <option value="tutup_sementara">Tutup Sementara (31)</option>
+                    <option value="tutup_permanen">Tutup Permanen (109)</option>
+                </select>
             </div>
         </div>
 
@@ -326,10 +334,22 @@
                                     <div class="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">{{ $usaha->alamat }}</div>
                                 </td>
                                 <td class="py-3.5 px-4 text-center">
-                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        <span>Buka</span>
-                                    </span>
+                                    @if($usaha->status_operasional === 'Buka')
+                                        <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                            <span>Buka</span>
+                                        </span>
+                                    @elseif($usaha->status_operasional === 'Tutup Sementara')
+                                        <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                            <span>Tutup Sementara</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">
+                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                            <span>Tutup Permanen</span>
+                                        </span>
+                                    @endif
                                 </td>
                                 <td class="py-3.5 px-4 text-center">
                                     <a href="{{ route('peta.sebaran') }}?q={{ urlencode($usaha->nama_usaha) }}" 
@@ -369,38 +389,101 @@
             </div>
         </div>
 
-        <!-- Tombol Aksi Bawah: Telusuri Seluruh Usaha -->
-        <div class="mt-8 text-center">
-            <a href="{{ route('peta.sebaran') }}" 
-               class="inline-flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-6 py-3 rounded-xl transition duration-150 text-xs sm:text-sm">
-                <span>Telusuri Seluruh {{ number_format($totalVerified, 0, ',', '.') }} Tempat Usaha di Peta Sebaran</span>
-                <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </a>
-        </div>
-
     </div>
 </section>
 
-<!-- Section 5: Call to Action (Ajakan Eksplorasi Peta Zonasi) -->
+<!-- Section 5: Panduan 3 Langkah Menjelajah Sistem WebGIS -->
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    <div class="bg-linear-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-        <div class="max-w-xl space-y-3">
-            <span class="text-xs font-semibold uppercase tracking-wider text-amber-400">Eksplorasi Spasial Cerdas</span>
-            <h3 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Siap Menemukan Pusat Usaha Wisata?</h3>
-            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                Gunakan panel interaktif kami untuk menyimulasikan radius jarak tetangga dan melihat bagaimana algoritma DBSCAN mengelompokkan kawasan secara otomatis.
-            </p>
+    <div class="text-center max-w-2xl mx-auto mb-12">
+        <div class="inline-flex items-center space-x-2 text-xs font-bold uppercase tracking-wider text-cluster-1 mb-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+            <span>Panduan Pengguna</span>
         </div>
-        <div class="shrink-0">
-            <a href="{{ route('peta.zonasi') }}" 
-               class="inline-flex items-center space-x-2.5 bg-cluster-1 hover:bg-ampera-900 text-white font-bold px-7 py-4 rounded-xl shadow-lg transition duration-200 text-sm">
-                <span>Buka Pusat Usaha Wisata</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-            </a>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">3 Langkah Menjelajahi Sistem</h2>
+        <p class="text-sm text-slate-600 mt-2">Alur terpadu untuk menelusuri data, memeriksa lokasi spasial, dan menganalisis sentra kawasan pariwisata Kota Palembang.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+        <!-- Kartu 1: Telusuri Direktori -->
+        <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200 hover:shadow-md transition duration-200 flex flex-col justify-between group">
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <span class="text-[11px] font-extrabold tracking-wider uppercase text-cluster-1 bg-ampera-50 px-3 py-1 rounded-full border border-ampera-100">Langkah 01</span>
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-[#8B1E2D] text-slate-600 group-hover:text-white flex items-center justify-center transition duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Telusuri Direktori Publik</h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Gunakan tabel katalog untuk mencari nama usaha, menyaring kecamatan, serta memeriksa legalitas izin resmi NIB dan status operasionalnya.
+                </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100">
+                <a href="#tabel-usaha-body" class="inline-flex items-center space-x-1.5 text-xs font-bold text-cluster-1 hover:text-[#741D29]">
+                    <span>Buka Katalog Tabel</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Kartu 2: Cek Titik di Peta -->
+        <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200 hover:shadow-md transition duration-200 flex flex-col justify-between group">
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <span class="text-[11px] font-extrabold tracking-wider uppercase text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">Langkah 02</span>
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-blue-600 text-slate-600 group-hover:text-white flex items-center justify-center transition duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Cek Sebaran Spasial di Peta</h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Eksplorasi peta digital interaktif 1.421 titik koordinat terverifikasi dengan rute langsung Google Maps dan peta tematik choropleth per kecamatan.
+                </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100">
+                <a href="{{ route('peta.sebaran') }}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 hover:text-blue-800">
+                    <span>Lihat Peta Sebaran</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Kartu 3: Eksplorasi Kawasan Klaster -->
+        <div class="bg-white rounded-2xl p-7 shadow-sm border border-slate-200 hover:shadow-md transition duration-200 flex flex-col justify-between group">
+            <div>
+                <div class="flex items-center justify-between mb-5">
+                    <span class="text-[11px] font-extrabold tracking-wider uppercase text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">Langkah 03</span>
+                    <div class="w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-emerald-600 text-slate-600 group-hover:text-white flex items-center justify-center transition duration-200">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                        </svg>
+                    </div>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900 mb-2">Eksplorasi Sentra Kawasan Wisata</h3>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    Simulasikan algoritma spasial DBSCAN untuk mengidentifikasi kelompok sentra usaha wisata terpadat secara otomatis melalui poligon kawasan resmi.
+                </p>
+            </div>
+            <div class="mt-6 pt-4 border-t border-slate-100">
+                <a href="{{ route('peta.zonasi') }}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800">
+                    <span>Buka Pusat Usaha Wisata</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                </a>
+            </div>
         </div>
     </div>
 </section>
@@ -610,6 +693,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // 4. Interaksi Pencarian, Filter & Paginasi Tabel Ringkas Tempat Usaha
     const searchInput = document.getElementById('filter-search-input');
     const kecamatanSelect = document.getElementById('filter-kecamatan-select');
+    const statusSelect = document.getElementById('filter-status-select');
     const tableBody = document.getElementById('tabel-usaha-body');
     const pagControls = document.getElementById('pagination-controls');
     const pagFrom = document.getElementById('pag-from');
@@ -622,6 +706,7 @@ document.addEventListener('DOMContentLoaded', function () {
         stateCurrentPage = page;
         const query = (searchInput?.value || '').trim();
         const selectedKec = (kecamatanSelect?.value || '').trim();
+        const selectedStatus = (statusSelect?.value || 'buka').trim();
 
         if (tableBody) {
             tableBody.innerHTML = `
@@ -640,6 +725,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams();
             if (query) params.append('q', query);
             if (selectedKec) params.append('id_kecamatan', selectedKec);
+            if (selectedStatus) params.append('status_operasional', selectedStatus);
             params.append('page', page);
 
             const res = await fetch(`{{ route('api.beranda.cari') }}?${params.toString()}`);
@@ -656,45 +742,53 @@ document.addEventListener('DOMContentLoaded', function () {
                                     </svg>
                                 </div>
                                 <div class="text-xs font-bold text-slate-800">Tidak ada tempat usaha ditemukan</div>
-                                <div class="text-[11px] text-slate-400 mt-0.5">Coba gunakan kata kunci pencarian lain atau pilih kecamatan yang berbeda.</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Coba gunakan kata kunci pencarian lain atau pilih kecamatan/status yang berbeda.</div>
                             </td>
                         </tr>
                     `;
                 } else {
-                    tableBody.innerHTML = json.data.map(u => `
-                        <tr class="hover:bg-slate-50/80 transition duration-150">
-                            <td class="py-3.5 px-4 text-center font-semibold text-slate-400">${u.no}</td>
-                            <td class="py-3.5 px-4">
-                                <div class="font-bold text-slate-900 leading-tight">${u.nama_usaha}</div>
-                                <div class="text-[11px] text-slate-400 leading-tight mt-0.5 truncate max-w-xs">${u.nama_perusahaan}</div>
-                            </td>
-                            <td class="py-3.5 px-4">
-                                <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-50" title="${u.kbli}">
-                                    ${u.kbli}
-                                </span>
-                            </td>
-                            <td class="py-3.5 px-4">
-                                <div class="font-semibold text-slate-800">${u.kecamatan}</div>
-                                <div class="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">${u.alamat}</div>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                    <span>Buka</span>
-                                </span>
-                            </td>
-                            <td class="py-3.5 px-4 text-center">
-                                <a href="{{ route('peta.sebaran') }}?q=${encodeURIComponent(u.nama_usaha)}" 
-                                   class="inline-flex items-center space-x-1.5 bg-cluster-1/10 hover:bg-cluster-1 text-cluster-1 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs transition duration-150">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    <span>Peta</span>
-                                </a>
-                            </td>
-                        </tr>
-                    `).join('');
+                    tableBody.innerHTML = json.data.map(u => {
+                        let statusBadge = '';
+                        if (u.status_operasional === 'Buka') {
+                            statusBadge = `<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>Buka</span></span>`;
+                        } else if (u.status_operasional === 'Tutup Sementara') {
+                            statusBadge = `<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span><span>Tutup Sementara</span></span>`;
+                        } else {
+                            statusBadge = `<span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span><span>Tutup Permanen</span></span>`;
+                        }
+
+                        return `
+                            <tr class="hover:bg-slate-50/80 transition duration-150">
+                                <td class="py-3.5 px-4 text-center font-semibold text-slate-400">${u.no}</td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900 leading-tight">${u.nama_usaha}</div>
+                                    <div class="text-[11px] text-slate-400 leading-tight mt-0.5 truncate max-w-xs">${u.nama_perusahaan}</div>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-50" title="${u.kbli}">
+                                        ${u.kbli}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-semibold text-slate-800">${u.kecamatan}</div>
+                                    <div class="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">${u.alamat}</div>
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    ${statusBadge}
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    <a href="{{ route('peta.sebaran') }}?q=${encodeURIComponent(u.nama_usaha)}" 
+                                       class="inline-flex items-center space-x-1.5 bg-cluster-1/10 hover:bg-cluster-1 text-cluster-1 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs transition duration-150">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <span>Peta</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        `;
+                    }).join('');
                 }
 
                 // Update info paginasi
@@ -793,6 +887,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (kecamatanSelect) {
         kecamatanSelect.addEventListener('change', () => loadTableData(1));
+    }
+
+    if (statusSelect) {
+        statusSelect.addEventListener('change', () => loadTableData(1));
     }
 
     // Inisialisasi tombol paginasi untuk data pertama dari server (tanpa curly braces blade di script)

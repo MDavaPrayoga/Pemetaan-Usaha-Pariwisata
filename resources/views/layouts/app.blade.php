@@ -32,19 +32,23 @@
             <div class="flex items-center justify-between h-16">
                 
                 <!-- Logo & Brand Title -->
-                <a href="{{ route('beranda') }}" class="flex items-center space-x-3 group">
-                    <div class="p-2 bg-white/10 group-hover:bg-white/20 rounded-lg transition duration-200">
-                        <!-- SVG Icon: Jembatan Ampera / Peta Geospasial -->
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                        </svg>
+                <a href="{{ route('beranda') }}" class="flex items-center space-x-3 group py-1">
+                    <div class="flex items-center space-x-2 shrink-0">
+                        <!-- Logo Pemkot Palembang -->
+                        <img src="{{ asset('images/palembang.png') }}" 
+                             alt="Logo Kota Palembang" 
+                             class="h-9 w-auto object-contain drop-shadow-sm">
+                        <!-- Logo Charming Palembang (Putih) -->
+                        <img src="{{ asset('images/charmingputih.png') }}" 
+                             alt="Logo Dinas Pariwisata Kota Palembang" 
+                             class="h-8 w-auto object-contain drop-shadow-sm">
                     </div>
-                    <div>
+                    <div class="border-l border-white/20 pl-3 hidden sm:block">
                         <div class="flex items-center space-x-2">
-                            <span class="text-base sm:text-lg font-bold tracking-tight">SIP-WISATA</span>
+                            <span class="text-base font-bold tracking-tight text-white leading-tight">SIP-WISATA</span>
                             <span class="text-[10px] bg-white/20 text-white font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider">Palembang</span>
                         </div>
-                        <p class="text-[11px] text-white/80 hidden sm:block">Dinas Pariwisata Kota Palembang</p>
+                        <p class="text-[11px] text-white/80 leading-tight">Dinas Pariwisata Kota Palembang</p>
                     </div>
                 </a>
 
@@ -85,7 +89,7 @@
                         <!-- Jika Staf Dinas / Admin Login -->
                         <div class="flex items-center space-x-2">
                             <a href="{{ route('admin.usaha.index') }}" 
-                               class="inline-flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition duration-150">
+                                class="inline-flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition duration-150">
                                 <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -129,7 +133,7 @@
         </div>
 
         <!-- Mobile Menu Dropdown -->
-        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-ampera-900 px-4 pt-3 pb-4 space-y-2">
+        <div id="mobile-menu" class="hidden md:hidden border-t border-white/10 bg-[#741D29] px-4 pt-3 pb-4 space-y-2">
             <a href="{{ route('beranda') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('beranda') ? 'bg-white/20 text-white font-semibold' : 'text-white/80 hover:bg-white/10' }}">
                 Beranda
             </a>
@@ -158,22 +162,26 @@
         @yield('content')
     </main>
 
-    <!-- Global Footer (Hanya muncul jika halaman tidak mendefinisikan 'no-footer') -->
+    <!-- Global Footer: Selaras Merah Ampera dengan Logo Resmi -->
     @unless(View::hasSection('no-footer'))
-    <footer class="bg-slate-900 text-slate-400 text-sm border-t border-slate-800 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <footer class="bg-[#8B1E2D] text-white/80 text-sm border-t border-white/15 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 
-                <!-- Kolom 1: Profil Sistem -->
-                <div class="md:col-span-2 space-y-3">
-                    <div class="flex items-center space-x-2 text-white font-bold text-base">
-                        <div class="w-2.5 h-2.5 rounded-full bg-[#8B1E2D]"></div>
-                        <span>SIP-WISATA KOTA PALEMBANG</span>
+                <!-- Kolom 1: Profil Sistem & Logo Resmi -->
+                <div class="md:col-span-2 space-y-4">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ asset('images/palembang.png') }}" alt="Logo Kota Palembang" class="h-10 w-auto object-contain">
+                        <img src="{{ asset('images/charmingputih.png') }}" alt="Logo Dinas Pariwisata Kota Palembang" class="h-9 w-auto object-contain">
+                        <div class="border-l border-white/20 pl-3">
+                            <div class="text-white font-bold text-sm tracking-tight leading-tight">SIP-WISATA PALEMBANG</div>
+                            <div class="text-[11px] text-white/70 leading-tight">Dinas Pariwisata Kota Palembang</div>
+                        </div>
                     </div>
-                    <p class="text-xs text-slate-400 leading-relaxed pr-6">
+                    <p class="text-xs text-white/80 leading-relaxed pr-6">
                         Sistem Informasi Geografis Pemetaan dan Klasterisasi Usaha Pariwisata Berbasis Algoritma Spasial DBSCAN (*Density-Based Spatial Clustering of Applications with Noise*) dan Perizinan OSS-RBA Terverifikasi Faktual.
                     </p>
-                    <div class="flex items-center space-x-2 text-xs text-slate-500 pt-1">
+                    <div class="flex items-center space-x-2 text-xs text-white/60 pt-1">
                         <span>Pemerintah Kota Palembang</span>
                         <span>•</span>
                         <span>Dinas Pariwisata</span>
@@ -182,33 +190,33 @@
 
                 <!-- Kolom 2: Navigasi Layanan Publik -->
                 <div class="space-y-3">
-                    <h2 class="text-xs font-semibold text-white uppercase tracking-wider">Layanan Informasi</h2>
+                    <h2 class="text-xs font-bold text-white uppercase tracking-wider">Layanan Informasi</h2>
                     <ul class="space-y-2 text-xs">
                         <li>
-                            <a href="{{ route('beranda') }}" class="hover:text-white transition duration-150">Beranda & Statistik</a>
+                            <a href="{{ route('beranda') }}" class="text-white/80 hover:text-white transition duration-150">Beranda & Statistik</a>
                         </li>
                         <li>
-                            <a href="{{ route('peta.sebaran') }}" class="hover:text-white transition duration-150">Peta Sebaran Usaha</a>
+                            <a href="{{ route('peta.sebaran') }}" class="text-white/80 hover:text-white transition duration-150">Peta Sebaran Usaha</a>
                         </li>
                         <li>
-                            <a href="{{ route('peta.zonasi') }}" class="hover:text-white transition duration-150">Pusat Usaha Wisata</a>
+                            <a href="{{ route('peta.zonasi') }}" class="text-white/80 hover:text-white transition duration-150">Pusat Usaha Wisata</a>
                         </li>
                         <li>
-                            <a href="{{ route('login') }}" class="hover:text-white transition duration-150">Portal Staf Admin</a>
+                            <a href="{{ route('login') }}" class="text-white/80 hover:text-white transition duration-150">Portal Staf Admin</a>
                         </li>
                     </ul>
                 </div>
 
                 <!-- Kolom 3: Identitas Penelitian Skripsi -->
                 <div class="space-y-3">
-                    <h2 class="text-xs font-semibold text-white uppercase tracking-wider">Informasi Akademis</h2>
-                    <p class="text-xs text-slate-400 leading-relaxed">
+                    <h2 class="text-xs font-bold text-white uppercase tracking-wider">Informasi Akademis</h2>
+                    <p class="text-xs text-white/80 leading-relaxed">
                         Penelitian Tugas Akhir / Skripsi Sarjana Terapan (D4)<br>
-                        <strong>Manajemen Informatika</strong><br>
+                        <strong class="text-white">Manajemen Informatika</strong><br>
                         Politeknik Negeri Sriwijaya
                     </p>
-                    <p class="text-[11px] text-slate-500">
-                        Peneliti: <strong>M. Dava Prayoga</strong><br>
+                    <p class="text-[11px] text-white/70">
+                        Peneliti: <strong class="text-white">M. Dava Prayoga</strong><br>
                         Tahun Akademik: 2025/2026
                     </p>
                 </div>
@@ -216,11 +224,11 @@
             </div>
 
             <!-- Bottom Copyright Bar -->
-            <div class="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 space-y-2 sm:space-y-0">
+            <div class="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-white/60 space-y-2 sm:space-y-0">
                 <p>© 2026 Pemerintah Kota Palembang — Dinas Pariwisata. Seluruh hak cipta dilindungi undang-undang.</p>
                 <div class="flex items-center space-x-2">
-                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>1.421 Titik Usaha Terverifikasi Geospasial</span>
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span class="text-white/90">1.421 Titik Usaha Terverifikasi Geospasial</span>
                 </div>
             </div>
         </div>

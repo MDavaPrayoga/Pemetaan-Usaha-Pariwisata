@@ -117,7 +117,18 @@ class BerandaController extends Controller
      */
     public function cariUsaha(Request $request): \Illuminate\Http\JsonResponse
     {
-        $query = UsahaPariwisata::verified()->buka()->with(['kbli', 'kecamatan']);
+        $query = UsahaPariwisata::verified()->with(['kbli', 'kecamatan']);
+
+        // Filter status operasional (buka, tutup_permanen, tutup_sementara, atau semua)
+        $statusOp = $request->input('status_operasional', 'buka');
+        if ($statusOp === 'buka') {
+            $query->buka();
+        } elseif ($statusOp === 'tutup_permanen') {
+            $query->tutupPermanen();
+        } elseif ($statusOp === 'tutup_sementara') {
+            $query->tutupSementara();
+        }
+        // Jika 'semua', maka menampilkan seluruh data terverifikasi (1.421 titik)
 
         // Filter kata kunci pencarian (nama proyek / nama perusahaan / alamat)
         if ($request->filled('q')) {
