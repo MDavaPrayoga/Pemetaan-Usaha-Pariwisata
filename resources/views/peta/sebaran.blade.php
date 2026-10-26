@@ -652,7 +652,13 @@
         } else if (gaya === 'titik') {
             mapSebaran.addLayer(circleDotLayer);
         } else if (gaya === 'heatmap') {
-            if (heatLayer) mapSebaran.addLayer(heatLayer);
+            if (heatLayer) {
+                mapSebaran.addLayer(heatLayer);
+                heatLayer.redraw();
+                setTimeout(() => {
+                    if (heatLayer) heatLayer.redraw();
+                }, 80);
+            }
         }
 
         updateLegendaSebaran(gaya);
@@ -1141,7 +1147,7 @@
 
             clusterMarkers.push(marker);
             circleDotLayer.addLayer(circleMarker);
-            heatPoints.push([item.latitude, item.longitude, 0.85]);
+            heatPoints.push([item.latitude, item.longitude, 1.0]);
 
             markersById[item.id_usaha] = {
                 marker: marker,
@@ -1155,24 +1161,26 @@
             clusterMarkers.forEach(m => clusterGroup.addLayer(m));
         }
 
-        // Rebuild Heatmap Layer
-        if (heatLayer && mapSebaran.hasLayer(heatLayer)) {
-            mapSebaran.removeLayer(heatLayer);
-        }
+        // Initialize or Update Heatmap Layer
         if (typeof L.heatLayer === 'function') {
-            heatLayer = L.heatLayer(heatPoints, {
-                radius: 25,
-                blur: 16,
-                maxZoom: 15,
-                max: 1.0,
-                gradient: {
-                    0.2: '#2563EB',
-                    0.4: '#10B981',
-                    0.6: '#FBBF24',
-                    0.8: '#F97316',
-                    1.0: '#8B1E2D'
-                }
-            });
+            if (!heatLayer) {
+                heatLayer = L.heatLayer(heatPoints, {
+                    radius: 28,
+                    blur: 18,
+                    maxZoom: 12,
+                    max: 0.5,
+                    minOpacity: 0.35,
+                    gradient: {
+                        0.15: '#2563EB',
+                        0.35: '#10B981',
+                        0.55: '#FBBF24',
+                        0.75: '#F97316',
+                        1.0:  '#8B1E2D'
+                    }
+                });
+            } else {
+                heatLayer.setLatLngs(heatPoints);
+            }
         }
 
         // Apply active layer on map
