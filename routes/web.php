@@ -10,10 +10,10 @@ use App\Http\Controllers\AdminUsahaController;
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
 
 // Halaman 2 Publik: Peta Sebaran Usaha
-Route::get('/peta', [PetaController::class, 'index'])->name('peta.sebaran');
+Route::get('/peta', [PetaController::class, 'sebaran'])->name('peta.sebaran');
 
 // Halaman 3 Publik: Pusat Usaha Wisata (Simulasi Zonasi Spasial)
-Route::get('/zonasi', [PetaController::class, 'index'])->name('peta.zonasi');
+Route::get('/zonasi', [PetaController::class, 'zonasi'])->name('peta.zonasi');
 
 // Alias kompatibilitas rute peta lama
 Route::get('/peta-legacy', [PetaController::class, 'index'])->name('peta.index');

@@ -26,14 +26,83 @@ class PetaController extends Controller
     }
 
     /**
-     * Menampilkan halaman peta utama publik (akan diarahkan ke view zonasi/peta).
+     * Halaman 2 Publik: Peta Sebaran Tempat Usaha Pariwisata Kota Palembang.
+     * Menyajikan eksplorasi 1.421 titik usaha OSS-RBA dan peta tematik kepadatan 18 kecamatan.
      */
-    public function index(): View
+    public function sebaran(Request $request): View
+    {
+        $daftarKbli = Kbli::orderBy('judul_kbli', 'asc')->get();
+        $daftarKecamatan = Kecamatan::withCount(['usahaPariwisata as total_verified' => function ($q) {
+            $q->verified();
+        }])->orderBy('nama_kecamatan', 'asc')->get();
+
+        $totalUsahaVerified = UsahaPariwisata::verified()->count();
+        $totalUsahaBuka = UsahaPariwisata::verified()->buka()->count();
+        $totalUsahaTutupPermanen = UsahaPariwisata::verified()->tutupPermanen()->count();
+        $totalUsahaTutupSementara = UsahaPariwisata::verified()->tutupSementara()->count();
+        $totalUsahaTutup = $totalUsahaTutupPermanen + $totalUsahaTutupSementara;
+
+        // Hitung statistik lengkap per kecamatan untuk peta tematik choropleth
+        $statistikKecamatan = Kecamatan::with(['usahaPariwisata' => function($q) {
+            $q->verified()->with('kbli');
+        }])->get()->map(function ($kec) use ($totalUsahaVerified) {
+            $verified = $kec->usahaPariwisata;
+            $total = $verified->count();
+            $buka = $verified->where('status_operasional', 'Buka')->count();
+            $tutupPermanen = $verified->where('status_operasional', 'Tutup Permanen')->count();
+            $tutupSementara = $verified->where('status_operasional', 'Tutup Sementara')->count();
+            
+            // Komposisi sektor usaha
+            $sektorCounts = [];
+            foreach ($verified as $item) {
+                $judulKbli = $item->kbli->judul_kbli ?? 'Lainnya';
+                $sektorCounts[$judulKbli] = ($sektorCounts[$judulKbli] ?? 0) + 1;
+            }
+            arsort($sektorCounts);
+
+            return [
+                'id_kecamatan' => $kec->id_kecamatan,
+                'nama_kecamatan' => $kec->nama_kecamatan,
+                'total' => $total,
+                'persentase' => $totalUsahaVerified > 0 ? round(($total / $totalUsahaVerified) * 100, 1) : 0,
+                'buka' => $buka,
+                'tutup_permanen' => $tutupPermanen,
+                'tutup_sementara' => $tutupSementara,
+                'tutup' => $tutupPermanen + $tutupSementara,
+                'sektor' => $sektorCounts,
+            ];
+        })->keyBy('id_kecamatan');
+
+        // Parameter pencarian awal dari URL
+        $initialQuery = (string) ($request->input('q') ?: $request->input('cari', ''));
+        $initialKecamatan = (string) $request->input('kecamatan', '');
+        $initialKbli = (string) $request->input('kbli', '');
+        $initialStatus = (string) $request->input('status', 'all');
+
+        return view('peta.sebaran', compact(
+            'daftarKbli',
+            'daftarKecamatan',
+            'totalUsahaVerified',
+            'totalUsahaBuka',
+            'totalUsahaTutupPermanen',
+            'totalUsahaTutupSementara',
+            'totalUsahaTutup',
+            'statistikKecamatan',
+            'initialQuery',
+            'initialKecamatan',
+            'initialKbli',
+            'initialStatus'
+        ));
+    }
+
+    /**
+     * Halaman 3 Publik: Pusat Usaha Wisata (Simulasi Zonasi Spasial DBSCAN).
+     */
+    public function zonasi(): View
     {
         $daftarKbli = Kbli::orderBy('judul_kbli', 'asc')->get();
         $daftarKecamatan = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
 
-        // Ambil konfigurasi klaster resmi dinas yang aktif (jika ada)
         $konfigurasiAktif = KonfigurasiKlaster::where('is_active', true)
             ->with(['anggotaKlaster.usahaPariwisata.kbli', 'anggotaKlaster.usahaPariwisata.kecamatan'])
             ->first();
@@ -48,6 +117,14 @@ class PetaController extends Controller
             'totalUsahaVerified',
             'totalUsahaBuka'
         ));
+    }
+
+    /**
+     * Alias kompatibilitas rute index.
+     */
+    public function index(Request $request): View
+    {
+        return $this->sebaran($request);
     }
 
     /**
@@ -79,8 +156,8 @@ class PetaController extends Controller
         }
 
         // Filter Pencarian Teks
-        if ($request->filled('cari')) {
-            $keyword = $request->input('cari');
+        $keyword = $request->input('cari') ?: $request->input('q');
+        if (!empty($keyword)) {
             $query->where(function ($q) use ($keyword) {
                 $q->where('nama_proyek', 'LIKE', "%{$keyword}%")
                   ->orWhere('nama_perusahaan', 'LIKE', "%{$keyword}%")
