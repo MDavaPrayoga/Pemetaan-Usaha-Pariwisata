@@ -272,12 +272,18 @@
 
                 <select id="filter-kecamatan-select" 
                         class="px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-cluster-1 focus:border-cluster-1 outline-none transition duration-150 text-slate-700">
-                    <option value="">Semua Kecamatan</option>
+                    <option value="">Semua Kecamatan (18 Kecamatan)</option>
                     @foreach($daftarKecamatan as $kec)
-                        <option value="{{ strtolower($kec->nama_kecamatan) }}">{{ $kec->nama_kecamatan }}</option>
+                        <option value="{{ $kec->id_kecamatan }}">{{ $kec->nama_kecamatan }}</option>
                     @endforeach
                 </select>
             </div>
+        </div>
+
+        <!-- Indikator Status Hasil Pencarian -->
+        <div id="search-status-text" class="text-xs text-slate-500 mb-4 font-medium flex items-center space-x-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Menampilkan {{ $sampelUsaha->count() }} sampel tempat usaha terverifikasi</span>
         </div>
 
         <!-- Grid Kartu Tempat Usaha Nyata -->
@@ -572,32 +578,118 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 4. Interaksi Pencarian & Filter Cepat Kartu Direktori Tempat Usaha
+    // 4. Interaksi Pencarian & Filter Dinamis Tempat Usaha via API
     const searchInput = document.getElementById('filter-search-input');
     const kecamatanSelect = document.getElementById('filter-kecamatan-select');
-    const cards = document.querySelectorAll('.kartu-usaha');
+    const gridContainer = document.getElementById('grid-sampel-usaha');
+    const statusText = document.getElementById('search-status-text');
+    let debounceTimer = null;
 
-    function filterCards() {
-        const query = (searchInput?.value || '').toLowerCase().trim();
-        const selectedKec = (kecamatanSelect?.value || '').toLowerCase().trim();
+    async function fetchUsaha() {
+        const query = (searchInput?.value || '').trim();
+        const selectedKec = (kecamatanSelect?.value || '').trim();
 
-        cards.forEach(card => {
-            const nama = card.getAttribute('data-nama') || '';
-            const kec = card.getAttribute('data-kecamatan') || '';
+        if (statusText) {
+            statusText.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                <span>Memuat data tempat usaha...</span>
+            `;
+        }
 
-            const matchesQuery = !query || nama.includes(query);
-            const matchesKec = !selectedKec || kec.includes(selectedKec);
+        try {
+            const params = new URLSearchParams();
+            if (query) params.append('q', query);
+            if (selectedKec) params.append('id_kecamatan', selectedKec);
 
-            if (matchesQuery && matchesKec) {
-                card.style.display = 'flex';
-            } else {
-                card.style.display = 'none';
+            const res = await fetch(`{{ route('api.beranda.cari') }}?${params.toString()}`);
+            const json = await res.json();
+
+            if (json.success && gridContainer) {
+                if (json.data.length === 0) {
+                    gridContainer.innerHTML = `
+                        <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12 bg-slate-50 border border-dashed border-slate-300 rounded-2xl">
+                            <div class="w-12 h-12 rounded-full bg-slate-200 text-slate-500 mx-auto flex items-center justify-center mb-3">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </div>
+                            <h4 class="text-sm font-bold text-slate-800">Tidak ada tempat usaha ditemukan</h4>
+                            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Coba gunakan kata kunci pencarian lain atau pilih kecamatan yang berbeda.</p>
+                        </div>
+                    `;
+                    if (statusText) {
+                        statusText.innerHTML = `
+                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                            <span>0 tempat usaha ditemukan</span>
+                        `;
+                    }
+                } else {
+                    gridContainer.innerHTML = json.data.map(u => `
+                        <div class="kartu-usaha bg-slate-50 border border-slate-200/90 rounded-2xl p-5 hover:border-[#8B1E2D]/40 hover:shadow-md transition duration-200 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-3 gap-2">
+                                    <span class="text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 px-2.5 py-0.5 rounded-lg truncate max-w-42.5" title="${u.kbli}">
+                                        ${u.kbli}
+                                    </span>
+                                    <span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <span>Buka</span>
+                                    </span>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-900 leading-snug line-clamp-1 mb-1.5" title="${u.nama_usaha}">
+                                    ${u.nama_usaha}
+                                </h3>
+                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
+                                    ${u.alamat}
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                                <div class="flex items-center space-x-1.5 text-slate-600 font-medium truncate max-w-37.5">
+                                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                    <span class="truncate">${u.kecamatan}</span>
+                                </div>
+                                <a href="{{ route('peta.sebaran') }}?q=${encodeURIComponent(u.nama_usaha)}" 
+                                   class="inline-flex items-center space-x-1 text-xs font-bold text-cluster-1 hover:text-ampera-900 group">
+                                    <span>Lihat di Peta</span>
+                                    <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    `).join('');
+                    if (statusText) {
+                        statusText.innerHTML = `
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span>Menampilkan ${json.data.length} tempat usaha terverifikasi</span>
+                        `;
+                    }
+                }
             }
+        } catch (err) {
+            console.error('Gagal mengambil data usaha:', err);
+            if (statusText) {
+                statusText.innerHTML = `
+                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                    <span>Gagal memuat data tempat usaha</span>
+                `;
+            }
+        }
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(fetchUsaha, 250);
         });
     }
 
-    if (searchInput) searchInput.addEventListener('input', filterCards);
-    if (kecamatanSelect) kecamatanSelect.addEventListener('change', filterCards);
+    if (kecamatanSelect) {
+        kecamatanSelect.addEventListener('change', fetchUsaha);
+    }
 });
 </script>
 @endsection

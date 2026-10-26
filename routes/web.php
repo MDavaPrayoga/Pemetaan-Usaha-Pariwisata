@@ -24,6 +24,9 @@ Route::get('/api/titik-usaha', [PetaController::class, 'dataTitik'])->name('api.
 // Rute API: menerima parameter eps dan minPts dari slider lalu menjalankan kalkulasi DBSCAN
 Route::post('/api/simulasi-dbscan', [PetaController::class, 'simulasiKlaster'])->name('api.simulasi');
 
+// Rute API: pencarian cepat tempat usaha di halaman beranda
+Route::get('/api/pencarian-beranda', [BerandaController::class, 'cariUsaha'])->name('api.beranda.cari');
+
 // Rute autentikasi administrator
 Route::get('/login', [AuthController::class, 'tampilkanFormLogin'])->name('login')->middleware('guest');
 Route::post('/login', [AuthController::class, 'prosesLogin'])->name('login.proses')->middleware('guest');

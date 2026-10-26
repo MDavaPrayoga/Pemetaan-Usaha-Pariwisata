@@ -126,4 +126,44 @@ class BerandaController extends Controller
             'daftarKecamatan'
         ));
     }
+
+    /**
+     * Endpoint API pencarian cepat tempat usaha di Beranda secara dinamis
+     */
+    public function cariUsaha(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $query = UsahaPariwisata::verified()->buka()->with(['kbli', 'kecamatan']);
+
+        // Filter kata kunci pencarian (nama proyek / nama perusahaan / alamat)
+        if ($request->filled('q')) {
+            $q = trim($request->input('q'));
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nama_proyek', 'like', "%{$q}%")
+                    ->orWhere('nama_perusahaan', 'like', "%{$q}%")
+                    ->orWhere('alamat', 'like', "%{$q}%");
+            });
+        }
+
+        // Filter kecamatan berdasarkan ID
+        if ($request->filled('id_kecamatan')) {
+            $query->where('id_kecamatan', $request->input('id_kecamatan'));
+        }
+
+        $hasil = $query->orderBy('nama_proyek', 'asc')->take(12)->get()->map(function ($u) {
+            return [
+                'id_usaha' => $u->id_usaha,
+                'nama_usaha' => $u->nama_usaha,
+                'kbli' => $u->kbli?->judul_kbli ?? 'Pariwisata',
+                'alamat' => $u->alamat ?: ('Kecamatan ' . ($u->kecamatan?->nama_kecamatan ?? 'Palembang')),
+                'kecamatan' => $u->kecamatan?->nama_kecamatan ?? '-',
+                'status_operasional' => $u->status_operasional,
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'total' => $hasil->count(),
+            'data' => $hasil,
+        ]);
+    }
 }
