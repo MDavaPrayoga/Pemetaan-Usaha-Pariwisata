@@ -168,27 +168,37 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 
-                <!-- Kolom 1: Profil Sistem & Logo Resmi -->
-                <div class="md:col-span-2 space-y-4">
+                <!-- Kolom 1: Profil Portal & Logo Resmi -->
+                <div class="space-y-4">
                     <div class="flex items-center space-x-3">
                         <img src="{{ asset('images/palembang.png') }}" alt="Logo Kota Palembang" class="h-10 w-auto object-contain">
                         <img src="{{ asset('images/charmingputih.png') }}" alt="Logo Dinas Pariwisata Kota Palembang" class="h-9 w-auto object-contain">
-                        <div class="border-l border-white/20 pl-3">
-                            <div class="text-white font-bold text-sm tracking-tight leading-tight">SIP-WISATA PALEMBANG</div>
-                            <div class="text-[11px] text-white/70 leading-tight">Dinas Pariwisata Kota Palembang</div>
-                        </div>
                     </div>
-                    <p class="text-xs text-white/80 leading-relaxed pr-6">
-                        Sistem Informasi Geografis Pemetaan dan Klasterisasi Usaha Pariwisata Berbasis Algoritma Spasial DBSCAN (*Density-Based Spatial Clustering of Applications with Noise*) dan Perizinan OSS-RBA Terverifikasi Faktual.
+                    <div>
+                        <div class="text-white font-bold text-sm tracking-tight leading-tight">SIP-WISATA PALEMBANG</div>
+                        <div class="text-[11px] text-white/70 leading-tight mt-0.5">Dinas Pariwisata Kota Palembang</div>
+                    </div>
+                    <p class="text-xs text-white/80 leading-relaxed">
+                        Sistem informasi geospasial resmi untuk pemetaan persebaran dan kawasan sentra usaha pariwisata di 18 kecamatan Kota Palembang.
                     </p>
-                    <div class="flex items-center space-x-2 text-xs text-white/60 pt-1">
-                        <span>Pemerintah Kota Palembang</span>
-                        <span>•</span>
-                        <span>Dinas Pariwisata</span>
+                </div>
+
+                <!-- Kolom 2: Kantor & Kontak Resmi -->
+                <div class="space-y-3">
+                    <h2 class="text-xs font-bold text-white uppercase tracking-wider">Kantor & Kontak</h2>
+                    <div class="space-y-2 text-xs text-white/80 leading-relaxed">
+                        <p class="font-semibold text-white">Dinas Pariwisata Kota Palembang</p>
+                        <p class="text-white/70">
+                            Jl. Dr. Wahidin No. 3, Talang Semut, Kec. Bukit Kecil, Kota Palembang, Sumatera Selatan 30135
+                        </p>
+                        <div class="pt-1 space-y-0.5 text-white/70">
+                            <p>Surel: <span class="text-white/90">pariwisata@palembang.go.id</span></p>
+                            <p>Situs: <span class="text-white/90">charmingpalembang.id</span></p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Kolom 2: Navigasi Layanan Publik -->
+                <!-- Kolom 3: Layanan Informasi -->
                 <div class="space-y-3">
                     <h2 class="text-xs font-bold text-white uppercase tracking-wider">Layanan Informasi</h2>
                     <ul class="space-y-2 text-xs">
@@ -207,18 +217,18 @@
                     </ul>
                 </div>
 
-                <!-- Kolom 3: Identitas Penelitian Skripsi -->
+                <!-- Kolom 4: Informasi Akademis -->
                 <div class="space-y-3">
                     <h2 class="text-xs font-bold text-white uppercase tracking-wider">Informasi Akademis</h2>
-                    <p class="text-xs text-white/80 leading-relaxed">
-                        Penelitian Tugas Akhir / Skripsi Sarjana Terapan (D4)<br>
-                        <strong class="text-white">Manajemen Informatika</strong><br>
-                        Politeknik Negeri Sriwijaya
-                    </p>
-                    <p class="text-[11px] text-white/70">
-                        Peneliti: <strong class="text-white">M. Dava Prayoga</strong><br>
-                        Tahun Akademik: 2025/2026
-                    </p>
+                    <div class="space-y-1.5 text-xs text-white/80 leading-relaxed">
+                        <p class="font-semibold text-white">Politeknik Negeri Sriwijaya</p>
+                        <p class="text-white/70">Jurusan Manajemen Informatika</p>
+                        <p class="text-white/70">Program Sarjana Terapan (D4)</p>
+                        <div class="pt-2 border-t border-white/10 text-[11px] text-white/70">
+                            Peneliti: <strong class="text-white">M. Dava Prayoga</strong><br>
+                            Tahun Akademik: 2025/2026
+                        </div>
+                    </div>
                 </div>
 
             </div>
