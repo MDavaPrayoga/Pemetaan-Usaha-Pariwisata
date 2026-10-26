@@ -78,10 +78,33 @@ class PetaController extends Controller
         $initialKecamatan = (string) $request->input('kecamatan', '');
         $initialKbli = (string) $request->input('kbli', '');
         $initialStatus = (string) $request->input('status', 'all');
+        // Seluruh 1.421 titik usaha terverifikasi geospasial
+        $daftarTitikUsaha = UsahaPariwisata::verified()->with(['kbli', 'kecamatan'])->get()->map(function ($item) {
+            return [
+                'id_usaha' => $item->id_usaha,
+                'nib' => $item->nib,
+                'nama_perusahaan' => $item->nama_perusahaan,
+                'nama_proyek' => $item->nama_proyek,
+                'nama_usaha' => $item->nama_usaha,
+                'skala_usaha' => $item->skala_usaha ?: 'Tidak Tercatat',
+                'alamat' => $item->alamat ?: '-',
+                'kelurahan' => $item->kelurahan ?: '-',
+                'latitude' => (float) $item->latitude,
+                'longitude' => (float) $item->longitude,
+                'id_kbli' => $item->id_kbli,
+                'kode_kbli' => $item->kbli->kode_kbli ?? '-',
+                'judul_kbli' => $item->kbli->judul_kbli ?? '-',
+                'id_kecamatan' => $item->id_kecamatan,
+                'nama_kecamatan' => $item->kecamatan->nama_kecamatan ?? '-',
+                'status_operasional' => $item->status_operasional ?? 'Buka',
+                'status_spasial' => $item->status_spasial,
+            ];
+        });
 
         return view('peta.sebaran', compact(
             'daftarKbli',
             'daftarKecamatan',
+            'daftarTitikUsaha',
             'totalUsahaVerified',
             'totalUsahaBuka',
             'totalUsahaTutupPermanen',

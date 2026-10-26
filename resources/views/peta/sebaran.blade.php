@@ -10,10 +10,16 @@
 <link rel="stylesheet" href="{{ asset('vendor/leaflet/MarkerCluster.Default.css') }}">
 
 <style>
-    /* Full viewport map setup */
-    .map-canvas {
+    /* Full viewport map setup dengan posisi absolut agar selalu mengisi penuh tinggi container */
+    #map-sebaran, #map-choropleth {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
         width: 100%;
         height: 100%;
+        min-height: 450px;
         background-color: #f8fafc;
         z-index: 10;
     }
@@ -92,9 +98,15 @@
      data-initial-kecamatan="{{ $initialKecamatan }}"
      data-initial-kbli="{{ $initialKbli }}"
      data-initial-status="{{ $initialStatus }}"
+     data-api-titik-url="{{ url('api/titik-usaha') }}"
      data-geojson-url="{{ asset('geojson/palembang_kecamatan.geojson') }}"
      data-total-verified="{{ $totalUsahaVerified }}">
 </div>
+
+<!-- Embedded Server Datasets for Zero-Latency Instant Rendering -->
+<script id="server-titik-usaha" type="application/json">
+    {!! json_encode($daftarTitikUsaha) !!}
+</script>
 <script id="server-statistik-kecamatan" type="application/json">
     {!! json_encode($statistikKecamatan) !!}
 </script>
@@ -185,8 +197,8 @@
     </div>
 </div>
 
-<!-- Main Interactive Split View Container (Fills calc(100vh - 64px - 53px)) -->
-<div class="flex-1 flex relative overflow-hidden h-[calc(100vh-117px)]">
+<!-- Main Interactive Split View Container -->
+<div class="flex-1 flex relative overflow-hidden h-[calc(100vh-117px)] min-h-[500px]">
 
     <!-- ============================================================== -->
     <!-- PANEL TAB 1: SEBARAN TITIK USAHA (Sidebar & Cluster Map)       -->
@@ -195,7 +207,7 @@
         
         <!-- Left Sidebar: Filter & Interactive Directory List -->
         <aside id="sidebar-sebaran" 
-               class="w-full md:w-96 lg:w-[410px] bg-white border-r border-slate-200 flex flex-col h-full z-20 shrink-0 shadow-sm transition-all duration-200">
+               class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full z-20 shrink-0 shadow-sm transition-all duration-200">
             
             <!-- Top Controls Box -->
             <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 space-y-2.5">
@@ -288,7 +300,6 @@
 
             <!-- Scrollable Results Place Directory -->
             <div id="container-daftar-usaha" class="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-                <!-- Dynamically rendered by JavaScript -->
                 <div id="loading-daftar-usaha" class="py-12 text-center text-slate-400">
                     <svg class="animate-spin w-6 h-6 mx-auto mb-2 text-ampera-900" fill="none" viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -301,11 +312,11 @@
         </aside>
 
         <!-- Right: Leaflet Map Canvas -->
-        <main class="flex-1 relative h-full bg-slate-100">
-            <div id="map-sebaran" class="map-canvas"></div>
+        <main class="flex-1 relative w-full h-full min-h-[450px] bg-slate-100">
+            <div id="map-sebaran"></div>
 
             <!-- Loading overlay for map operations -->
-            <div id="map-loading-indicator" class="hidden absolute top-4 left-4 bg-white/90 backdrop-blur-md border border-slate-300 shadow-lg px-3.5 py-2 rounded-lg z-30 flex items-center space-x-2 text-xs font-medium text-slate-800">
+            <div id="map-loading-indicator" class="hidden absolute top-4 left-4 bg-white/90 backdrop-blur-md border border-slate-300 shadow-lg px-3.5 py-2 rounded-lg z-30 items-center space-x-2 text-xs font-medium text-slate-800">
                 <svg class="animate-spin w-4 h-4 text-ampera-900" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -345,10 +356,10 @@
     <!-- ============================================================== -->
     <!-- PANEL TAB 2: KEPADATAN PER KECAMATAN (Choropleth Peta Tematik) -->
     <!-- ============================================================== -->
-    <div id="view-tab-choropleth" class="hidden flex-1 flex w-full h-full">
+    <div id="view-tab-choropleth" class="hidden flex-1 w-full h-full">
         
         <!-- Left Sidebar: Ranking Kepadatan 18 Wilayah -->
-        <aside class="w-full md:w-96 lg:w-[410px] bg-white border-r border-slate-200 flex flex-col h-full z-20 shrink-0 shadow-sm">
+        <aside class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full z-20 shrink-0 shadow-sm">
             <div class="p-3.5 border-b border-slate-200 bg-slate-50/70">
                 <div class="flex items-center justify-between">
                     <div>
@@ -384,9 +395,9 @@
                         <!-- Progress Bar Kepadatan -->
                         <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden mb-1.5">
                             @php
-                                $pctBar = ($item['total'] / 263) * 100;
+                                $pctBar = round(($item['total'] / 263) * 100, 1);
                             @endphp
-                            <div class="h-1.5 rounded-full bg-ampera-900" style="width: {{ $pctBar }}%"></div>
+                            <div class="h-1.5 rounded-full bg-ampera-900" style="{{ 'width: ' . $pctBar . '%;' }}"></div>
                         </div>
 
                         <div class="flex items-center justify-between text-[10px] text-slate-500">
@@ -402,8 +413,8 @@
         </aside>
 
         <!-- Right: Leaflet Choropleth Map Canvas -->
-        <main class="flex-1 relative h-full bg-slate-100">
-            <div id="map-choropleth" class="map-canvas"></div>
+        <main class="flex-1 relative w-full h-full min-h-[450px] bg-slate-100">
+            <div id="map-choropleth"></div>
 
             <!-- Floating Info Panel on Hover (Top Right) -->
             <div id="choropleth-info-panel" class="absolute top-4 right-4 bg-white/95 backdrop-blur-md border border-slate-300 shadow-xl rounded-xl p-4 z-20 max-w-sm pointer-events-auto transition duration-150">
@@ -459,22 +470,23 @@
     const PALEMBANG_CENTER = [-2.976073, 104.757833];
     const PALEMBANG_ZOOM = 12;
 
-    // Load static data from DOM safely
+    // Load static config from DOM safely
     const metaEl = document.getElementById('peta-meta');
-    const geojsonUrl = metaEl.dataset.geojsonUrl;
-    const initialQuery = metaEl.dataset.initialQuery || '';
-    const initialKecamatan = metaEl.dataset.initialKecamatan || '';
-    const initialKbli = metaEl.dataset.initialKbli || '';
-    const initialStatus = metaEl.dataset.initialStatus || 'all';
+    const geojsonUrl = metaEl ? metaEl.dataset.geojsonUrl : '';
+    const apiTitikUrl = metaEl ? metaEl.dataset.apiTitikUrl : '';
+    const initialQuery = metaEl ? (metaEl.dataset.initialQuery || '') : '';
+    const initialKecamatan = metaEl ? (metaEl.dataset.initialKecamatan || '') : '';
+    const initialKbli = metaEl ? (metaEl.dataset.initialKbli || '') : '';
+    const initialStatus = metaEl ? (metaEl.dataset.initialStatus || 'all') : 'all';
 
     let dataStatistikKecamatan = {};
     try {
         const statsScript = document.getElementById('server-statistik-kecamatan');
-        if (statsScript) {
+        if (statsScript && statsScript.textContent.trim()) {
             dataStatistikKecamatan = JSON.parse(statsScript.textContent);
         }
     } catch (e) {
-        console.error('Gagal mem-parsing data statistik kecamatan:', e);
+        console.error('Gagal membaca data statistik kecamatan:', e);
     }
 
     // App state
@@ -483,7 +495,7 @@
     let mapSebaran = null;
     let clusterGroup = null;
     let markersById = {};
-    let activeTab = 'sebaran'; // 'sebaran' or 'choropleth'
+    let activeTab = 'sebaran';
 
     // Choropleth Map State
     let mapChoropleth = null;
@@ -517,7 +529,7 @@
 
     // Initialize Map Sebaran (Tab 1)
     function inisialisasiPetaSebaran() {
-        if (mapSebaran) return;
+        if (mapSebaran || !document.getElementById('map-sebaran')) return;
 
         mapSebaran = L.map('map-sebaran', {
             center: PALEMBANG_CENTER,
@@ -526,31 +538,39 @@
             maxZoom: 19
         });
 
-        // CartoDB Positron / OSM Base Tile
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-            subdomains: 'abcd',
+        // OpenStreetMap Standard Tile Layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | Dinas Pariwisata Kota Palembang',
+            subdomains: ['a', 'b', 'c'],
             maxZoom: 19
         }).addTo(mapSebaran);
 
-        // Marker Cluster Group with custom radius & animation
-        clusterGroup = L.markerClusterGroup({
-            showCoverageOnHover: false,
-            maxClusterRadius: 50,
-            spiderfyOnMaxZoom: true,
-            zoomToBoundsOnClick: true,
-            chunkedLoading: true
-        });
+        // Marker Cluster Group with custom radius & safe fallback
+        if (typeof L.markerClusterGroup === 'function') {
+            clusterGroup = L.markerClusterGroup({
+                showCoverageOnHover: false,
+                maxClusterRadius: 50,
+                spiderfyOnMaxZoom: true,
+                zoomToBoundsOnClick: true,
+                chunkedLoading: true
+            });
+        } else {
+            console.warn('L.markerClusterGroup tidak tersedia, menggunakan L.layerGroup() biasa.');
+            clusterGroup = L.layerGroup();
+        }
         mapSebaran.addLayer(clusterGroup);
 
         setTimeout(() => {
-            mapSebaran.invalidateSize();
+            if (mapSebaran) mapSebaran.invalidateSize();
         }, 150);
+        setTimeout(() => {
+            if (mapSebaran) mapSebaran.invalidateSize();
+        }, 500);
     }
 
     // Initialize Map Choropleth (Tab 2)
     function inisialisasiPetaChoropleth() {
-        if (mapChoropleth) return;
+        if (mapChoropleth || !document.getElementById('map-choropleth')) return;
 
         mapChoropleth = L.map('map-choropleth', {
             center: PALEMBANG_CENTER,
@@ -559,17 +579,20 @@
             maxZoom: 18
         });
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-            subdomains: 'abcd',
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors | Peta Tematik Palembang',
+            subdomains: ['a', 'b', 'c'],
             maxZoom: 19
         }).addTo(mapChoropleth);
 
         muatDataGeojsonKecamatan();
 
         setTimeout(() => {
-            mapChoropleth.invalidateSize();
+            if (mapChoropleth) mapChoropleth.invalidateSize();
         }, 150);
+        setTimeout(() => {
+            if (mapChoropleth) mapChoropleth.invalidateSize();
+        }, 500);
     }
 
     // Color gradient scale based on total businesses
@@ -588,6 +611,8 @@
             return;
         }
 
+        if (!geojsonUrl) return;
+
         fetch(geojsonUrl)
             .then(res => res.json())
             .then(data => {
@@ -600,7 +625,7 @@
     }
 
     function renderChoroplethLayers(geojson) {
-        if (geojsonLayer) {
+        if (geojsonLayer && mapChoropleth) {
             mapChoropleth.removeLayer(geojsonLayer);
         }
 
@@ -621,6 +646,7 @@
             onEachFeature: function(feature, layer) {
                 const idKec = feature.properties.id_kecamatan;
                 const stats = dataStatistikKecamatan[idKec] || {
+                    id_kecamatan: idKec,
                     nama_kecamatan: feature.properties.nama_kecamatan || 'Kecamatan',
                     total: 0,
                     persentase: 0,
@@ -643,7 +669,7 @@
                         updateChoroplethInfo(stats);
                     },
                     mouseout: function(e) {
-                        geojsonLayer.resetStyle(e.target);
+                        if (geojsonLayer) geojsonLayer.resetStyle(e.target);
                     },
                     click: function(e) {
                         mapChoropleth.fitBounds(e.target.getBounds());
@@ -659,7 +685,6 @@
         const panel = document.getElementById('choropleth-info-panel');
         if (!panel) return;
 
-        // Top 3 sectors breakdown
         let sektorHtml = '';
         if (stats.sektor && Object.keys(stats.sektor).length > 0) {
             const topSektors = Object.entries(stats.sektor).slice(0, 3);
@@ -727,26 +752,60 @@
         terapkanFilterDanRender();
     };
 
-    // Load points data from API
+    // Load points data: Pre-loaded from server script tag with AJAX fallback
     function muatSemuaTitik() {
-        const loading = document.getElementById('map-loading-indicator');
-        if (loading) loading.classList.remove('hidden');
+        const loadingIndicator = document.getElementById('map-loading-indicator');
+        
+        // 1. Cek data bawaan server (zero network latency)
+        const serverDataScript = document.getElementById('server-titik-usaha');
+        if (serverDataScript && serverDataScript.textContent.trim()) {
+            try {
+                semuaDataTitik = JSON.parse(serverDataScript.textContent);
+                if (Array.isArray(semuaDataTitik) && semuaDataTitik.length > 0) {
+                    terapkanFilterDanRender();
+                    return;
+                }
+            } catch (err) {
+                console.warn('Gagal membaca data titik tersemat, mencoba memuat via AJAX:', err);
+            }
+        }
 
-        fetch('/api/titik-usaha?status_operasional=all')
-            .then(res => res.json())
+        // 2. Fallback AJAX fetch
+        if (loadingIndicator) {
+            loadingIndicator.classList.remove('hidden');
+            loadingIndicator.classList.add('flex');
+        }
+
+        const fetchUrl = (apiTitikUrl || '/api/titik-usaha') + '?status_operasional=all';
+
+        fetch(fetchUrl)
             .then(res => {
-                if (loading) loading.classList.add('hidden');
+                if (!res.ok) throw new Error(`HTTP ${res.status}: Gagal menghubungi endpoint`);
+                return res.json();
+            })
+            .then(res => {
+                if (loadingIndicator) {
+                    loadingIndicator.classList.add('hidden');
+                    loadingIndicator.classList.remove('flex');
+                }
                 semuaDataTitik = res.data || [];
                 terapkanFilterDanRender();
             })
             .catch(err => {
-                if (loading) loading.classList.add('hidden');
+                if (loadingIndicator) {
+                    loadingIndicator.classList.add('hidden');
+                    loadingIndicator.classList.remove('flex');
+                }
                 console.error('Gagal memuat titik usaha:', err);
                 const container = document.getElementById('container-daftar-usaha');
                 if (container) {
                     container.innerHTML = `
                         <div class="p-6 text-center text-rose-500 text-xs">
-                            Gagal memuat data dari server. Silakan muat ulang halaman.
+                            <p class="font-bold">Gagal memuat data titik usaha</p>
+                            <p class="mt-1 text-slate-500">${err.message}</p>
+                            <button onclick="location.reload()" class="mt-3 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-semibold">
+                                Muat Ulang Halaman
+                            </button>
                         </div>
                     `;
                 }
@@ -815,7 +874,6 @@
             const icon = createCustomMarkerIcon(item.status_operasional);
             const marker = L.marker([item.latitude, item.longitude], { icon: icon });
 
-            // Status Badge Formatting
             let statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-100 text-emerald-800">Buka</span>';
             if (item.status_operasional === 'Tutup Sementara') {
                 statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800">Tutup Sementara</span>';
@@ -823,7 +881,6 @@
                 statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">Tutup Permanen</span>';
             }
 
-            // Google Maps Navigation Link
             const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${item.latitude},${item.longitude}`;
 
             const popupHtml = `
@@ -870,13 +927,21 @@
             markersById[item.id_usaha] = marker;
         });
 
-        clusterGroup.addLayers(markers);
+        if (typeof clusterGroup.addLayers === 'function') {
+            clusterGroup.addLayers(markers);
+        } else {
+            markers.forEach(m => clusterGroup.addLayer(m));
+        }
 
         // If filter is active and has results, zoom to fit
-        if (dataTerfilter.length > 0 && dataTerfilter.length < semuaDataTitik.length) {
-            const bounds = clusterGroup.getBounds();
-            if (bounds.isValid()) {
-                mapSebaran.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+        if (dataTerfilter.length > 0 && dataTerfilter.length < semuaDataTitik.length && mapSebaran) {
+            try {
+                const bounds = clusterGroup.getBounds();
+                if (bounds && bounds.isValid()) {
+                    mapSebaran.fitBounds(bounds, { padding: [50, 50], maxZoom: 16 });
+                }
+            } catch (e) {
+                // Ignore bounds error
             }
         }
     }
@@ -906,8 +971,8 @@
             return;
         }
 
-        // Limit initial display to 60 for ultra-fluid rendering; user can search or scroll
-        const displayed = dataTerfilter.slice(0, 60);
+        // Display up to 80 items
+        const displayed = dataTerfilter.slice(0, 80);
 
         let html = '';
         displayed.forEach(item => {
@@ -957,10 +1022,10 @@
             `;
         });
 
-        if (dataTerfilter.length > 60) {
+        if (dataTerfilter.length > 80) {
             html += `
                 <div class="p-3 text-center text-xs text-slate-500 bg-slate-50 rounded-lg border border-slate-200">
-                    Menampilkan 60 dari ${dataTerfilter.length} hasil. Persempit pencarian atau pilih kecamatan untuk melihat tempat spesifik.
+                    Menampilkan 80 dari ${dataTerfilter.length} hasil. Persempit pencarian atau pilih kecamatan untuk melihat tempat spesifik.
                 </div>
             `;
         }
@@ -993,17 +1058,24 @@
 
         setTimeout(() => {
             const marker = markersById[idUsaha];
-            if (marker && clusterGroup) {
-                clusterGroup.zoomToShowLayer(marker, () => {
+            if (marker) {
+                if (clusterGroup && typeof clusterGroup.zoomToShowLayer === 'function') {
+                    clusterGroup.zoomToShowLayer(marker, () => {
+                        marker.openPopup();
+                    });
+                } else {
                     marker.openPopup();
-                });
+                }
             }
         }, 1300);
     }
 
     // Set up DOM events
     document.addEventListener('DOMContentLoaded', function() {
+        // 1. Inisialisasi Peta
         inisialisasiPetaSebaran();
+        
+        // 2. Muat Titik Usaha
         muatSemuaTitik();
 
         // Mode Switcher Tabs
@@ -1021,10 +1093,12 @@
             btnTabChoropleth.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/60');
 
             viewTabSebaran.classList.remove('hidden');
+            viewTabSebaran.classList.add('flex');
             viewTabChoropleth.classList.add('hidden');
+            viewTabChoropleth.classList.remove('flex');
 
             if (mapSebaran) {
-                setTimeout(() => mapSebaran.invalidateSize(), 100);
+                setTimeout(() => mapSebaran.invalidateSize(), 150);
             }
         });
 
@@ -1037,11 +1111,13 @@
             btnTabSebaran.classList.add('text-slate-300', 'hover:text-white', 'hover:bg-slate-700/60');
 
             viewTabChoropleth.classList.remove('hidden');
+            viewTabChoropleth.classList.add('flex');
             viewTabSebaran.classList.add('hidden');
+            viewTabSebaran.classList.remove('flex');
 
             inisialisasiPetaChoropleth();
             if (mapChoropleth) {
-                setTimeout(() => mapChoropleth.invalidateSize(), 100);
+                setTimeout(() => mapChoropleth.invalidateSize(), 150);
             }
         });
 
