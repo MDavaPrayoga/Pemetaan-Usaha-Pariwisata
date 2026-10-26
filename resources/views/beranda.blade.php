@@ -241,7 +241,7 @@
     </div>
 </section>
 
-<!-- Section 4: Direktori & Eksplorasi Cepat Tempat Usaha (Pengganti Tiga Pilar) -->
+<!-- Section 4: Direktori & Eksplorasi Cepat Tempat Usaha (Tabel Ringkas dengan Paginasi) -->
 <section class="bg-white border-y border-slate-200 py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -252,10 +252,10 @@
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                     </svg>
-                    <span>Direktori Interaktif Publik</span>
+                    <span>Direktori Terpadu Publik</span>
                 </div>
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Eksplorasi Tempat Usaha Wisata</h2>
-                <p class="text-sm text-slate-600 mt-1">Telusuri sampel tempat usaha terverifikasi dan temukan langsung lokasinya di peta interaktif.</p>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Daftar Tempat Usaha Pariwisata</h2>
+                <p class="text-sm text-slate-600 mt-1">Katalog ringkas tempat usaha pariwisata terverifikasi faktual di 18 kecamatan Kota Palembang.</p>
             </div>
 
             <!-- Filter & Search Bar Sederhana -->
@@ -280,68 +280,82 @@
             </div>
         </div>
 
-        <!-- Indikator Status Hasil Pencarian -->
-        <div id="search-status-text" class="text-xs text-slate-500 mb-4 font-medium flex items-center space-x-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-            <span>Menampilkan {{ $sampelUsaha->count() }} sampel tempat usaha terverifikasi</span>
-        </div>
+        <!-- Tabel Ringkas Tempat Usaha Nyata -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 uppercase tracking-wider text-[11px] font-bold">
+                            <th scope="col" class="py-3.5 px-4 w-12 text-center">No</th>
+                            <th scope="col" class="py-3.5 px-4">Nama Tempat Usaha</th>
+                            <th scope="col" class="py-3.5 px-4">Bidang Usaha (KBLI)</th>
+                            <th scope="col" class="py-3.5 px-4">Kecamatan & Alamat</th>
+                            <th scope="col" class="py-3.5 px-4 text-center">Status</th>
+                            <th scope="col" class="py-3.5 px-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabel-usaha-body" class="divide-y divide-slate-100">
+                        @forelse($tabelUsaha as $index => $usaha)
+                            <tr class="hover:bg-slate-50/80 transition duration-150">
+                                <td class="py-3.5 px-4 text-center font-semibold text-slate-400">
+                                    {{ $tabelUsaha->firstItem() + $index }}
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-bold text-slate-900 leading-tight">{{ $usaha->nama_usaha }}</div>
+                                    <div class="text-[11px] text-slate-400 leading-tight mt-0.5 truncate max-w-xs">{{ $usaha->nama_perusahaan ?: $usaha->nama_proyek }}</div>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-[200px]" title="{{ $usaha->kbli?->judul_kbli }}">
+                                        {{ $usaha->kbli?->judul_kbli ?? 'Pariwisata' }}
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4">
+                                    <div class="font-semibold text-slate-800">{{ $usaha->kecamatan?->nama_kecamatan ?? '-' }}</div>
+                                    <div class="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">{{ $usaha->alamat }}</div>
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                        <span>Buka</span>
+                                    </span>
+                                </td>
+                                <td class="py-3.5 px-4 text-center">
+                                    <a href="{{ route('peta.sebaran') }}?q={{ urlencode($usaha->nama_usaha) }}" 
+                                       class="inline-flex items-center space-x-1.5 bg-cluster-1/10 hover:bg-cluster-1 text-cluster-1 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs transition duration-150">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        </svg>
+                                        <span>Peta</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-10 text-center text-slate-500">
+                                    Tidak ada data tempat usaha ditemukan.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-        <!-- Grid Kartu Tempat Usaha Nyata -->
-        <div id="grid-sampel-usaha" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            @foreach($sampelUsaha as $usaha)
-                <div class="kartu-usaha bg-slate-50 border border-slate-200/90 rounded-2xl p-5 hover:border-[#8B1E2D]/40 hover:shadow-md transition duration-200 flex flex-col justify-between"
-                     data-nama="{{ strtolower($usaha->nama_usaha) }}"
-                     data-kecamatan="{{ strtolower($usaha->kecamatan?->nama_kecamatan ?? '') }}">
-                    
-                    <div>
-                        <!-- Header Kartu: Kategori & Status Buka -->
-                        <div class="flex items-center justify-between mb-3 gap-2">
-                            <span class="text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 px-2.5 py-0.5 rounded-lg truncate max-w-42.5" title="{{ $usaha->kbli?->judul_kbli }}">
-                                {{ $usaha->kbli?->judul_kbli ?? 'Pariwisata' }}
-                            </span>
-                            
-                            <span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                <span>Buka</span>
-                            </span>
-                        </div>
-
-                        <!-- Nama Tempat Usaha -->
-                        <h3 class="text-base font-bold text-slate-900 leading-snug line-clamp-1 mb-1.5" title="{{ $usaha->nama_usaha }}">
-                            {{ $usaha->nama_usaha }}
-                        </h3>
-
-                        <!-- Alamat & Kecamatan -->
-                        <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                            {{ $usaha->alamat ?: 'Kecamatan ' . ($usaha->kecamatan?->nama_kecamatan ?? 'Palembang') }}
-                        </p>
-                    </div>
-
-                    <!-- Footer Kartu: Kecamatan & Tombol Aksi -->
-                    <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
-                        <div class="flex items-center space-x-1.5 text-slate-600 font-medium truncate max-w-37.5">
-                            <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                            </svg>
-                            <span class="truncate">{{ $usaha->kecamatan?->nama_kecamatan ?? '-' }}</span>
-                        </div>
-
-                        <a href="{{ route('peta.sebaran') }}?q={{ urlencode($usaha->nama_usaha) }}" 
-                           class="inline-flex items-center space-x-1 text-xs font-bold text-cluster-1 hover:text-ampera-900 group">
-                            <span>Lihat di Peta</span>
-                            <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                    </div>
-
+            <!-- Footer Paginasi Nomor Halaman -->
+            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="text-xs text-slate-500">
+                    Menampilkan <span id="pag-from" class="font-bold text-slate-800">{{ $tabelUsaha->firstItem() ?? 0 }}</span>–<span id="pag-to" class="font-bold text-slate-800">{{ $tabelUsaha->lastItem() ?? 0 }}</span> dari <span id="pag-total" class="font-bold text-slate-800">{{ number_format($tabelUsaha->total(), 0, ',', '.') }}</span> tempat usaha
                 </div>
-            @endforeach
+
+                <!-- Kontrol Navigasi Halaman -->
+                <div id="pagination-controls" class="flex items-center space-x-1 text-xs">
+                    <!-- Tombol Halaman digenerate secara dinamis oleh JavaScript -->
+                </div>
+            </div>
         </div>
 
         <!-- Tombol Aksi Bawah: Telusuri Seluruh Usaha -->
-        <div class="mt-10 text-center">
+        <div class="mt-8 text-center">
             <a href="{{ route('peta.sebaran') }}" 
                class="inline-flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold px-6 py-3 rounded-xl transition duration-150 text-xs sm:text-sm">
                 <span>Telusuri Seluruh {{ number_format($totalVerified, 0, ',', '.') }} Tempat Usaha di Peta Sebaran</span>
@@ -578,21 +592,32 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // 4. Interaksi Pencarian & Filter Dinamis Tempat Usaha via API
+    // 4. Interaksi Pencarian, Filter & Paginasi Tabel Ringkas Tempat Usaha
     const searchInput = document.getElementById('filter-search-input');
     const kecamatanSelect = document.getElementById('filter-kecamatan-select');
-    const gridContainer = document.getElementById('grid-sampel-usaha');
-    const statusText = document.getElementById('search-status-text');
+    const tableBody = document.getElementById('tabel-usaha-body');
+    const pagControls = document.getElementById('pagination-controls');
+    const pagFrom = document.getElementById('pag-from');
+    const pagTo = document.getElementById('pag-to');
+    const pagTotal = document.getElementById('pag-total');
     let debounceTimer = null;
+    let stateCurrentPage = 1;
 
-    async function fetchUsaha() {
+    async function loadTableData(page = 1) {
+        stateCurrentPage = page;
         const query = (searchInput?.value || '').trim();
         const selectedKec = (kecamatanSelect?.value || '').trim();
 
-        if (statusText) {
-            statusText.innerHTML = `
-                <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                <span>Memuat data tempat usaha...</span>
+        if (tableBody) {
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="py-8 text-center text-slate-400">
+                        <div class="inline-flex items-center space-x-2">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span class="text-xs">Memuat data tempat usaha...</span>
+                        </div>
+                    </td>
+                </tr>
             `;
         }
 
@@ -600,96 +625,163 @@ document.addEventListener('DOMContentLoaded', function () {
             const params = new URLSearchParams();
             if (query) params.append('q', query);
             if (selectedKec) params.append('id_kecamatan', selectedKec);
+            params.append('page', page);
 
             const res = await fetch(`{{ route('api.beranda.cari') }}?${params.toString()}`);
             const json = await res.json();
 
-            if (json.success && gridContainer) {
+            if (json.success && tableBody) {
                 if (json.data.length === 0) {
-                    gridContainer.innerHTML = `
-                        <div class="col-span-1 md:col-span-2 lg:col-span-3 text-center py-12 bg-slate-50 border border-dashed border-slate-300 rounded-2xl">
-                            <div class="w-12 h-12 rounded-full bg-slate-200 text-slate-500 mx-auto flex items-center justify-center mb-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                            <h4 class="text-sm font-bold text-slate-800">Tidak ada tempat usaha ditemukan</h4>
-                            <p class="text-xs text-slate-500 mt-1 max-w-sm mx-auto">Coba gunakan kata kunci pencarian lain atau pilih kecamatan yang berbeda.</p>
-                        </div>
-                    `;
-                    if (statusText) {
-                        statusText.innerHTML = `
-                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                            <span>0 tempat usaha ditemukan</span>
-                        `;
-                    }
-                } else {
-                    gridContainer.innerHTML = json.data.map(u => `
-                        <div class="kartu-usaha bg-slate-50 border border-slate-200/90 rounded-2xl p-5 hover:border-[#8B1E2D]/40 hover:shadow-md transition duration-200 flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-3 gap-2">
-                                    <span class="text-[11px] font-semibold bg-white border border-slate-200 text-slate-700 px-2.5 py-0.5 rounded-lg truncate max-w-42.5" title="${u.kbli}">
-                                        ${u.kbli}
-                                    </span>
-                                    <span class="inline-flex items-center space-x-1 bg-emerald-100 text-emerald-800 text-[11px] font-bold px-2 py-0.5 rounded-full">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                        <span>Buka</span>
-                                    </span>
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="py-12 text-center text-slate-500">
+                                <div class="w-10 h-10 rounded-full bg-slate-100 text-slate-400 mx-auto flex items-center justify-center mb-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
                                 </div>
-                                <h3 class="text-base font-bold text-slate-900 leading-snug line-clamp-1 mb-1.5" title="${u.nama_usaha}">
-                                    ${u.nama_usaha}
-                                </h3>
-                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                                    ${u.alamat}
-                                </p>
-                            </div>
-                            <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
-                                <div class="flex items-center space-x-1.5 text-slate-600 font-medium truncate max-w-37.5">
-                                    <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="text-xs font-bold text-slate-800">Tidak ada tempat usaha ditemukan</div>
+                                <div class="text-[11px] text-slate-400 mt-0.5">Coba gunakan kata kunci pencarian lain atau pilih kecamatan yang berbeda.</div>
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tableBody.innerHTML = json.data.map(u => `
+                        <tr class="hover:bg-slate-50/80 transition duration-150">
+                            <td class="py-3.5 px-4 text-center font-semibold text-slate-400">${u.no}</td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-bold text-slate-900 leading-tight">${u.nama_usaha}</div>
+                                <div class="text-[11px] text-slate-400 leading-tight mt-0.5 truncate max-w-xs">${u.nama_perusahaan}</div>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <span class="inline-block px-2.5 py-1 bg-slate-100 text-slate-700 font-medium rounded-lg text-[11px] truncate max-w-[200px]" title="${u.kbli}">
+                                    ${u.kbli}
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4">
+                                <div class="font-semibold text-slate-800">${u.kecamatan}</div>
+                                <div class="text-[11px] text-slate-400 truncate max-w-sm mt-0.5">${u.alamat}</div>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                    <span>Buka</span>
+                                </span>
+                            </td>
+                            <td class="py-3.5 px-4 text-center">
+                                <a href="{{ route('peta.sebaran') }}?q=${encodeURIComponent(u.nama_usaha)}" 
+                                   class="inline-flex items-center space-x-1.5 bg-cluster-1/10 hover:bg-cluster-1 text-cluster-1 hover:text-white px-3 py-1.5 rounded-lg font-bold text-xs transition duration-150">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                                     </svg>
-                                    <span class="truncate">${u.kecamatan}</span>
-                                </div>
-                                <a href="{{ route('peta.sebaran') }}?q=${encodeURIComponent(u.nama_usaha)}" 
-                                   class="inline-flex items-center space-x-1 text-xs font-bold text-cluster-1 hover:text-ampera-900 group">
-                                    <span>Lihat di Peta</span>
-                                    <svg class="w-3.5 h-3.5 group-hover:translate-x-0.5 transition duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                    </svg>
+                                    <span>Peta</span>
                                 </a>
-                            </div>
-                        </div>
+                            </td>
+                        </tr>
                     `).join('');
-                    if (statusText) {
-                        statusText.innerHTML = `
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span>Menampilkan ${json.data.length} tempat usaha terverifikasi</span>
-                        `;
-                    }
                 }
+
+                // Update info paginasi
+                if (pagFrom) pagFrom.textContent = json.from;
+                if (pagTo) pagTo.textContent = json.to;
+                if (pagTotal) pagTotal.textContent = Number(json.total).toLocaleString('id-ID');
+
+                // Render tombol paginasi
+                renderPagination(json.current_page, json.last_page);
             }
         } catch (err) {
-            console.error('Gagal mengambil data usaha:', err);
-            if (statusText) {
-                statusText.innerHTML = `
-                    <span class="w-2 h-2 rounded-full bg-rose-500"></span>
-                    <span>Gagal memuat data tempat usaha</span>
+            console.error('Gagal mengambil data tabel:', err);
+        }
+    }
+
+    function renderPagination(current, last) {
+        if (!pagControls) return;
+        if (last <= 1) {
+            pagControls.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+
+        // Tombol Sebelumnya
+        const prevDisabled = current <= 1;
+        html += `
+            <button type="button" 
+                    data-page="${current - 1}" 
+                    class="btn-page px-2.5 py-1.5 rounded-lg border border-slate-200 ${prevDisabled ? 'opacity-40 cursor-not-allowed bg-slate-100 text-slate-400' : 'bg-white text-slate-700 hover:bg-slate-100 cursor-pointer'} transition duration-150" 
+                    ${prevDisabled ? 'disabled' : ''}>
+                &larr;
+            </button>
+        `;
+
+        // Kalkulasi daftar nomor halaman
+        const pages = [];
+        if (last <= 7) {
+            for (let i = 1; i <= last; i++) pages.push(i);
+        } else {
+            pages.push(1);
+            if (current > 3) pages.push('...');
+            const start = Math.max(2, current - 1);
+            const end = Math.min(last - 1, current + 1);
+            for (let i = start; i <= end; i++) pages.push(i);
+            if (current < last - 2) pages.push('...');
+            pages.push(last);
+        }
+
+        // Render nomor halaman
+        pages.forEach(p => {
+            if (p === '...') {
+                html += `<span class="px-2 py-1 text-slate-400 font-bold">...</span>`;
+            } else {
+                const isActive = p === current;
+                html += `
+                    <button type="button" 
+                            data-page="${p}" 
+                            class="btn-page px-3 py-1.5 rounded-lg font-bold transition duration-150 cursor-pointer ${isActive ? 'bg-cluster-1 text-white shadow-sm' : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'}">
+                        ${p}
+                    </button>
                 `;
             }
-        }
+        });
+
+        // Tombol Selanjutnya
+        const nextDisabled = current >= last;
+        html += `
+            <button type="button" 
+                    data-page="${current + 1}" 
+                    class="btn-page px-2.5 py-1.5 rounded-lg border border-slate-200 ${nextDisabled ? 'opacity-40 cursor-not-allowed bg-slate-100 text-slate-400' : 'bg-white text-slate-700 hover:bg-slate-100 cursor-pointer'} transition duration-150" 
+                    ${nextDisabled ? 'disabled' : ''}>
+                &rarr;
+            </button>
+        `;
+
+        pagControls.innerHTML = html;
+
+        // Pasang event listener ke seluruh tombol paginasi
+        pagControls.querySelectorAll('.btn-page:not([disabled])').forEach(btn => {
+            btn.addEventListener('click', function () {
+                const targetPage = parseInt(this.getAttribute('data-page'), 10);
+                if (targetPage && targetPage !== current) {
+                    loadTableData(targetPage);
+                }
+            });
+        });
     }
 
     if (searchInput) {
         searchInput.addEventListener('input', function () {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(fetchUsaha, 250);
+            debounceTimer = setTimeout(() => loadTableData(1), 250);
         });
     }
 
     if (kecamatanSelect) {
-        kecamatanSelect.addEventListener('change', fetchUsaha);
+        kecamatanSelect.addEventListener('change', () => loadTableData(1));
     }
+
+    // Inisialisasi tombol paginasi untuk data pertama dari server
+    renderPagination({{ $tabelUsaha->currentPage() }}, {{ $tabelUsaha->lastPage() }});
 });
 </script>
 @endsection

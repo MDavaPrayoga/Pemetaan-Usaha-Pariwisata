@@ -86,26 +86,11 @@ class BerandaController extends Controller
         $chartTahunLabels = $trenTahunan->pluck('tahun')->toArray();
         $chartTahunData = $trenTahunan->pluck('total')->toArray();
 
-        // 5. Sampel Ragam Tempat Usaha untuk Mini Katalog Direktori
-        $sampelKuliner = UsahaPariwisata::verified()->buka()
-            ->whereHas('kbli', fn($q) => $q->where('judul_kbli', 'like', '%Restoran%')->orWhere('judul_kbli', 'like', '%Kafe%'))
+        // 5. Data Awal Tabel Ringkas Tempat Usaha (Paginasi 6 Baris)
+        $tabelUsaha = UsahaPariwisata::verified()->buka()
             ->with(['kbli', 'kecamatan'])
-            ->take(4)
-            ->get();
-
-        $sampelHotel = UsahaPariwisata::verified()->buka()
-            ->whereHas('kbli', fn($q) => $q->where('judul_kbli', 'like', '%Hotel%'))
-            ->with(['kbli', 'kecamatan'])
-            ->take(4)
-            ->get();
-
-        $sampelPerjalanan = UsahaPariwisata::verified()->buka()
-            ->whereHas('kbli', fn($q) => $q->where('judul_kbli', 'like', '%Perjalanan%')->orWhere('judul_kbli', 'like', '%Wisata%'))
-            ->with(['kbli', 'kecamatan'])
-            ->take(4)
-            ->get();
-
-        $sampelUsaha = $sampelKuliner->concat($sampelHotel)->concat($sampelPerjalanan);
+            ->orderBy('nama_proyek', 'asc')
+            ->paginate(6);
 
         $daftarKecamatan = Kecamatan::orderBy('nama_kecamatan', 'asc')->get();
 
@@ -122,13 +107,13 @@ class BerandaController extends Controller
             'chartSektor',
             'chartTahunLabels',
             'chartTahunData',
-            'sampelUsaha',
+            'tabelUsaha',
             'daftarKecamatan'
         ));
     }
 
     /**
-     * Endpoint API pencarian cepat tempat usaha di Beranda secara dinamis
+     * Endpoint API pencarian cepat tempat usaha di Beranda secara dinamis dengan paginasi
      */
     public function cariUsaha(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -149,21 +134,43 @@ class BerandaController extends Controller
             $query->where('id_kecamatan', $request->input('id_kecamatan'));
         }
 
-        $hasil = $query->orderBy('nama_proyek', 'asc')->take(12)->get()->map(function ($u) {
-            return [
-                'id_usaha' => $u->id_usaha,
-                'nama_usaha' => $u->nama_usaha,
-                'kbli' => $u->kbli?->judul_kbli ?? 'Pariwisata',
-                'alamat' => $u->alamat ?: ('Kecamatan ' . ($u->kecamatan?->nama_kecamatan ?? 'Palembang')),
-                'kecamatan' => $u->kecamatan?->nama_kecamatan ?? '-',
-                'status_operasional' => $u->status_operasional,
-            ];
-        });
+        $perPage = 6;
+        $total = $query->count();
+        $currentPage = max(1, (int) $request->input('page', 1));
+        $lastPage = max(1, (int) ceil($total / $perPage));
+        if ($currentPage > $lastPage) {
+            $currentPage = $lastPage;
+        }
+
+        $hasil = $query->orderBy('nama_proyek', 'asc')
+            ->skip(($currentPage - 1) * $perPage)
+            ->take($perPage)
+            ->get()
+            ->map(function ($u, $idx) use ($currentPage, $perPage) {
+                return [
+                    'no' => (($currentPage - 1) * $perPage) + $idx + 1,
+                    'id_usaha' => $u->id_usaha,
+                    'nama_usaha' => $u->nama_usaha,
+                    'nama_perusahaan' => $u->nama_perusahaan ?: $u->nama_proyek,
+                    'kbli' => $u->kbli?->judul_kbli ?? 'Pariwisata',
+                    'alamat' => $u->alamat ?: ('Kecamatan ' . ($u->kecamatan?->nama_kecamatan ?? 'Palembang')),
+                    'kecamatan' => $u->kecamatan?->nama_kecamatan ?? '-',
+                    'status_operasional' => $u->status_operasional,
+                ];
+            });
+
+        $from = $total > 0 ? (($currentPage - 1) * $perPage) + 1 : 0;
+        $to = min($currentPage * $perPage, $total);
 
         return response()->json([
             'success' => true,
-            'total' => $hasil->count(),
             'data' => $hasil,
+            'total' => $total,
+            'per_page' => $perPage,
+            'current_page' => $currentPage,
+            'last_page' => $lastPage,
+            'from' => $from,
+            'to' => $to,
         ]);
     }
 }
