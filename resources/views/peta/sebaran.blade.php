@@ -431,8 +431,8 @@
                 </div>
             </div>
 
-            <!-- Choropleth Legend (Bottom Right) -->
-            <div class="absolute bottom-6 right-6 bg-white/95 backdrop-blur-sm border border-slate-200/90 shadow-xl rounded-xl p-3 z-20 text-xs text-slate-700 max-w-xs pointer-events-auto">
+            <!-- Choropleth Legend (Bottom Left - Diposisikan di kiri bawah agar tidak bertabrakan dengan Info Panel) -->
+            <div class="absolute bottom-6 left-6 bg-white/95 backdrop-blur-sm border border-slate-200/90 shadow-xl rounded-xl p-3 z-20 text-xs text-slate-700 max-w-xs pointer-events-auto">
                 <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
                     <span class="font-bold text-[11px] uppercase tracking-wider text-slate-800">Skala Kepadatan Usaha</span>
                 </div>
@@ -732,9 +732,19 @@
                         <span class="text-[10px] font-bold uppercase tracking-wider text-ampera-900 bg-ampera-900/10 px-2 py-0.5 rounded">Wilayah Kecamatan</span>
                         <h3 class="font-bold text-base text-slate-900 mt-1">${stats.nama_kecamatan}</h3>
                     </div>
-                    <span class="font-mono text-sm font-bold text-slate-800 bg-slate-100 px-2.5 py-1 rounded-lg">
-                        ${stats.total} <span class="text-[10px] font-normal text-slate-500">usaha</span>
-                    </span>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="font-mono text-sm font-bold text-ampera-900 bg-ampera-900/10 border border-ampera-900/20 px-2.5 py-1 rounded-lg">
+                            ${stats.total} <span class="text-[10px] font-normal text-slate-600">usaha</span>
+                        </span>
+                        <button type="button" 
+                                onclick="tutupChoroplethInfo()" 
+                                title="Tutup info wilayah" 
+                                class="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-1.5 text-center">
@@ -771,6 +781,21 @@
             </div>
         `;
     }
+
+    // Dismiss info panel and restore placeholder instruction
+    window.tutupChoroplethInfo = function() {
+        const panel = document.getElementById('choropleth-info-panel');
+        if (panel) {
+            panel.innerHTML = `
+                <div class="text-slate-400 text-xs italic flex items-center space-x-1.5">
+                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Arahkan kursor atau klik wilayah kecamatan untuk melihat profil kepadatan.</span>
+                </div>
+            `;
+        }
+    };
 
     // Switch from Tab 2 to Tab 1 with a specific kecamatan filtered
     window.alihkanKeTabSebaranFilter = function(idKecamatan) {
