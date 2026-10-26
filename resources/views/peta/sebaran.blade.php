@@ -402,7 +402,7 @@
                             @php
                                 $pctBar = round(($item['total'] / 263) * 100, 1);
                             @endphp
-                            <div class="h-1.5 rounded-full bg-ampera-900" style="{{ 'width: ' . $pctBar . '%;' }}"></div>
+                            <div class="bar-kepadatan h-1.5 rounded-full bg-ampera-900" data-pct="{{ $pctBar }}"></div>
                         </div>
 
                         <div class="flex items-center justify-between text-[10px] text-slate-500">
@@ -1104,6 +1104,11 @@
         
         // 2. Muat Titik Usaha
         muatSemuaTitik();
+
+        // 3. Setel lebar bar kepadatan kecamatan secara dinamis
+        document.querySelectorAll('.bar-kepadatan').forEach(el => {
+            el.style.width = (el.dataset.pct || 0) + '%';
+        });
 
         // Mode Switcher Tabs
         const btnTabSebaran = document.getElementById('btn-tab-sebaran');
