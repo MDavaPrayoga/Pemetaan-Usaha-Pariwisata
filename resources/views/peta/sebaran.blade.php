@@ -145,14 +145,14 @@
 </script>
 
 <!-- Secondary Sub-Navbar Toolbar: Clean Light Workspace Theme -->
-<div class="h-11 bg-white border-b border-slate-200/90 shadow-2xs z-30 shrink-0 px-3 sm:px-4 flex items-center justify-between gap-2">
+<div class="h-11 bg-white border-b border-slate-200/90 shadow-sm z-30 shrink-0 px-3 sm:px-4 flex items-center justify-between gap-2">
     
     <!-- Left: Tombol Buka/Tutup Bilah Samping (Desktop & Mobile) -->
     <div class="flex items-center space-x-2">
         <button id="btn-toggle-sidebar" 
                 type="button" 
                 title="Buka / Sembunyikan Bilah Samping" 
-                class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200/90 hover:border-slate-300 transition flex items-center space-x-1.5 shadow-2xs">
+                class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200/90 hover:border-slate-300 transition flex items-center space-x-1.5 shadow-sm">
             <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
             </svg>
@@ -165,7 +165,7 @@
         <!-- Tab 1: Sebaran Titik Usaha -->
         <button id="btn-tab-sebaran" 
                 type="button" 
-                class="tab-btn px-3 py-1 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow-xs">
+                class="tab-btn px-3 py-1 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow-sm">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -192,7 +192,7 @@
         <button id="btn-recenter-map" 
                 type="button" 
                 title="Pusatkan Peta ke Kota Palembang" 
-                class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition flex items-center space-x-1.5 shadow-2xs">
+                class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition flex items-center space-x-1.5 shadow-sm">
             <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
@@ -1398,10 +1398,10 @@
 
         btnTabSebaran.addEventListener('click', function() {
             activeTab = 'sebaran';
-            btnTabSebaran.classList.add('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabSebaran.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
             btnTabSebaran.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
-            btnTabChoropleth.classList.remove('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabChoropleth.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
             btnTabChoropleth.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
             viewTabSebaran.classList.remove('hidden');
@@ -1418,10 +1418,10 @@
 
         btnTabChoropleth.addEventListener('click', function() {
             activeTab = 'choropleth';
-            btnTabChoropleth.classList.add('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabChoropleth.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
             btnTabChoropleth.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
-            btnTabSebaran.classList.remove('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabSebaran.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
             btnTabSebaran.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
             viewTabChoropleth.classList.remove('hidden');
