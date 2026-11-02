@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -24,7 +25,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // Jika pengguna sudah dalam kondisi login dan mencoba mengakses rute login,
         // alihkan sesuai peran masing-masing
         $middleware->redirectUsersTo(function () {
-            $user = auth()->user();
+            /** @var \App\Models\User|null $user */
+            $user = Auth::user();
             if ($user && $user->role === 'pimpinan') {
                 return route('admin.dashboard');
             }
