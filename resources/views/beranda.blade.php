@@ -8,8 +8,8 @@
          class="relative bg-cover bg-center text-white py-20 lg:py-28 overflow-hidden" 
          data-bg="{{ asset('images/mencoba.png') }}">
     
-    <!-- Lapisan Gelap (Overlay) Gradasi agar foto Ampera tetap artistik dan teks putih terbaca sangat kontras -->
-    <div class="absolute inset-0 bg-linear-to-r from-slate-950/95 via-slate-950/85 to-[#741D29]/45 backdrop-blur-[0.5px]"></div>
+    <!-- Lapisan Peredup Seragam: Foto terlihat jelas dan utuh di semua sisi tanpa ada bagian yang dihitamkan sebelah -->
+    <div class="absolute inset-0 bg-slate-950/55 backdrop-blur-[0.5px]"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="max-w-4xl mx-auto text-center">

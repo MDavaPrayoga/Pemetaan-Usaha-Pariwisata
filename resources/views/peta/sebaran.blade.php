@@ -93,19 +93,32 @@
         background: #94a3b8;
     }
 
-    /* Label Permanen Nama Kecamatan pada Peta Kepadatan (Choropleth) */
-    .leaflet-tooltip.label-kecamatan-choropleth {
-        background: rgba(255, 255, 255, 0.94);
-        backdrop-filter: blur(4px);
-        border: 1px solid rgba(139, 30, 45, 0.35);
-        border-radius: 6px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-        padding: 2px 6px;
-        pointer-events: none;
-        white-space: nowrap;
+    /* Cartographic Clean Label Nama Kecamatan pada Peta Kepadatan */
+    .carto-kecamatan-marker {
+        background: transparent !important;
+        border: none !important;
     }
-    .leaflet-tooltip.label-kecamatan-choropleth::before {
-        display: none !important;
+    .carto-kecamatan-label {
+        display: inline-block;
+        white-space: nowrap;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        user-select: none;
+    }
+    .carto-kecamatan-label .kecamatan-name {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: #0f172a;
+        text-shadow: 
+            -1.5px -1.5px 0 #ffffff,
+             1.5px -1.5px 0 #ffffff,
+            -1.5px  1.5px 0 #ffffff,
+             1.5px  1.5px 0 #ffffff,
+             0 0 4px rgba(255, 255, 255, 0.95),
+             0 1px 3px rgba(0, 0, 0, 0.25);
     }
 </style>
 @endsection
@@ -131,17 +144,31 @@
     {!! json_encode($statistikKecamatan) !!}
 </script>
 
-<!-- Main Interactive Split View Container -->
-<div class="flex-1 min-h-0 flex relative overflow-hidden w-full">
+<!-- Secondary Sub-Navbar Toolbar: Clean Light Workspace Theme -->
+<div class="h-11 bg-white border-b border-slate-200/90 shadow-2xs z-30 shrink-0 px-3 sm:px-4 flex items-center justify-between gap-2">
+    
+    <!-- Left: Judul Konteks Peta & Count -->
+    <div class="flex items-center space-x-2.5 min-w-0">
+        <div class="w-6 h-6 rounded-md bg-ampera-50 border border-ampera-900/20 flex items-center justify-center shrink-0 text-ampera-900">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+        </div>
+        <div class="flex items-center space-x-2 truncate">
+            <span class="text-xs sm:text-sm font-bold text-slate-800 tracking-tight truncate">Peta Spasial Usaha Pariwisata</span>
+            <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200/80 hidden sm:inline-block">1.421 Titik</span>
+        </div>
+    </div>
 
-    <!-- Unified Floating Mode Switcher & Controls (Clean Centered Pill over Map) -->
-    <div class="absolute top-3.5 left-1/2 md:left-[calc(50%+192px)] lg:left-[calc(50%+208px)] -translate-x-1/2 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg rounded-xl p-1 z-30 flex items-center space-x-1 pointer-events-auto">
+    <!-- Center: Segmented Control Tabs (Mode Switcher) -->
+    <div class="flex items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200/80 shadow-inner">
         <!-- Tab 1: Sebaran Titik Usaha -->
         <button id="btn-tab-sebaran" 
                 type="button" 
-                class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow-sm">
+                class="tab-btn px-3 py-1 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow-xs">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
             <span class="hidden sm:inline">Sebaran Titik Usaha</span>
             <span class="sm:hidden">Sebaran</span>
@@ -150,38 +177,44 @@
         <!-- Tab 2: Kepadatan per Wilayah (Choropleth) -->
         <button id="btn-tab-choropleth" 
                 type="button" 
-                class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+                class="tab-btn px-3 py-1 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-600 hover:text-slate-900 hover:bg-white/60">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
             </svg>
             <span class="hidden sm:inline">Kepadatan per Wilayah</span>
             <span class="sm:hidden">Kepadatan</span>
         </button>
+    </div>
 
-        <div class="h-4 w-px bg-slate-200 mx-1"></div>
-
-        <!-- Reset Map View Button -->
+    <!-- Right: Quick Actions -->
+    <div class="flex items-center space-x-1.5 shrink-0">
+        <!-- Pusatkan Peta -->
         <button id="btn-recenter-map" 
                 type="button" 
                 title="Pusatkan Peta ke Kota Palembang" 
-                class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 hover:text-slate-900 transition flex items-center space-x-1.5 shadow-2xs">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
-            <span class="hidden sm:inline">Pusatkan</span>
+            <span class="hidden md:inline">Pusatkan Peta</span>
         </button>
 
-        <!-- Mobile Toggle Sidebar Button -->
+        <!-- Mobile Toggle Sidebar -->
         <button id="btn-toggle-sidebar" 
                 type="button" 
                 title="Buka/Tutup Bilah Samping" 
-                class="md:hidden px-2 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="md:hidden px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
             </svg>
             <span>Filter</span>
         </button>
     </div>
+
+</div>
+
+<!-- Main Interactive Split View Container -->
+<div class="flex-1 min-h-0 flex relative overflow-hidden w-full">
 
     <!-- ============================================================== -->
     <!-- PANEL TAB 1: SEBARAN TITIK USAHA (Sidebar & Cluster Map)       -->
@@ -529,6 +562,7 @@
     let mapChoropleth = null;
     let geojsonLayer = null;
     let rawGeojsonData = null;
+    let cartoLabelsLayer = null;
 
     // SVG Marker Icons Generator (Compact & Sharp)
     function createCustomMarkerIcon(status) {
@@ -736,10 +770,36 @@
             });
     }
 
+    function hitungCentroidFeature(feature) {
+        let coords = [];
+        const geom = feature.geometry;
+        if (geom.type === 'Polygon') {
+            coords = geom.coordinates[0];
+        } else if (geom.type === 'MultiPolygon') {
+            let maxCount = 0;
+            for (const poly of geom.coordinates) {
+                if (poly[0].length > maxCount) {
+                    maxCount = poly[0].length;
+                    coords = poly[0];
+                }
+            }
+        }
+        let sumLat = 0, sumLng = 0, n = coords.length;
+        for (const pt of coords) {
+            sumLng += pt[0];
+            sumLat += pt[1];
+        }
+        return n > 0 ? [sumLat / n, sumLng / n] : null;
+    }
+
     function renderChoroplethLayers(geojson) {
         if (geojsonLayer && mapChoropleth) {
             mapChoropleth.removeLayer(geojsonLayer);
         }
+        if (cartoLabelsLayer && mapChoropleth) {
+            mapChoropleth.removeLayer(cartoLabelsLayer);
+        }
+        cartoLabelsLayer = L.layerGroup();
 
         geojsonLayer = L.geoJSON(geojson, {
             style: function(feature) {
@@ -769,17 +829,25 @@
                     sektor: {}
                 };
 
-                // Label permanen nama kecamatan & jumlah usaha langsung di poligon
-                layer.bindTooltip(`
-                    <div class="text-center font-bold text-[10px] text-slate-900 leading-tight">
-                        <span>${stats.nama_kecamatan}</span>
-                        <div class="text-[9px] font-extrabold text-ampera-900">${stats.total} usaha</div>
-                    </div>
-                `, {
-                    permanent: true,
-                    direction: 'center',
-                    className: 'label-kecamatan-choropleth'
-                });
+                // Label kartografi murni langsung di tengah wilayah tanpa kartu kotak tebal
+                const centroid = hitungCentroidFeature(feature);
+                if (centroid) {
+                    const labelMarker = L.marker(centroid, {
+                        icon: L.divIcon({
+                            className: 'carto-kecamatan-marker',
+                            html: `
+                                <div class="carto-kecamatan-label select-none pointer-events-none text-center">
+                                    <span class="kecamatan-name">${stats.nama_kecamatan}</span>
+                                </div>
+                            `,
+                            iconSize: [0, 0],
+                            iconAnchor: [0, 0]
+                        }),
+                        interactive: false,
+                        zIndexOffset: 1000
+                    });
+                    cartoLabelsLayer.addLayer(labelMarker);
+                }
 
                 layer.on({
                     mouseover: function(e) {
@@ -802,6 +870,8 @@
                 });
             }
         }).addTo(mapChoropleth);
+
+        cartoLabelsLayer.addTo(mapChoropleth);
 
         // Otomatis pusatkan seluruh 18 kecamatan Kota Palembang
         try {
@@ -1297,11 +1367,11 @@
 
         btnTabSebaran.addEventListener('click', function() {
             activeTab = 'sebaran';
-            btnTabSebaran.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
-            btnTabSebaran.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            btnTabSebaran.classList.add('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabSebaran.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
-            btnTabChoropleth.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
-            btnTabChoropleth.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            btnTabChoropleth.classList.remove('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabChoropleth.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
             viewTabSebaran.classList.remove('hidden');
             viewTabSebaran.classList.add('flex');
@@ -1315,11 +1385,11 @@
 
         btnTabChoropleth.addEventListener('click', function() {
             activeTab = 'choropleth';
-            btnTabChoropleth.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
-            btnTabChoropleth.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            btnTabChoropleth.classList.add('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabChoropleth.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
-            btnTabSebaran.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
-            btnTabSebaran.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+            btnTabSebaran.classList.remove('bg-ampera-900', 'text-white', 'shadow-xs');
+            btnTabSebaran.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-white/60');
 
             viewTabChoropleth.classList.remove('hidden');
             viewTabChoropleth.classList.add('flex');
