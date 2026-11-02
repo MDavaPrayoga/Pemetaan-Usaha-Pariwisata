@@ -147,17 +147,17 @@
 <!-- Secondary Sub-Navbar Toolbar: Clean Light Workspace Theme -->
 <div class="h-11 bg-white border-b border-slate-200/90 shadow-2xs z-30 shrink-0 px-3 sm:px-4 flex items-center justify-between gap-2">
     
-    <!-- Left: Judul Konteks Peta & Count -->
-    <div class="flex items-center space-x-2.5 min-w-0">
-        <div class="w-6 h-6 rounded-md bg-ampera-50 border border-ampera-900/20 flex items-center justify-center shrink-0 text-ampera-900">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+    <!-- Left: Tombol Buka/Tutup Bilah Samping (Desktop & Mobile) -->
+    <div class="flex items-center space-x-2">
+        <button id="btn-toggle-sidebar" 
+                type="button" 
+                title="Buka / Sembunyikan Bilah Samping" 
+                class="px-2.5 py-1 rounded-lg text-xs font-semibold text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200/90 hover:border-slate-300 transition flex items-center space-x-1.5 shadow-2xs">
+            <svg class="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
             </svg>
-        </div>
-        <div class="flex items-center space-x-2 truncate">
-            <span class="text-xs sm:text-sm font-bold text-slate-800 tracking-tight truncate">Peta Spasial Usaha Pariwisata</span>
-            <span class="text-[10px] font-mono font-bold bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200/80 hidden sm:inline-block">1.421 Titik</span>
-        </div>
+            <span id="label-toggle-sidebar" class="hidden sm:inline">Tutup Panel</span>
+        </button>
     </div>
 
     <!-- Center: Segmented Control Tabs (Mode Switcher) -->
@@ -198,17 +198,6 @@
             </svg>
             <span class="hidden md:inline">Pusatkan Peta</span>
         </button>
-
-        <!-- Mobile Toggle Sidebar -->
-        <button id="btn-toggle-sidebar" 
-                type="button" 
-                title="Buka/Tutup Bilah Samping" 
-                class="md:hidden px-2.5 py-1 rounded-lg text-xs font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition flex items-center space-x-1">
-            <svg class="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-            </svg>
-            <span>Filter</span>
-        </button>
     </div>
 
 </div>
@@ -238,9 +227,19 @@
                             <span class="text-amber-700 font-semibold">{{ number_format($totalUsahaTutupSementara, 0, ',', '.') }} Smt.</span>
                         </p>
                     </div>
-                    <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-mono font-bold px-2 py-0.5 rounded-full border border-ampera-900/20">
-                        1.421 Titik
-                    </span>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-mono font-bold px-2 py-0.5 rounded-full border border-ampera-900/20">
+                            1.421 Titik
+                        </span>
+                        <button type="button" 
+                                onclick="document.getElementById('btn-toggle-sidebar').click()" 
+                                title="Sembunyikan panel samping" 
+                                class="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-200/80 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Live Search Box -->
@@ -425,7 +424,17 @@
                         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Peringkat Kepadatan Usaha</h2>
                         <p class="text-[11px] text-slate-500">Distribusi 1.421 usaha di 18 kecamatan</p>
                     </div>
-                    <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-bold px-2 py-0.5 rounded-full border border-ampera-900/20">18 Wilayah</span>
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-bold px-2 py-0.5 rounded-full border border-ampera-900/20">18 Wilayah</span>
+                        <button type="button" 
+                                onclick="document.getElementById('btn-toggle-sidebar').click()" 
+                                title="Sembunyikan panel samping" 
+                                class="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -792,6 +801,28 @@
         return n > 0 ? [sumLat / n, sumLng / n] : null;
     }
 
+    // Titik pusat (visual centroid) terkalibrasi presisi untuk 18 kecamatan Kota Palembang
+    const KECAMATAN_CALIBRATED_CENTROIDS = {
+        1: [-2.942, 104.704], // Alang-Alang Lebar
+        2: [-2.987, 104.753], // Bukit Kecil
+        3: [-3.001, 104.686], // Gandus
+        4: [-2.978, 104.720], // Ilir Barat I
+        5: [-2.998, 104.745], // Ilir Barat II
+        6: [-2.968, 104.748], // Ilir Timur I
+        7: [-2.968, 104.795], // Ilir Timur II
+        8: [-2.955, 104.768], // Ilir Timur III
+        9: [-3.015, 104.775], // Jakabaring
+        10: [-2.961, 104.816], // Kalidoni
+        11: [-2.952, 104.748], // Kemuning
+        12: [-3.045, 104.720], // Kertapati
+        13: [-3.018, 104.810], // Plaju
+        14: [-2.922, 104.782], // Sako
+        15: [-3.006, 104.763], // Seberang Ulu I
+        16: [-3.001, 104.786], // Seberang Ulu II
+        17: [-2.942, 104.819], // Sematang Borang
+        18: [-2.915, 104.735]  // Sukarami
+    };
+
     function renderChoroplethLayers(geojson) {
         if (geojsonLayer && mapChoropleth) {
             mapChoropleth.removeLayer(geojsonLayer);
@@ -829,8 +860,8 @@
                     sektor: {}
                 };
 
-                // Label kartografi murni langsung di tengah wilayah tanpa kartu kotak tebal
-                const centroid = hitungCentroidFeature(feature);
+                // Label kartografi murni tepat di tengah wilayah tanpa kartu kotak tebal
+                const centroid = KECAMATAN_CALIBRATED_CENTROIDS[idKec] || hitungCentroidFeature(feature);
                 if (centroid) {
                     const labelMarker = L.marker(centroid, {
                         icon: L.divIcon({
@@ -864,7 +895,7 @@
                         if (geojsonLayer) geojsonLayer.resetStyle(e.target);
                     },
                     click: function(e) {
-                        mapChoropleth.fitBounds(e.target.getBounds());
+                        // Tidak memanggil fitBounds agar peta tidak melompat/bergerak saat diklik
                         updateChoroplethInfo(stats, true);
                     }
                 });
@@ -1378,6 +1409,8 @@
             viewTabChoropleth.classList.add('hidden');
             viewTabChoropleth.classList.remove('flex');
 
+            if (typeof perbaruiStatusSidebar === 'function') perbaruiStatusSidebar();
+
             if (mapSebaran) {
                 setTimeout(() => mapSebaran.invalidateSize(), 150);
             }
@@ -1395,6 +1428,8 @@
             viewTabChoropleth.classList.add('flex');
             viewTabSebaran.classList.add('hidden');
             viewTabSebaran.classList.remove('flex');
+
+            if (typeof perbaruiStatusSidebar === 'function') perbaruiStatusSidebar();
 
             inisialisasiPetaChoropleth();
             if (mapChoropleth) {
@@ -1480,10 +1515,25 @@
             }
         });
 
-        // Mobile Toggle Sidebar Button
+        // Toggle Sidebar Action (Desktop & Mobile)
         const toggleSidebarBtn = document.getElementById('btn-toggle-sidebar');
         const sidebarSebaran = document.getElementById('sidebar-sebaran');
         const sidebarChoropleth = document.getElementById('sidebar-choropleth');
+        const labelToggleSidebar = document.getElementById('label-toggle-sidebar');
+
+        function perbaruiStatusSidebar() {
+            const currentSidebar = activeTab === 'sebaran' ? sidebarSebaran : sidebarChoropleth;
+            if (!currentSidebar) return;
+            const isHidden = currentSidebar.classList.contains('hidden');
+            if (labelToggleSidebar) {
+                labelToggleSidebar.textContent = isHidden ? 'Buka Panel' : 'Tutup Panel';
+            }
+            setTimeout(() => {
+                if (activeTab === 'sebaran' && mapSebaran) mapSebaran.invalidateSize();
+                if (activeTab === 'choropleth' && mapChoropleth) mapChoropleth.invalidateSize();
+            }, 100);
+        }
+
         if (toggleSidebarBtn) {
             toggleSidebarBtn.addEventListener('click', function() {
                 if (activeTab === 'sebaran' && sidebarSebaran) {
@@ -1491,6 +1541,7 @@
                 } else if (activeTab === 'choropleth' && sidebarChoropleth) {
                     sidebarChoropleth.classList.toggle('hidden');
                 }
+                perbaruiStatusSidebar();
             });
         }
 
@@ -1502,7 +1553,8 @@
 
                 geojsonLayer.eachLayer(layer => {
                     if (layer.feature && layer.feature.properties.id_kecamatan == idKec) {
-                        mapChoropleth.fitBounds(layer.getBounds(), { padding: [50, 50] });
+                        // Highlight poligon & buka info wilayah tanpa melompatkan posisi peta
+                        layer.fire('mouseover');
                         layer.fire('click');
                     }
                 });
