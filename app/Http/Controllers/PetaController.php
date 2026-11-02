@@ -133,7 +133,7 @@ class PetaController extends Controller
         $totalUsahaVerified = UsahaPariwisata::verified()->count();
         $totalUsahaBuka = UsahaPariwisata::verified()->buka()->count();
 
-        return view('peta', compact(
+        return view('peta.zonasi', compact(
             'daftarKbli',
             'daftarKecamatan',
             'konfigurasiAktif',

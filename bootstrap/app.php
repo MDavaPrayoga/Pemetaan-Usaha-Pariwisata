@@ -11,6 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Bebaskan endpoint API publik dari verifikasi token CSRF agar simulasi peta selalu lancar
+        $middleware->validateCsrfTokens(except: [
+            'api/*',
+        ]);
+
         // Daftarkan alias middleware role untuk pengecekan hak akses admin / pimpinan
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
