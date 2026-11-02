@@ -27,7 +27,7 @@
 <body class="bg-slate-50 text-slate-800 antialiased flex flex-col min-h-screen">
 
     <!-- Global Header & Navigation Bar: Ampera Maroon Theme -->
-    <header class="bg-[#8B1E2D] text-white shadow-lg sticky top-0 z-50">
+    <header class="bg-ampera-800 text-white shadow-lg sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 
@@ -195,7 +195,7 @@
 
     <!-- Global Footer: Selaras Merah Ampera dengan Logo Resmi -->
     @unless(View::hasSection('no-footer'))
-    <footer class="bg-[#8B1E2D] text-white/80 text-sm border-t border-white/15 mt-auto">
+    <footer class="bg-ampera-800 text-white/80 text-sm border-t border-white/15 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 
