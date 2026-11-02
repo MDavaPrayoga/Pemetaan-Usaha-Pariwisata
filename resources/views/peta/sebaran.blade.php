@@ -92,6 +92,21 @@
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
+
+    /* Label Permanen Nama Kecamatan pada Peta Kepadatan (Choropleth) */
+    .leaflet-tooltip.label-kecamatan-choropleth {
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(139, 30, 45, 0.35);
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        padding: 2px 6px;
+        pointer-events: none;
+        white-space: nowrap;
+    }
+    .leaflet-tooltip.label-kecamatan-choropleth::before {
+        display: none !important;
+    }
 </style>
 @endsection
 
@@ -116,95 +131,57 @@
     {!! json_encode($statistikKecamatan) !!}
 </script>
 
-<!-- Subheader & Toolbar Navigasi Peta -->
-<!-- Subheader & Toolbar Navigasi Peta: Ampera Maroon Unified Theme -->
-<div class="bg-ampera-900 text-white border-b border-black/20 shadow-inner z-30 shrink-0">
-    <div class="px-4 py-2 flex flex-wrap items-center justify-between gap-3">
-        
-        <!-- Left: Judul & KPI Status Cepat -->
-        <div class="flex items-center space-x-3">
-            <div class="w-8 h-8 rounded-lg bg-black/20 border border-white/20 flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-            </div>
-            <div>
-                <div class="flex items-center space-x-2">
-                    <h1 class="text-sm sm:text-base font-bold text-white tracking-tight leading-none">Peta Sebaran Usaha Pariwisata</h1>
-                    <span class="text-[10px] bg-black/25 text-white/90 px-2 py-0.5 rounded border border-white/15 font-mono hidden sm:inline-block">1.421 Titik</span>
-                </div>
-                <div class="flex items-center space-x-2 text-[11px] text-white/80 mt-1">
-                    <span class="inline-flex items-center space-x-1">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        <span class="text-white font-medium">{{ number_format($totalUsahaBuka, 0, ',', '.') }} Buka</span>
-                    </span>
-                    <span class="text-white/40">•</span>
-                    <span class="inline-flex items-center space-x-1">
-                        <span class="w-2 h-2 rounded-full bg-rose-300"></span>
-                        <span class="text-white/90">{{ number_format($totalUsahaTutupPermanen, 0, ',', '.') }} Tutup Permanen</span>
-                    </span>
-                    <span class="text-white/40">•</span>
-                    <span class="inline-flex items-center space-x-1">
-                        <span class="w-2 h-2 rounded-full bg-amber-300"></span>
-                        <span class="text-white/90">{{ number_format($totalUsahaTutupSementara, 0, ',', '.') }} Sementara</span>
-                    </span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Center: Segmented Control Tabs (Mode Switcher) -->
-        <div class="flex items-center bg-black/25 p-1 rounded-xl border border-white/15 shadow-inner">
-            <!-- Tab 1: Sebaran Titik Usaha -->
-            <button id="btn-tab-sebaran" 
-                    type="button" 
-                    class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-white text-ampera-900 shadow">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                </svg>
-                <span>Sebaran Titik Usaha</span>
-            </button>
-
-            <!-- Tab 2: Kepadatan per Kecamatan (Choropleth) -->
-            <button id="btn-tab-choropleth" 
-                    type="button" 
-                    class="tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 text-white/80 hover:text-white hover:bg-white/10">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-                <span>Kepadatan per Wilayah</span>
-            </button>
-        </div>
-
-        <!-- Right: Actions -->
-        <div class="flex items-center space-x-2">
-            <!-- Mobile Toggle Sidebar Button -->
-            <button id="btn-toggle-sidebar" 
-                    type="button" 
-                    class="md:hidden px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-medium border border-white/20 flex items-center space-x-1">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
-                </svg>
-                <span>Filter & Daftar</span>
-            </button>
-
-            <!-- Reset Map View Button -->
-            <button id="btn-recenter-map" 
-                    type="button" 
-                    title="Pusatkan Peta ke Kota Palembang" 
-                    class="px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white hover:text-white text-xs font-medium border border-white/20 flex items-center space-x-1.5 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-                <span class="hidden sm:inline">Pusatkan Peta</span>
-            </button>
-        </div>
-
-    </div>
-</div>
-
 <!-- Main Interactive Split View Container -->
 <div class="flex-1 min-h-0 flex relative overflow-hidden w-full">
+
+    <!-- Unified Floating Mode Switcher & Controls (Clean Centered Pill over Map) -->
+    <div class="absolute top-3.5 left-1/2 md:left-[calc(50%+192px)] lg:left-[calc(50%+208px)] -translate-x-1/2 bg-white/95 backdrop-blur-md border border-slate-200/90 shadow-lg rounded-xl p-1 z-30 flex items-center space-x-1 pointer-events-auto">
+        <!-- Tab 1: Sebaran Titik Usaha -->
+        <button id="btn-tab-sebaran" 
+                type="button" 
+                class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 bg-ampera-900 text-white shadow-sm">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+            </svg>
+            <span class="hidden sm:inline">Sebaran Titik Usaha</span>
+            <span class="sm:hidden">Sebaran</span>
+        </button>
+
+        <!-- Tab 2: Kepadatan per Wilayah (Choropleth) -->
+        <button id="btn-tab-choropleth" 
+                type="button" 
+                class="tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition duration-150 text-slate-600 hover:text-slate-900 hover:bg-slate-100">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+            <span class="hidden sm:inline">Kepadatan per Wilayah</span>
+            <span class="sm:hidden">Kepadatan</span>
+        </button>
+
+        <div class="h-4 w-px bg-slate-200 mx-1"></div>
+
+        <!-- Reset Map View Button -->
+        <button id="btn-recenter-map" 
+                type="button" 
+                title="Pusatkan Peta ke Kota Palembang" 
+                class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            <span class="hidden sm:inline">Pusatkan</span>
+        </button>
+
+        <!-- Mobile Toggle Sidebar Button -->
+        <button id="btn-toggle-sidebar" 
+                type="button" 
+                title="Buka/Tutup Bilah Samping" 
+                class="md:hidden px-2 py-1.5 rounded-lg text-xs font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition flex items-center space-x-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+            </svg>
+            <span>Filter</span>
+        </button>
+    </div>
 
     <!-- ============================================================== -->
     <!-- PANEL TAB 1: SEBARAN TITIK USAHA (Sidebar & Cluster Map)       -->
@@ -217,6 +194,21 @@
             
             <!-- Top Controls Box -->
             <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 space-y-2.5 shrink-0">
+                
+                <!-- Quick KPI Summary Header -->
+                <div class="flex items-center justify-between pb-1">
+                    <div>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Direktori Usaha Pariwisata</h2>
+                        <p class="text-[11px] text-slate-500">
+                            <span class="text-emerald-700 font-semibold">{{ number_format($totalUsahaBuka, 0, ',', '.') }} Buka</span> • 
+                            <span class="text-rose-700 font-semibold">{{ number_format($totalUsahaTutupPermanen, 0, ',', '.') }} Tutup</span> • 
+                            <span class="text-amber-700 font-semibold">{{ number_format($totalUsahaTutupSementara, 0, ',', '.') }} Smt.</span>
+                        </p>
+                    </div>
+                    <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-mono font-bold px-2 py-0.5 rounded-full border border-ampera-900/20">
+                        1.421 Titik
+                    </span>
+                </div>
                 
                 <!-- Live Search Box -->
                 <div class="relative">
@@ -393,14 +385,14 @@
     <div id="view-tab-choropleth" class="hidden flex-1 w-full h-full min-h-0 overflow-hidden">
         
         <!-- Left Sidebar: Ranking Kepadatan 18 Wilayah -->
-        <aside class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full min-h-0 z-20 shrink-0 shadow-sm">
-            <div class="p-3.5 border-b border-slate-200 bg-slate-50/70 shrink-0">
+        <aside id="sidebar-choropleth" class="w-full md:w-96 lg:w-104 bg-white border-r border-slate-200 flex flex-col h-full min-h-0 z-20 shrink-0 shadow-sm transition-all duration-200">
+            <div class="p-3.5 border-b border-slate-200 bg-white shrink-0">
                 <div class="flex items-center justify-between">
                     <div>
                         <h2 class="text-xs font-bold uppercase tracking-wider text-slate-800">Peringkat Kepadatan Usaha</h2>
                         <p class="text-[11px] text-slate-500">Distribusi 1.421 usaha di 18 kecamatan</p>
                     </div>
-                    <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-bold px-2 py-0.5 rounded-full">18 Wilayah</span>
+                    <span class="text-[10px] bg-ampera-900/10 text-ampera-900 font-bold px-2 py-0.5 rounded-full border border-ampera-900/20">18 Wilayah</span>
                 </div>
             </div>
 
@@ -777,16 +769,16 @@
                     sektor: {}
                 };
 
-                // Tooltip interaktif
+                // Label permanen nama kecamatan & jumlah usaha langsung di poligon
                 layer.bindTooltip(`
-                    <div class="text-xs p-0.5 font-sans leading-tight">
-                        <strong class="text-slate-900">${stats.nama_kecamatan}</strong><br>
-                        <span class="text-red-800 font-bold">${stats.total} tempat usaha</span> (${stats.persentase}%)
+                    <div class="text-center font-bold text-[10px] text-slate-900 leading-tight">
+                        <span>${stats.nama_kecamatan}</span>
+                        <div class="text-[9px] font-extrabold text-ampera-900">${stats.total} usaha</div>
                     </div>
                 `, {
-                    sticky: true,
-                    direction: 'auto',
-                    opacity: 0.95
+                    permanent: true,
+                    direction: 'center',
+                    className: 'label-kecamatan-choropleth'
                 });
 
                 layer.on({
@@ -1305,11 +1297,11 @@
 
         btnTabSebaran.addEventListener('click', function() {
             activeTab = 'sebaran';
-            btnTabSebaran.classList.add('bg-white', 'text-ampera-900', 'shadow');
-            btnTabSebaran.classList.remove('text-white/80', 'hover:text-white', 'hover:bg-white/10');
+            btnTabSebaran.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
+            btnTabSebaran.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
 
-            btnTabChoropleth.classList.remove('bg-white', 'text-ampera-900', 'shadow');
-            btnTabChoropleth.classList.add('text-white/80', 'hover:text-white', 'hover:bg-white/10');
+            btnTabChoropleth.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
+            btnTabChoropleth.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
 
             viewTabSebaran.classList.remove('hidden');
             viewTabSebaran.classList.add('flex');
@@ -1323,11 +1315,11 @@
 
         btnTabChoropleth.addEventListener('click', function() {
             activeTab = 'choropleth';
-            btnTabChoropleth.classList.add('bg-white', 'text-ampera-900', 'shadow');
-            btnTabChoropleth.classList.remove('text-white/80', 'hover:text-white', 'hover:bg-white/10');
+            btnTabChoropleth.classList.add('bg-ampera-900', 'text-white', 'shadow-sm');
+            btnTabChoropleth.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
 
-            btnTabSebaran.classList.remove('bg-white', 'text-ampera-900', 'shadow');
-            btnTabSebaran.classList.add('text-white/80', 'hover:text-white', 'hover:bg-white/10');
+            btnTabSebaran.classList.remove('bg-ampera-900', 'text-white', 'shadow-sm');
+            btnTabSebaran.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
 
             viewTabChoropleth.classList.remove('hidden');
             viewTabChoropleth.classList.add('flex');
@@ -1421,9 +1413,14 @@
         // Mobile Toggle Sidebar Button
         const toggleSidebarBtn = document.getElementById('btn-toggle-sidebar');
         const sidebarSebaran = document.getElementById('sidebar-sebaran');
-        if (toggleSidebarBtn && sidebarSebaran) {
+        const sidebarChoropleth = document.getElementById('sidebar-choropleth');
+        if (toggleSidebarBtn) {
             toggleSidebarBtn.addEventListener('click', function() {
-                sidebarSebaran.classList.toggle('hidden');
+                if (activeTab === 'sebaran' && sidebarSebaran) {
+                    sidebarSebaran.classList.toggle('hidden');
+                } else if (activeTab === 'choropleth' && sidebarChoropleth) {
+                    sidebarChoropleth.classList.toggle('hidden');
+                }
             });
         }
 

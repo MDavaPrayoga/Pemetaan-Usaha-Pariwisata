@@ -13,12 +13,6 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
-            <!-- Institutional Badge -->
-            <div class="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-1.5 rounded-full text-xs font-semibold text-white/95 mb-6 shadow-sm">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Portal Informasi Resmi Pariwisata Kota Palembang</span>
-            </div>
-
             <!-- Main Title (Centered) -->
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-tight mb-5 text-white drop-shadow-md">
                 Sistem Pemetaan & Klasterisasi Usaha Pariwisata Kota Palembang
