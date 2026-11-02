@@ -1,11 +1,13 @@
 # PRODUCT REQUIREMENT DOCUMENT (PRD)
-## SISTEM INFORMASI GEOGRAFIS BERBASIS WEB UNTUK PEMETAAN DAN KLASTERISASI USAHA PARIWISATA KOTA PALEMBANG MENGGUNAKAN ALGORITMA DBSCAN
+## SISTEM INFORMASI GEOGRAFIS PEMETAAN DAN KLASTERISASI USAHA PARIWISATA KOTA PALEMBANG MENGGUNAKAN ALGORITMA DENSITY-BASED SPATIAL CLUSTERING OF APPLICATIONS WITH NOISE (DBSCAN)
 
 * **Dokumen:** Product Requirement Document (PRD) Komprehensif  
+* **Judul Resmi Penelitian:** Sistem Informasi Geografis Pemetaan dan Klasterisasi Usaha Pariwisata Kota Palembang Menggunakan Algoritma Density-Based Spatial Clustering of Applications with Noise (DBSCAN)  
 * **Program Studi:** Sarjana Terapan (D4) Manajemen Informatika  
 * **Jurusan:** Manajemen Informatika, Politeknik Negeri Sriwijaya (Polsri)  
 * **Status Dokumen:** Baseline Resmi & Terkunci (Kitab Suci Proyek)  
-* **Terakhir Diperbarui:** 23 Oktober 2026  
+* **Terakhir Diperbarui:** 28 Oktober 2026 (Pembaruan Judul Resmi Sesuai Arahan Dosen Pembimbing)  
+* **Catatan Perubahan Judul:** Frasa "Berbasis Web" dan "untuk" disederhanakan dari judul utama sesuai revisi dosen pembimbing; pemanjangan akronim DBSCAN menjadi *Density-Based Spatial Clustering of Applications with Noise (DBSCAN)*. Aspek implementasi berbasis web (WebGIS) dijelaskan secara komprehensif di dalam batang tubuh laporan tugas akhir dan arsitektur sistem.  
 
 ---
 
@@ -115,50 +117,57 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
    * Menggunakan tata letak modern **Peta Penuh (*Full-Bleed Map*)** dengan **Panel Pengaturan Pusat Usaha (*Floating Workbench*)** yang fleksibel dan dapat dilipat/diminimalkan (`[_] [X]`).
    * Menampilkan poligon area pembungkus kelompok usaha (*Convex Hull*), memisahkan usaha mandiri di pinggiran sebagai titik tersebar (*noise*), menyajikan skor kerapihan kawasan (*Silhouette Score*).
 
-##### B. Halaman Internal Administrator (Wajib Login):
+##### B. Halaman Internal Administrator & Pimpinan (Wajib Login):
 4. **Halaman 4: Dashboard Eksekutif & Statistik Mutu Data (`/admin`):**
-   * Khusus Pimpinan / Kepala Dinas & Penguji Sidang: Menyajikan 4 kartu metrik data izin, 3 grafik analitis mendalam (Mutu Geospasial, Ketahanan Usaha Buka vs Tutup Permanen, dan Tren Pengajuan Izin Tahunan OSS), serta tombol cepat cetak dokumen eksekutif PDF.
+   * Khusus Pimpinan & Admin: Menyajikan 4 kartu metrik data izin, 3 grafik analitis mendalam (Mutu Geospasial, Ketahanan Usaha Buka vs Tutup Permanen, dan Tren Pengajuan Izin Tahunan OSS), serta tombol cepat cetak dokumen eksekutif PDF.
 5. **Halaman 5: Kelola Data Usaha & Verifikasi Spasial (`/admin/usaha`):**
-   * Khusus Staf Teknis / Operator Data Dinas: Meja kerja terpadu (*Single Integrated Workbench*) untuk pemeliharaan 2.809 data izin, verifikasi kilat data antrean, penambahan usaha manual lengkap dengan peta interaktif (*Map Picker*), dan modal impor berkas Excel DPMPTSP.
+   * Khusus Admin (Staf Teknis / Operator Data Dinas): Meja kerja terpadu (*Single Integrated Workbench*) untuk pemeliharaan 2.809 data izin, verifikasi kilat data antrean, penambahan usaha manual lengkap dengan peta interaktif (*Map Picker*), dan modal impor berkas Excel DPMPTSP.
 * **Fitur Penguncian Terintegrasi (Tanpa Menambah Halaman Baru):**
-  * Di halaman **Pusat Usaha Wisata (`/zonasi`)**, saat sistem mendeteksi admin sedang login, otomatis muncul tombol eksklusif **`[ Kunci sebagai Pusat Usaha Resmi Dinas ]`** di panel *Floating Workbench*.
+  * Di halaman **Pusat Usaha Wisata (`/zonasi`)**, saat sistem mendeteksi akun pimpinan sedang login, otomatis muncul tombol eksklusif **`[ Kunci sebagai Pusat Usaha Resmi Dinas ]`** di panel *Floating Workbench*.
 
 ---
 
 ## 2. USER ROLES, PRIVACY GOVERNANCE, & ACCESS CONTROL MATRIX
 
 ### 2.1 Definisi Aktor Sistem
-1. **Publik / Tamu (*Public Guest*):**
+1. **Masyarakat (Publik / Tamu / Tanpa Login):**
    * **Sifat Akses:** Tanpa Login (*Unauthenticated* / Akses Terbuka).
-   * **Fungsi:** Masyarakat, calon investor, akademisi, dan dewan penguji sidang yang mengakses portal untuk melihat informasi sebaran usaha, peta kepadatan kecamatan, dan melakukan simulasi penemuan pusat usaha wisata secara interaktif.
-   * **Batasan:** Bersifat *stateless* (hanya baca). Simulasi parameter hanya berjalan di layar browser sendiri dan tidak dapat mengubah basis data dinas.
-2. **Administrator (Staf Teknis & Pimpinan Dinas Pariwisata):**
-   * **Sifat Akses:** Wajib Login (*Authenticated* via Email & Password terenkripsi).
-   * **Fungsi:** Pengelola resmi data perizinan pariwisata Kota Palembang.
-   * **Wewenang:** Memegang kendali penuh atas basis data (CRUD manual + Map Picker), verifikasi koordinat antrean, impor berkas DPMPTSP, penetapan pusat usaha resmi dinas, dan pencetakan laporan PDF.
+   * **Fungsi:** Masyarakat, calon investor, wisatawan, dan akademisi yang mengakses portal untuk melihat direktori sebaran 1.421 usaha pariwisata terverifikasi (10 KBLI: Kuliner, Hotel, Kafe, dll.) tanpa harus mencari secara manual satu per satu, melihat kawasan sentra/klaster wisata yang terbentuk dengan status operasional valid (buka), serta melakukan simulasi eksplorasi mandiri pusat usaha secara interaktif.
+   * **Batasan:** Bersifat *stateless* (hanya baca). Simulasi parameter hanya berjalan di peramban pengguna dan tidak dapat mengubah basis data dinas.
+2. **Admin (Operator Data / Staf Teknis Dinas):**
+   * **Sifat Akses:** Wajib Login (*Authenticated* via Akun Administrator). Akun dibuat dan dikelola oleh pengembang sistem / seeder awal.
+   * **Fungsi:** Pengelola teknis dan pemelihara data perizinan pariwisata Kota Palembang.
+   * **Wewenang:** Memegang kendali penuh atas basis data operasional (CRUD 2.809 data izin), verifikasi koordinat antrean 1.388 data via *Map Picker* (drag-and-drop pin marker), pembersihan data ganda/zombie akibat pengajuan berulang di OSS, impor berkas berkala Excel DPMPTSP, serta membuat dan mengelola akun Pimpinan.
+   * **Batasan:** Berfokus pada tata kelola data operasional dan teknis spasial.
+3. **Pimpinan (Pimpinan Dinas Pariwisata):**
+   * **Sifat Akses:** Wajib Login (*Authenticated* via Akun Pimpinan). Akun dibuat dan dikelola oleh Admin. Peran mencakup pimpinan instansi maupun kepala bidang terkait perizinan/industri pariwisata.
+   * **Fungsi:** Pengambil kebijakan strategis dan pengawas mutu perizinan pariwisata Kota Palembang.
+   * **Wewenang:** Memantau Dashboard Eksekutif & Statistik Mutu Data (monitoring capaian pembenahan data: 1.421 terverifikasi vs 1.388 antrean, rasio ketahanan usaha buka vs tutup permanen, tren izin tahunan), menetapkan dan mengunci klaster resmi dinas via tombol eksklusif `[ Kunci sebagai Pusat Usaha Resmi Dinas ]` di halaman `/zonasi`, serta mencetak Laporan Eksekutif Resmi berformat PDF (A4 berkop dinas) untuk bahan rapat dan koordinasi lintas instansi (DPMPTSP, Bapenda, Satpol PP).
+   * **Batasan:** Tidak dibebani tugas teknis penarikan titik koordinat satu per satu (*Map Picker*) maupun entri perizinan harian.
 
 ### 2.2 Kebijakan Privasi & Citra Publik (*Data Governance*)
-* **Halaman Publik:** Hanya menampilkan data bersih yang telah terverifikasi (**1.421 Usaha**). Angka 1.388 data kosong disembunyikan untuk menjaga reputasi kinerja instansi pemerintah dari tudingan publik mengenai data perizinan yang tidak lengkap.
-* **Halaman Admin:** Menampilkan statistik mutu data lengkap (2.809 total, 1.421 verified, 1.388 unverified) sebagai antrean kerja penjaminan mutu data internal (*data quality assurance*).
+* **Halaman Publik (Masyarakat):** Hanya menampilkan data bersih yang telah terverifikasi (**1.421 Usaha**). Angka 1.388 data kosong disembunyikan untuk menjaga reputasi kinerja instansi pemerintah dari tudingan publik mengenai data perizinan yang tidak lengkap.
+* **Halaman Internal (Admin & Pimpinan):** Menampilkan statistik mutu data lengkap (2.809 total, 1.421 verified, 1.388 unverified) sebagai antrean kerja penjaminan mutu data internal (*data quality assurance*) bagi staf dan bahan monitoring evaluasi berkala bagi pimpinan.
 
 ### 2.3 Matriks Hak Akses (Access Control Matrix)
 
-| No | Modul / Halaman Sistem | Publik / Tamu (Tanpa Login) | Admin Dinas (Wajib Login) | Keterangan & Batasan Hak Akses |
-| :-: | :--- | :--- :--- | :---: | :--- |
-| **1** | **Beranda & Statistik Pariwisata (`/`)** | ✅ Ya | ✅ Ya | Menampilkan statistik sebaran 1.421 usaha terverifikasi, peringkat kecamatan, dan proporsi sektor. |
-| **2** | **Peta Sebaran: Sebaran Tempat Usaha (`/peta`)** | ✅ Ya | ✅ Ya | Menampilkan 1.421 pin sebaran tempat usaha, filter status (Buka/Tutup), filter KBLI, pencarian nama, dan popup info. |
-| **3** | **Peta Sebaran: Kepadatan per Kecamatan (`/peta`)** | ✅ Ya | ✅ Ya | Menampilkan batas 18 kecamatan Palembang dengan gradasi warna kepadatan wilayah (peta tematik interaktif). |
-| **4** | **Pusat Usaha Wisata (`/zonasi`)** | ✅ Ya | ✅ Ya | Mengatur jarak maksimal antar tempat (meter) & minimal tempat berkumpul via *Floating Workbench* untuk simulasi pusat usaha. |
-| **5** | **Melihat Tingkat Kerapihan Kawasan** | ✅ Ya | ✅ Ya | Skor kerapihan kawasan (*Silhouette Score*) tampil *real-time* saat simulasi dijalankan (keperluan uji sidang). |
-| **6** | **Kunci Pusat Usaha Resmi Dinas** | ❌ **Dilarang** | ✅ **Ya** | Tombol khusus di `/zonasi` (hanya muncul saat login) untuk mengunci parameter resmi ke database. |
-| **7** | **Dashboard Eksekutif & Mutu Data (`/admin`)** | ❌ **Dilarang** | ✅ **Ya** | Khusus Admin: Menampilkan 3 grafik analitis internal (mutu spasial, survival rate, tren tahunan) dan tombol cetak PDF. |
-| **8** | **Kelola Data Usaha & Workbench (`/admin/usaha`)**| ❌ **Dilarang** | ✅ **Ya** | Meja kerja staf: tabel 2.809 data dengan tab filter status (Semua, Terverifikasi, Antrean, Duplikat). |
-| **9** | **Tambah Usaha Manual (CRUD)** | ❌ **Dilarang** | ✅ **Ya** | Input mandiri data usaha baru (NIB, PT/CV, alamat, status) lengkap dengan ketik koordinat manual. |
-| **10**| **Penentuan Titik di Peta (Map Picker)** | ❌ **Dilarang** | ✅ **Ya** | Geser pin marker (*drag-and-drop*) di atas peta Leaflet saat tambah/edit data agar Lat/Long otomatis terisi. |
-| **11**| **Verifikasi Kilat Antrean Data** | ❌ **Dilarang** | ✅ **Ya** | Tombol `[+ Pasang Titik]` pada baris data antrean untuk menentukan lokasi dan menaikkan status ke *verified*. |
-| **12**| **Penyaringan Duplikasi Data** | ❌ **Dilarang** | ✅ **Ya** | Menyaring dan menghapus data ganda (NIB sama / nama identik) akibat riwayat pendaftaran berulang di OSS. |
-| **13**| **Impor Berkas Excel DPMPTSP** | ❌ **Dilarang** | ✅ **Ya** | Modal upload file rekapitulasi `.xlsx` baru dari DPMPTSP dengan pemilahan otomatis (*verified* vs *unverified*). |
-| **14**| **Cetak Laporan Resmi (PDF)** | ❌ **Dilarang** | ✅ **Ya** | Menghasilkan dokumen laporan formal A4 berkop surat Dinas Pariwisata untuk pimpinan dinas. |
+| No | Modul / Fitur Sistem | Masyarakat (Tanpa Login) | Admin (Operator Dispar) | Pimpinan (Eksekutif Dispar) | Keterangan & Batasan Hak Akses |
+| :-: | :--- | :---: | :---: | :---: | :--- |
+| **1** | **Beranda & Statistik Pariwisata (`/`)** | ✅ Ya | ✅ Ya | ✅ Ya | Menampilkan statistik sebaran 1.421 usaha terverifikasi, peringkat kecamatan, dan proporsi sektor. |
+| **2** | **Peta Sebaran: Sebaran Tempat Usaha (`/peta`)** | ✅ Ya | ✅ Ya | ✅ Ya | Menampilkan 1.421 pin sebaran tempat usaha, filter status (Buka/Tutup), filter KBLI, pencarian nama, dan popup info. |
+| **3** | **Peta Sebaran: Kepadatan per Kecamatan (`/peta`)** | ✅ Ya | ✅ Ya | ✅ Ya | Menampilkan batas 18 kecamatan Palembang dengan gradasi warna kepadatan wilayah (peta tematik interaktif). |
+| **4** | **Pusat Usaha Wisata: Simulasi Klaster (`/zonasi`)** | ✅ Ya | ✅ Ya | ✅ Ya | Mengatur jarak maksimal antar tempat (meter) & minimal tempat berkumpul via *Floating Workbench* untuk simulasi pusat usaha. |
+| **5** | **Melihat Tingkat Kerapihan Kawasan (Silhouette)** | ✅ Ya | ✅ Ya | ✅ Ya | Skor kerapihan kawasan (*Silhouette Score*) tampil *real-time* saat simulasi dijalankan (keperluan evaluasi dan uji sidang). |
+| **6** | **Kunci Pusat Usaha Resmi Dinas** | ❌ Dilarang | ❌ Dilarang | ✅ **Ya** | Wewenang eksklusif Pimpinan di `/zonasi` untuk mengunci parameter resmi ke database sebagai acuan dinas. |
+| **7** | **Dashboard Eksekutif & Mutu Data (`/admin`)** | ❌ Dilarang | ✅ Ya | ✅ **Ya** | Menampilkan 3 grafik analitis internal (mutu spasial, survival rate, tren tahunan) dan tombol cetak PDF eksekutif. |
+| **8** | **Kelola Data Usaha & Workbench (`/admin/usaha`)** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Meja kerja operator: tabel 2.809 data dengan tab filter status (Semua, Terverifikasi, Antrean, Duplikat). |
+| **9** | **Tambah & Ubah Usaha Manual (CRUD)** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Input mandiri data usaha baru (NIB, PT/CV, alamat, status) lengkap dengan pengisian koordinat manual. |
+| **10** | **Penentuan Titik di Peta (Map Picker)** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Geser pin marker (*drag-and-drop*) di atas peta Leaflet saat tambah/edit data agar Lat/Long otomatis terisi presisi. |
+| **11** | **Verifikasi Kilat Antrean Data (1.388 Antrean)** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Tombol `[+ Pasang Titik]` pada baris data antrean untuk menentukan lokasi fisik dan menaikkan status ke *verified*. |
+| **12** | **Penyaringan Duplikasi Data Izin** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Menyaring dan membersihkan data ganda (NIB sama / nama identik) akibat riwayat pendaftaran berulang di OSS. |
+| **13** | **Impor Berkas Excel DPMPTSP** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Upload berkas rekapitulasi `.xlsx` baru dari DPMPTSP dengan pemilahan otomatis (*verified* vs *unverified*). |
+| **14** | **Kelola Akun Pengguna / Pimpinan** | ❌ Dilarang | ✅ **Ya** | ❌ Dilarang | Admin membuat, mengaktifkan, dan mengelola kredensial akun Pimpinan untuk akses portal eksekutif. |
+| **15** | **Cetak Laporan Resmi Eksekutif (PDF)** | ❌ Dilarang | ✅ Ya | ✅ **Ya** | Menghasilkan dokumen laporan formal A4 berkop surat Dinas Pariwisata untuk koordinasi lintas dinas. |
 
 ---
 
@@ -169,8 +178,9 @@ Di antarmuka publik, sistem menggunakan bahasa Indonesia yang wajar dan intuitif
 ```mermaid
 flowchart LR
     subgraph Aktor
-        Guest["Publik / Tamu (Tanpa Login)"]
-        Admin["Administrator Dinas (Login)"]
+        Masyarakat["Masyarakat (Tanpa Login)"]
+        Admin["Admin (Operator Dispar)"]
+        Pimpinan["Pimpinan (Eksekutif Dispar)"]
     end
 
     subgraph Portal WebGIS Usaha Pariwisata Palembang
@@ -178,19 +188,21 @@ flowchart LR
         UC02["UC-02: Mengeksplorasi Peta Sebaran & Filter Status"]
         UC03["UC-03: Melihat Peta Kepadatan per Kecamatan"]
         UC04["UC-04: Menjalankan Simulasi Zonasi Sentra Wisata"]
-        UC05["UC-05: Otentikasi Login Administrator"]
+        UC05["UC-05: Otentikasi Login Sistem"]
         UC06["UC-06: Mengelola Data Usaha (CRUD + Map Picker)"]
         UC07["UC-07: Verifikasi Lokasi Fisik Data Antrean"]
         UC08["UC-08: Menyaring Data Permohonan Duplikat"]
-        UC09["UC-09: Menyimpan Zonasi Klaster Resmi Dinas"]
-        UC10["UC-10: Mengimpor Berkas Rekapitulasi Excel"]
-        UC11["UC-11: Mengunduh Laporan Resmi Eksekutif PDF"]
+        UC09["UC-09: Mengimpor Berkas Rekapitulasi Excel DPMPTSP"]
+        UC10["UC-10: Mengelola Akun Pengguna / Pimpinan"]
+        UC11["UC-11: Memantau Dashboard Eksekutif & Mutu Data"]
+        UC12["UC-12: Menetapkan & Mengunci Kawasan Pusat Usaha Resmi"]
+        UC13["UC-13: Mengunduh Laporan Resmi Eksekutif PDF"]
     end
 
-    Guest --> UC01
-    Guest --> UC02
-    Guest --> UC03
-    Guest --> UC04
+    Masyarakat --> UC01
+    Masyarakat --> UC02
+    Masyarakat --> UC03
+    Masyarakat --> UC04
 
     Admin --> UC05
     Admin --> UC01
@@ -203,6 +215,16 @@ flowchart LR
     Admin --> UC09
     Admin --> UC10
     Admin --> UC11
+    Admin --> UC13
+
+    Pimpinan --> UC05
+    Pimpinan --> UC01
+    Pimpinan --> UC02
+    Pimpinan --> UC03
+    Pimpinan --> UC04
+    Pimpinan --> UC11
+    Pimpinan --> UC12
+    Pimpinan --> UC13
 ```
 
 ---
@@ -210,7 +232,7 @@ flowchart LR
 ### 3.2 Skenario Use Case Spesifik
 
 #### UC-04: Menjalankan Simulasi Klaster DBSCAN
-* **Aktor:** Publik / Tamu dan Administrator Dinas
+* **Aktor:** Masyarakat, Admin, dan Pimpinan
 * **Kondisi Awal (*Pre-condition*):** Pengguna berada di halaman Analisis DBSCAN; 1.421 data terverifikasi telah dimuat di sistem.
 * **Kondisi Akhir (*Post-condition*):** Peta menampilkan poligon klaster berwarna, titik noise berwarna abu-abu, dan nilai Silhouette Score.
 * **Alur Utama (*Main Flow*):**
@@ -224,7 +246,7 @@ flowchart LR
   8. Peta Leaflet.js merender ulang tampilan: titik dikelompokkan dengan warna berbeda, poligon area transparan membungkus klaster, titik noise diwarnai abu-abu redup, dan panel metrik menampilkan jumlah klaster serta nilai Silhouette Score.
 
 #### UC-06: Mengelola Data Usaha dengan Map Picker (Tambah Usaha Baru)
-* **Aktor:** Administrator Dinas Pariwisata
+* **Aktor:** Admin (Operator Data)
 * **Kondisi Awal:** Admin telah berhasil login dan berada di halaman Kelola Data Usaha.
 * **Kondisi Akhir:** Data usaha baru tersimpan ke database MySQL dengan status `verified` dan koordinat valid.
 * **Alur Utama:**
@@ -239,7 +261,7 @@ flowchart LR
   9. Sistem menampilkan notifikasi sukses dan tabel data ter-refresh secara otomatis.
 
 #### UC-07: Verifikasi Titik Spasial Antrean Unverified
-* **Aktor:** Administrator Dinas Pariwisata
+* **Aktor:** Admin (Operator Data)
 * **Kondisi Awal:** Admin berada di tab *"Belum Ada Titik / Antrean (1.388)"*.
 * **Alur Utama:**
   1. Admin memilih salah satu baris usaha pada tabel antrean yang alamatnya ingin diverifikasi.
@@ -249,8 +271,8 @@ flowchart LR
   5. Koordinat tersimpan, sistem mengubah kolom status dari `unverified` menjadi `verified`.
   6. Data tersebut otomatis keluar dari antrean dan masuk ke daftar 1.421 data aktif untuk klasterisasi.
 
-#### UC-10: Mengimpor Berkas Excel DPMPTSP
-* **Aktor:** Administrator Dinas Pariwisata
+#### UC-09: Mengimpor Berkas Excel DPMPTSP
+* **Aktor:** Admin (Operator Data)
 * **Alur Utama:**
   1. Admin membuka menu Impor Berkas, lalu memilih file Excel (`.xlsx`) laporan berkala dari DPMPTSP.
   2. Admin menekan tombol `[ Unggah & Proses ]`.
@@ -260,13 +282,32 @@ flowchart LR
      * Baris baru yang tidak memiliki koordinat disimpan dengan status `unverified`.
   4. Sistem menampilkan ringkasan laporan hasil impor: jumlah baris terbaca, jumlah data sukses masuk verified, jumlah data masuk antrean, dan jumlah duplikasi yang ditolak.
 
-#### UC-11: Mengunduh Laporan Eksekutif PDF
-* **Aktor:** Administrator Dinas Pariwisata
+#### UC-10: Mengelola Akun Pengguna / Pimpinan
+* **Aktor:** Admin (Operator Data)
 * **Alur Utama:**
-  1. Admin memilih menu Cetak Laporan dan menentukan tipe laporan: *Laporan Hasil Klasterisasi Spasial DBSCAN*.
-  2. Admin menekan tombol `[ Unduh Laporan PDF ]`.
+  1. Admin membuka menu Pengaturan Akun di area administrasi.
+  2. Admin dapat membuat akun baru dengan hak akses Pimpinan (mengisi nama, email, password terenkripsi, role = 'pimpinan').
+  3. Admin dapat menonaktifkan atau mengatur ulang kredensial akun pimpinan jika terjadi rotasi jabatan struktural di dinas.
+  4. Sistem menyimpan data kredensial terenkripsi ke tabel `users`.
+
+#### UC-12: Menetapkan & Mengunci Kawasan Pusat Usaha Resmi Dinas
+* **Aktor:** Pimpinan (Eksekutif Dinas)
+* **Kondisi Awal:** Pimpinan telah login dan berada di halaman Pusat Usaha Wisata (`/zonasi`).
+* **Alur Utama:**
+  1. Pimpinan melakukan tinjauan klaster hasil kalkulasi parameter DBSCAN ($\varepsilon$ dan $MinPts$).
+  2. Pimpinan melihat metrik Silhouette Score untuk memastikan klaster terpisah dengan baik secara spasial.
+  3. Setelah parameter dinilai optimal dan sesuai dengan arahan kebijakan tata ruang pariwisata daerah, Pimpinan menekan tombol eksklusif `[ Kunci sebagai Pusat Usaha Resmi Dinas ]`.
+  4. Sistem memvalidasi hak akses (hanya role pimpinan yang dapat mengeksekusi aksi ini).
+  5. Sistem menyimpan konfigurasi parameter resmi dan daftar klaster terpilih ke database sebagai status acuan resmi dinas.
+  6. Tampilan portal publik otomatis memperbarui label pusat usaha resmi yang disahkan dinas.
+
+#### UC-13: Mengunduh Laporan Eksekutif PDF
+* **Aktor:** Admin dan Pimpinan
+* **Alur Utama:**
+  1. Pengguna memilih menu Cetak Laporan dan menentukan tipe dokumen eksekutif: *Laporan Hasil Klasterisasi Spasial DBSCAN*.
+  2. Pengguna menekan tombol `[ Unduh Laporan PDF ]`.
   3. Sistem (via library `dompdf`) merender data hasil klasterisasi resmi dinas ke dalam format dokumen A4 berstandar instansi pemerintah (memuat Kop Surat Dinas Pariwisata, parameter $\varepsilon$ dan $MinPts$, nilai Silhouette Score, tabel zonasi kawasan sentra wisata, dan kolom tanda tangan pimpinan).
-  4. Berkas PDF otomatis terunduh ke perangkat lokal admin.
+  4. Berkas PDF otomatis terunduh ke perangkat lokal pengguna untuk kebutuhan rapat koordinasi lintas OPD.
 
 ---
 

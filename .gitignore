@@ -35,3 +35,7 @@ Thumbs.db
 *.xlsx
 *.xls
 
+# Dokumen Panduan Laporan Skripsi Pribadi (Lokal saja, tidak di-push ke GitHub)
+PANDUAN_LAPORAN.md
+
+
