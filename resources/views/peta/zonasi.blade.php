@@ -178,7 +178,7 @@
     <!-- SIDEBAR KIRI: KONTROL PARAMETER DBSCAN & DIREKTORI SENTRA      -->
     <!-- ============================================================== -->
     <aside id="sidebar-zonasi" 
-           class="w-full md:w-96 lg:w-[410px] bg-white border-r border-slate-200 flex flex-col h-full min-h-0 z-20 shrink-0 shadow-sm transition-all duration-200">
+           class="w-full md:w-96 bg-white border-r border-slate-200 flex flex-col h-full min-h-0 z-20 shrink-0 shadow-sm transition-all duration-200">
         
         <!-- Header Sidebar dengan Tombol Panah Tutup -->
         <div class="px-4 py-3 border-b border-slate-200/90 bg-white flex items-center justify-between shrink-0">
@@ -339,7 +339,7 @@
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Silhouette Score:</span>
                             <span id="kpi-silhouette-val" class="font-mono font-bold text-slate-900">-</span>
                         </div>
-                        <span id="kpi-silhouette-label" class="block text-[10px] font-semibold text-slate-500 truncate max-w-[210px]">
+                        <span id="kpi-silhouette-label" class="block text-[10px] font-semibold text-slate-500 truncate max-w-48">
                             Menunggu evaluasi...
                         </span>
                     </div>
@@ -387,7 +387,7 @@
                     <span>Poligon Batas Sentra (Convex Hull)</span>
                 </div>
                 <div class="flex items-center space-x-2">
-                    <span class="w-4 h-4 rounded-full bg-ampera-800 text-white font-bold text-[9px] flex items-center justify-center inline-block">#</span>
+                    <span class="w-4 h-4 rounded-full bg-ampera-800 text-white font-bold text-[9px] inline-flex items-center justify-center">#</span>
                     <span>Titik Pusat Sentra (Centroid Pin)</span>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -411,9 +411,9 @@
 
 <!-- Modal Konfirmasi Kunci Konfigurasi Acuan Resmi (Khusus Akun Pimpinan) -->
 @if(Auth::check() && Auth::user()->isPimpinan())
-<div id="modal-kunci-konfigurasi" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+<div id="modal-kunci-konfigurasi" class="hidden fixed inset-0 z-50 items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
     <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 max-w-md w-full overflow-hidden transition-all transform">
-        <div class="bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-4 text-white flex items-center justify-between">
+        <div class="bg-amber-600 px-5 py-4 text-white flex items-center justify-between">
             <div class="flex items-center space-x-2.5">
                 <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1067,10 +1067,12 @@
                 : 'N/A';
 
             modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
 
         function tutupModal() {
             modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
 
         btnBuka.addEventListener('click', bukaModal);
