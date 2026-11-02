@@ -5,6 +5,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\PetaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminUsahaController;
+use App\Http\Controllers\AdminDashboardController;
 
 // Halaman 1 Publik: Beranda & Statistik Pariwisata
 Route::get('/', [BerandaController::class, 'index'])->name('beranda');
@@ -32,12 +33,15 @@ Route::get('/login', [AuthController::class, 'tampilkanFormLogin'])->name('login
 Route::post('/login', [AuthController::class, 'prosesLogin'])->name('login.proses')->middleware('guest');
 Route::post('/logout', [AuthController::class, 'prosesLogout'])->name('logout')->middleware('auth');
 
-// Rute panel administrator: hanya bisa diakses oleh admin yang sudah login
+// Rute panel administrator & pimpinan: hanya bisa diakses oleh akun internal yang sudah login
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
-    // Menampilkan halaman kelola 2.809 data usaha pariwisata
-    Route::get('/usaha', [AdminUsahaController::class, 'index'])->name('usaha.index');
+    // Halaman 4: Dashboard Eksekutif & Statistik Mutu Data (Admin & Pimpinan)
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+    // Halaman 5: Menampilkan halaman kelola 2.809 data usaha pariwisata (Khusus Admin Operator)
+    Route::get('/usaha', [AdminUsahaController::class, 'index'])->name('usaha.index')->middleware('role:admin');
     
-    // Kunci parameter konfigurasi sentra resmi dinas ke database
-    Route::post('/kunci-konfigurasi', [PetaController::class, 'kunciKonfigurasi'])->name('kunci-konfigurasi');
+    // Kunci parameter konfigurasi sentra resmi dinas ke database (Wewenang Eksklusif Pimpinan)
+    Route::post('/kunci-konfigurasi', [PetaController::class, 'kunciKonfigurasi'])->name('kunci-konfigurasi')->middleware('role:pimpinan');
 });
 

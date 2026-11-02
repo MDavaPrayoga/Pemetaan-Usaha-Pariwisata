@@ -36,4 +36,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(KonfigurasiKlaster::class, 'id_user', 'id_user');
     }
+
+    /**
+     * Memeriksa apakah pengguna memiliki hak akses Administrator (Operator Teknis Dispar).
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Memeriksa apakah pengguna memiliki hak akses Pimpinan (Eksekutif Dinas Pariwisata).
+     */
+    public function isPimpinan(): bool
+    {
+        return $this->role === 'pimpinan';
+    }
 }

@@ -9,11 +9,15 @@ use Illuminate\Http\RedirectResponse;
 
 class AuthController extends Controller
 {
-    // Menampilkan halaman formulir login administrator
+    // Menampilkan halaman formulir login administrator & pimpinan
     public function tampilkanFormLogin(): View|RedirectResponse
     {
-        // Jika admin sudah dalam kondisi login, langsung arahkan ke panel data usaha
+        // Jika pengguna sudah dalam kondisi login, arahkan sesuai peran
         if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->role === 'pimpinan') {
+                return redirect()->route('admin.dashboard');
+            }
             return redirect()->route('admin.usaha.index');
         }
 
@@ -41,7 +45,12 @@ class AuthController extends Controller
             // Regenerasi session ID untuk mencegah serangan session fixation
             $request->session()->regenerate();
 
-            // Arahkan admin langsung ke halaman kelola usaha
+            // Arahkan pengguna sesuai peran akun
+            $user = Auth::user();
+            if ($user->role === 'pimpinan') {
+                return redirect()->route('admin.dashboard');
+            }
+
             return redirect()->route('admin.usaha.index');
         }
 

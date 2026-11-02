@@ -11,9 +11,20 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Daftarkan alias middleware role untuk pengecekan hak akses admin / pimpinan
+        $middleware->alias([
+            'role' => \App\Http\Middleware\RoleMiddleware::class,
+        ]);
+
         // Jika pengguna sudah dalam kondisi login dan mencoba mengakses rute login,
-        // alihkan langsung ke dashboard admin usaha, bukan kembali ke halaman publik
-        $middleware->redirectUsersTo(fn () => route('admin.usaha.index'));
+        // alihkan sesuai peran masing-masing
+        $middleware->redirectUsersTo(function () {
+            $user = auth()->user();
+            if ($user && $user->role === 'pimpinan') {
+                return route('admin.dashboard');
+            }
+            return route('admin.usaha.index');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

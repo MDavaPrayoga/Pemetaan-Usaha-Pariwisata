@@ -86,21 +86,45 @@
                 <!-- Right Side Action: Auth / Status Indicator -->
                 <div class="hidden md:flex items-center space-x-3">
                     @auth
-                        <!-- Jika Staf Dinas / Admin Login -->
+                        <!-- Jika Staf Dinas / Pimpinan Login -->
                         <div class="flex items-center space-x-2">
-                            <a href="{{ route('admin.usaha.index') }}" 
-                                class="inline-flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition duration-150">
-                                <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span>Panel Admin</span>
-                            </a>
+                            @if(auth()->user()->isPimpinan())
+                                <span class="inline-flex items-center space-x-1.5 bg-amber-400 text-ampera-950 font-bold px-2.5 py-1 rounded-lg text-xs shadow-sm">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-ampera-900"></span>
+                                    <span>Pimpinan Dinas</span>
+                                </span>
+                                <a href="{{ route('admin.dashboard') }}" 
+                                    class="inline-flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition duration-150">
+                                    <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                    <span>Dashboard Eksekutif</span>
+                                </a>
+                            @else
+                                <span class="inline-flex items-center space-x-1.5 bg-white/20 text-white font-semibold px-2.5 py-1 rounded-lg text-xs">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                    <span>Admin Operator</span>
+                                </span>
+                                <a href="{{ route('admin.usaha.index') }}" 
+                                    class="inline-flex items-center space-x-1.5 bg-white/20 hover:bg-white/30 border border-white/30 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition duration-150">
+                                    <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                                    </svg>
+                                    <span>Meja Kerja Data</span>
+                                </a>
+                                <a href="{{ route('admin.dashboard') }}" 
+                                    class="inline-flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white/90 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-medium transition duration-150"
+                                    title="Dashboard Mutu Data">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                    </svg>
+                                </a>
+                            @endif
 
                             <form method="POST" action="{{ route('logout') }}" class="inline">
                                 @csrf
                                 <button type="submit" 
-                                        class="inline-flex items-center space-x-1 bg-black/20 hover:bg-black/30 text-white/90 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-medium transition duration-150">
+                                        class="inline-flex items-center space-x-1 bg-black/25 hover:bg-black/40 text-white/90 hover:text-white px-2.5 py-1.5 rounded-lg text-xs font-semibold transition duration-150">
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
@@ -109,13 +133,13 @@
                             </form>
                         </div>
                     @else
-                        <!-- Tombol Masuk Admin bagi Publik -->
+                        <!-- Tombol Masuk Internal bagi Publik -->
                         <a href="{{ route('login') }}" 
-                           class="inline-flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium transition duration-150">
+                           class="inline-flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold transition duration-150">
                             <svg class="w-4 h-4 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                             </svg>
-                            <span>Masuk Admin</span>
+                            <span>Masuk Dinas</span>
                         </a>
                     @endauth
                 </div>
@@ -143,15 +167,22 @@
             <a href="{{ route('peta.zonasi') }}" class="block px-3 py-2 rounded-md text-sm font-medium {{ request()->routeIs('peta.zonasi') ? 'bg-white/20 text-white font-semibold' : 'text-white/80 hover:bg-white/10' }}">
                 Pusat Usaha Wisata
             </a>
-            <div class="pt-2 border-t border-white/10">
+            <div class="pt-2 border-t border-white/10 space-y-1">
                 @auth
-                    <a href="{{ route('admin.usaha.index') }}" class="block px-3 py-2 text-sm font-medium text-amber-200">Panel Admin</a>
+                    @if(auth()->user()->isPimpinan())
+                        <div class="px-3 py-1 text-xs font-bold text-amber-300">Akun: Pimpinan Dinas</div>
+                        <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-md">Dashboard Eksekutif</a>
+                    @else
+                        <div class="px-3 py-1 text-xs font-bold text-emerald-300">Akun: Admin Operator</div>
+                        <a href="{{ route('admin.usaha.index') }}" class="block px-3 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-md">Meja Kerja Data (2.809)</a>
+                        <a href="{{ route('admin.dashboard') }}" class="block px-3 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-md">Dashboard Mutu Data</a>
+                    @endif
                     <form method="POST" action="{{ route('logout') }}" class="mt-1">
                         @csrf
-                        <button type="submit" class="w-full text-left px-3 py-2 text-sm font-medium text-white/80 hover:text-white">Keluar</button>
+                        <button type="submit" class="w-full text-left px-3 py-2 text-sm font-semibold text-rose-200 hover:text-white">Keluar Sistem</button>
                     </form>
                 @else
-                    <a href="{{ route('login') }}" class="block px-3 py-2 text-sm font-medium text-white hover:bg-white/10 rounded-md">Masuk Admin</a>
+                    <a href="{{ route('login') }}" class="block px-3 py-2 text-sm font-semibold text-white hover:bg-white/10 rounded-md">Masuk Dinas</a>
                 @endauth
             </div>
         </div>

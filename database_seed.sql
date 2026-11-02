@@ -36,7 +36,7 @@ CREATE TABLE `usaha_pariwisata` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Default User Admin
-INSERT INTO `users` (`id_user`, `username`, `password`, `nama_lengkap`, `role`) VALUES (1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator WebGIS', 'super_admin') ON DUPLICATE KEY UPDATE `username` = VALUES(`username`);
+INSERT INTO `users` (`id_user`, `username`, `password`, `nama_lengkap`, `role`) VALUES (1, 'admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator Dinas (Operator)', 'admin'), (2, 'pimpinan', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Pimpinan Dinas Pariwisata', 'pimpinan') ON DUPLICATE KEY UPDATE `username` = VALUES(`username`), `role` = VALUES(`role`), `nama_lengkap` = VALUES(`nama_lengkap`);
 
 -- Master KBLI
 INSERT INTO `kbli` (`id_kbli`, `kode_kbli`, `judul_kbli`) VALUES 

@@ -3,8 +3,8 @@
 @section('title', 'Kelola Data Usaha Pariwisata - Panel Admin')
 
 @section('content')
-<!-- Header Panel Administrator dengan identitas warna Maroon Ampera -->
-<header class="bg-[#8B1E2D] text-white shadow-md z-20">
+<!-- Subheader Toolbar Administrator -->
+<header class="bg-ampera-900 text-white shadow-md z-20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
         <div class="flex items-center space-x-3">
             <div class="p-2 bg-white/10 rounded-lg">
@@ -13,30 +13,27 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-base sm:text-lg font-bold leading-tight">Panel Administrator WebGIS</h1>
+                <h1 class="text-base sm:text-lg font-bold leading-tight">Meja Kerja Data Usaha (2.809)</h1>
                 <p class="text-xs text-white/80">Kelola Data Perizinan & Pengayaan Titik Spasial Usaha Pariwisata</p>
             </div>
         </div>
 
-        <div class="flex items-center space-x-3">
+        <div class="flex items-center space-x-2">
+            <!-- Tautan ke Dashboard Eksekutif -->
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition duration-150">
+                <svg class="w-4 h-4 text-amber-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span>Dashboard Mutu</span>
+            </a>
+
             <!-- Tautan kembali ke Peta Publik -->
-            <a href="{{ route('peta.index') }}" target="_blank" class="hidden sm:inline-flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded-md text-xs font-medium transition duration-150">
+            <a href="{{ route('peta.sebaran') }}" target="_blank" class="hidden sm:inline-flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 border border-white/20 px-3 py-1.5 rounded-lg text-xs font-semibold transition duration-150">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                 </svg>
-                <span>Lihat Peta Publik</span>
+                <span>Lihat Peta Sebaran</span>
             </a>
-
-            <!-- Tombol Logout -->
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="inline-flex items-center space-x-1.5 bg-red-950/40 hover:bg-red-950/60 border border-white/20 px-3 py-1.5 rounded-md text-xs font-medium transition duration-150">
-                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span>Keluar</span>
-                </button>
-            </form>
         </div>
     </div>
 </header>
