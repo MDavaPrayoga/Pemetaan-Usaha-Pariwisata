@@ -384,7 +384,7 @@
             <div class="space-y-1.5 text-slate-600 text-[11px]">
                 <div class="flex items-center space-x-2">
                     <span class="w-4 h-3 rounded border border-ampera-700 bg-ampera-700/20 inline-block"></span>
-                    <span>Poligon Batas Sentra (Convex Hull)</span>
+                    <span>Batas Kawasan (Poligon / Buffer)</span>
                 </div>
                 <div class="flex items-center space-x-2">
                     <span class="w-4 h-4 rounded-full bg-ampera-800 text-white font-bold text-[9px] inline-flex items-center justify-center">#</span>
@@ -401,6 +401,10 @@
                 <div class="flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block"></span>
                     <span>Usaha Mandiri (Pencilan / Noise)</span>
+                </div>
+                <div class="flex items-center space-x-2 pt-1 border-t border-slate-100 text-[10px] text-indigo-700 font-medium">
+                    <span class="w-2.5 h-2.5 rounded-full bg-indigo-600 border border-white shadow-sm inline-block"></span>
+                    <span>Titik Ganda (Gedung/Mall Bersama)</span>
                 </div>
             </div>
         </div>
@@ -805,8 +809,33 @@
             const cData = clusters[cId];
             const warnaIdx = (cId - 1) % PALET_KLASTER.length;
             const warnaKlaster = PALET_KLASTER[warnaIdx];
+            const namaSentra = cData.nama_sentra || `${cData.sektor_dominan} (${cData.kecamatan_dominan || 'Palembang'})`;
 
-            // 1. Poligon Batas Sentra (Convex Hull)
+            const ringkasanSektor = Object.entries(cData.sektor_ringkasan || {})
+                .map(([sektor, jml]) => `<li class="flex justify-between py-0.5"><span class="truncate pr-2">${sektor}</span><strong class="font-mono text-slate-800">${jml}</strong></li>`)
+                .join('');
+
+            const popupKawasan = `
+                <div class="p-3 text-xs max-w-xs font-sans">
+                    <div class="flex items-center space-x-2 mb-2 pb-1.5 border-b border-slate-100">
+                        <span class="w-3.5 h-3.5 rounded-full shrink-0" style="background-color: ${warnaKlaster}"></span>
+                        <h4 class="font-bold text-sm text-slate-900 leading-snug">Sentra #${cId}: ${namaSentra}</h4>
+                    </div>
+                    <div class="space-y-1 mb-2.5">
+                        <p class="text-slate-600"><span class="font-semibold text-slate-700">Wilayah:</span> Kecamatan ${cData.kecamatan_dominan || '-'}</p>
+                        <p class="text-slate-600"><span class="font-semibold text-slate-700">Sektor Dominan:</span> ${cData.sektor_dominan}</p>
+                        <p class="text-slate-600"><span class="font-semibold text-slate-700">Total Anggota:</span> <strong class="font-mono text-slate-900">${cData.total_titik}</strong> usaha (${cData.total_core} Core, ${cData.total_border} Border)</p>
+                    </div>
+                    <div class="bg-slate-50 p-2 rounded-lg border border-slate-200/80">
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Komposisi Sektor Teratas:</span>
+                        <ul class="text-[11px] text-slate-600 divide-y divide-slate-100">
+                            ${ringkasanSektor}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            // 1. Batas Kawasan Sentra: Poligon Convex Hull (jika >= 3 titik) ATAU Lingkaran Zona Buffer (jika titik kolinear / sedikit)
             if (cData.convex_hull && cData.convex_hull.length >= 3) {
                 const polygon = L.polygon(cData.convex_hull, {
                     color: warnaKlaster,
@@ -823,39 +852,39 @@
                 polygon.on('mouseout', function () {
                     this.setStyle({ fillOpacity: 0.20, weight: 2.5 });
                 });
-
-                const ringkasanSektor = Object.entries(cData.sektor_ringkasan || {})
-                    .map(([sektor, jml]) => `<li class="flex justify-between py-0.5"><span class="truncate pr-2">${sektor}</span><strong class="font-mono text-slate-800">${jml}</strong></li>`)
-                    .join('');
-
-                const popupPoligon = `
-                    <div class="p-3 text-xs max-w-xs font-sans">
-                        <div class="flex items-center space-x-2 mb-2 pb-1.5 border-b border-slate-100">
-                            <span class="w-3.5 h-3.5 rounded-full" style="background-color: ${warnaKlaster}"></span>
-                            <h4 class="font-bold text-sm text-slate-900">Sentra Pariwisata #${cId}</h4>
-                        </div>
-                        <div class="space-y-1 mb-2.5">
-                            <p class="text-slate-600"><span class="font-semibold text-slate-700">Sektor Dominan:</span> ${cData.sektor_dominan}</p>
-                            <p class="text-slate-600"><span class="font-semibold text-slate-700">Total Anggota:</span> <strong class="font-mono text-slate-900">${cData.total_titik}</strong> usaha (${cData.total_core} Core, ${cData.total_border} Border)</p>
-                        </div>
-                        <div class="bg-slate-50 p-2 rounded-lg border border-slate-200/80">
-                            <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-1">Komposisi Sektor Teratas:</span>
-                            <ul class="text-[11px] text-slate-600 divide-y divide-slate-100">
-                                ${ringkasanSektor}
-                            </ul>
-                        </div>
-                    </div>
-                `;
-                polygon.bindPopup(popupPoligon);
+                polygon.bindPopup(popupKawasan);
                 poligonSentraMap[cId] = polygon;
+            } else if (cData.center && cData.center.latitude && cData.center.longitude) {
+                // Buffer lingkaran jika titik sentra segaris lurus / koordinat bertumpuk (< 3 simpul)
+                const epsM = res.parameter_eps_meter || 300;
+                const bufferRadius = Math.max(90, Math.min(250, epsM * 0.5));
+
+                const circleZone = L.circle([cData.center.latitude, cData.center.longitude], {
+                    radius: bufferRadius,
+                    color: warnaKlaster,
+                    weight: 2.5,
+                    opacity: 0.85,
+                    fillColor: warnaKlaster,
+                    fillOpacity: 0.20,
+                    dashArray: '4, 4'
+                }).addTo(layerConvexHulls);
+
+                circleZone.on('mouseover', function () {
+                    this.setStyle({ fillOpacity: 0.38, weight: 3.5 });
+                });
+                circleZone.on('mouseout', function () {
+                    this.setStyle({ fillOpacity: 0.20, weight: 2.5 });
+                });
+                circleZone.bindPopup(popupKawasan);
+                poligonSentraMap[cId] = circleZone;
             }
 
-            // 2. Pola Pusat Sentra (Pin Kompak Berdiameter 26px - Bebas dari Teks Bertumpuk)
+            // 2. Pola Pusat Sentra (Pin Kompak Berdiameter 26px)
             if (cData.center && cData.center.latitude && cData.center.longitude) {
                 const pinIcon = L.divIcon({
                     className: 'sentra-center-pin-marker',
                     html: `
-                        <div class="sentra-center-pin" style="background-color: ${warnaKlaster};" title="Sentra #${cId}: ${cData.sektor_dominan} (${cData.total_titik} usaha)">
+                        <div class="sentra-center-pin" style="background-color: ${warnaKlaster};" title="Sentra #${cId}: ${namaSentra} (${cData.total_titik} usaha)">
                             <span>${cId}</span>
                         </div>
                     `,
@@ -866,7 +895,7 @@
                 const pinMarker = L.marker([cData.center.latitude, cData.center.longitude], { icon: pinIcon }).addTo(layerCenterPins);
                 
                 // Tooltip informatif saat pin di-hover
-                pinMarker.bindTooltip(`<strong>Sentra #${cId}</strong>: ${cData.sektor_dominan} (${cData.total_titik} usaha)`, {
+                pinMarker.bindTooltip(`<strong>Sentra #${cId}</strong>: ${namaSentra} (${cData.total_titik} usaha)`, {
                     direction: 'top',
                     offset: [0, -10]
                 });
@@ -875,38 +904,51 @@
             }
         });
 
-        // 3. Render Titik Usaha (Core, Border, Noise)
+        // 3. Render Titik Usaha (Termasuk Deteksi Multi-Usaha Bertumpuk di Koordinat Sama)
         const points = res.points || [];
+
+        // Peta kelompok titik yang memiliki koordinat identik / sangat berdekatan (~1 meter)
+        const coordMap = {};
+        points.forEach(p => {
+            const key = `${parseFloat(p.latitude).toFixed(5)},${parseFloat(p.longitude).toFixed(5)}`;
+            if (!coordMap[key]) coordMap[key] = [];
+            coordMap[key].push(p);
+        });
+
         points.forEach(p => {
             const isCluster = p.cluster_id > 0;
             const cId = p.cluster_id;
             const warnaKlaster = isCluster ? PALET_KLASTER[(cId - 1) % PALET_KLASTER.length] : WARNA_NOISE;
             const tipeTitik = p.tipe_titik || (isCluster ? 'core' : 'noise');
 
+            const coordKey = `${parseFloat(p.latitude).toFixed(5)},${parseFloat(p.longitude).toFixed(5)}`;
+            const coLocated = coordMap[coordKey] || [p];
+            const isMultiUsaha = coLocated.length > 1;
+
             let marker;
             if (tipeTitik === 'core') {
                 marker = L.circleMarker([p.latitude, p.longitude], {
-                    radius: 5.5,
+                    radius: isMultiUsaha ? 7 : 5.5,
                     fillColor: warnaKlaster,
-                    color: '#FFFFFF',
-                    weight: 2,
+                    color: isMultiUsaha ? '#312E81' : '#FFFFFF',
+                    weight: isMultiUsaha ? 2.5 : 2,
                     opacity: 1,
                     fillOpacity: 0.95
                 }).addTo(layerCoreMarkers);
             } else if (tipeTitik === 'border') {
                 marker = L.circleMarker([p.latitude, p.longitude], {
-                    radius: 4.5,
+                    radius: isMultiUsaha ? 6 : 4.5,
                     fillColor: warnaKlaster,
-                    color: '#FFFFFF',
-                    weight: 1.5,
+                    color: isMultiUsaha ? '#312E81' : '#FFFFFF',
+                    weight: isMultiUsaha ? 2 : 1.5,
                     opacity: 0.9,
                     fillOpacity: 0.75
                 }).addTo(layerBorderMarkers);
             } else {
                 marker = L.circleMarker([p.latitude, p.longitude], {
-                    radius: 3.5,
+                    radius: isMultiUsaha ? 4.5 : 3.5,
                     fillColor: WARNA_NOISE,
-                    color: '#FFFFFF',
+                    color: isMultiUsaha ? '#1E293B' : '#FFFFFF',
                     weight: 1,
                     opacity: 0.8,
                     fillOpacity: 0.45
@@ -927,8 +969,38 @@
                 ? '<span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Aktif Buka</span>'
                 : `<span class="text-[10px] font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">${p.status_operasional}</span>`;
 
+            // Banner multi-usaha jika ada lebih dari 1 usaha di koordinat yang sama
+            const multiUsahaBanner = isMultiUsaha
+                ? `<div class="mb-2 p-1.5 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-between text-[11px] font-semibold text-indigo-950">
+                       <div class="flex items-center space-x-1.5">
+                           <span class="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></span>
+                           <span>Titik Bersama / Gedung yang Sama</span>
+                       </div>
+                       <strong class="font-mono text-indigo-800 bg-indigo-100 px-1.5 py-0.5 rounded">${coLocated.length} Usaha</strong>
+                   </div>`
+                : '';
+
+            // Daftar seluruh tempat usaha di lokasi yang sama
+            const daftarUsahaLain = isMultiUsaha
+                ? `<div class="mt-2.5 pt-2 border-t border-slate-100">
+                       <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Seluruh Usaha di Lokasi Ini (${coLocated.length}):</span>
+                       <ul class="text-[11px] text-slate-700 divide-y divide-slate-100 max-h-32 overflow-y-auto custom-scrollbar">
+                           ${coLocated.map((u, idx) => `
+                               <li class="py-1 flex items-start justify-between gap-1.5 ${u.id_usaha === p.id_usaha ? 'font-bold text-ampera-900 bg-slate-50 px-1 rounded' : 'text-slate-600'}">
+                                   <div class="min-w-0">
+                                       <div class="truncate">${idx + 1}. ${u.nama_usaha}</div>
+                                       <div class="text-[10px] text-slate-400 truncate">${u.judul_kbli || '-'}</div>
+                                   </div>
+                                   <span class="text-[9px] shrink-0 font-normal px-1 py-0.5 rounded ${u.status_operasional === 'Buka' ? 'text-emerald-700 bg-emerald-50' : 'text-rose-700 bg-rose-50'}">${u.status_operasional || 'Buka'}</span>
+                               </li>
+                           `).join('')}
+                       </ul>
+                   </div>`
+                : '';
+
             const popupContent = `
                 <div class="p-3 text-xs max-w-xs font-sans">
+                    ${multiUsahaBanner}
                     <div class="flex items-center justify-between gap-1 mb-2">
                         <div class="flex items-center space-x-1.5">
                             ${badgeSentra}
@@ -946,6 +1018,7 @@
                         <span>Lat: ${p.latitude}</span>
                         <span>Lon: ${p.longitude}</span>
                     </div>
+                    ${daftarUsahaLain}
                 </div>
             `;
             marker.bindPopup(popupContent);
@@ -975,6 +1048,7 @@
             const warnaIdx = (cId - 1) % PALET_KLASTER.length;
             const warna = PALET_KLASTER[warnaIdx];
             const porsiKota = totalPoints > 0 ? ((cData.total_titik / totalPoints) * 100).toFixed(1) : '0';
+            const namaSentra = cData.nama_sentra || `${cData.sektor_dominan} (${cData.kecamatan_dominan || 'Palembang'})`;
 
             const item = document.createElement('div');
             item.className = 'item-sentra p-2.5 rounded-xl border border-slate-200/80 hover:border-slate-300 hover:bg-slate-50/80 transition duration-150 cursor-pointer flex items-center justify-between group';
@@ -987,10 +1061,12 @@
                         ${cId}
                     </span>
                     <div class="min-w-0">
-                        <h4 class="text-xs font-bold text-slate-800 truncate leading-snug group-hover:text-ampera-800 transition" title="${cData.sektor_dominan}">
-                            ${cData.sektor_dominan}
+                        <h4 class="text-xs font-bold text-slate-800 truncate leading-snug group-hover:text-ampera-800 transition" title="${namaSentra}">
+                            ${namaSentra}
                         </h4>
                         <div class="flex items-center space-x-2 text-[10px] text-slate-500 font-mono">
+                            <span class="text-slate-600 font-medium">${cData.kecamatan_dominan || 'Kota Palembang'}</span>
+                            <span>•</span>
                             <span class="text-emerald-700">${cData.total_core} Core</span>
                             <span>•</span>
                             <span class="text-amber-700">${cData.total_border} Border</span>

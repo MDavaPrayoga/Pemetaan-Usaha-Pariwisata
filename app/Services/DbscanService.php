@@ -329,6 +329,7 @@ class DbscanService
             $coreCount = 0;
             $borderCount = 0;
             $sektorCounts = [];
+            $kecamatanCounts = [];
 
             foreach ($pts as $pt) {
                 $sumLat += (float) $pt['latitude'];
@@ -342,10 +343,19 @@ class DbscanService
 
                 $judulKbli = $pt['judul_kbli'] ?? 'Lainnya';
                 $sektorCounts[$judulKbli] = ($sektorCounts[$judulKbli] ?? 0) + 1;
+
+                $namaKec = $pt['nama_kecamatan'] ?? null;
+                if ($namaKec && $namaKec !== '-') {
+                    $kecamatanCounts[$namaKec] = ($kecamatanCounts[$namaKec] ?? 0) + 1;
+                }
             }
 
             arsort($sektorCounts);
-            $sektorDominan = key($sektorCounts);
+            $sektorDominan = key($sektorCounts) ?? 'Lainnya';
+
+            arsort($kecamatanCounts);
+            $kecamatanDominan = !empty($kecamatanCounts) ? key($kecamatanCounts) : 'Palembang';
+            $namaSentra = $sektorDominan . ' (' . $kecamatanDominan . ')';
 
             // Hitung Convex Hull untuk poligon batas sentra
             $hullCoords = $this->convexHull($pts);
@@ -356,6 +366,8 @@ class DbscanService
                 'total_core' => $coreCount,
                 'total_border' => $borderCount,
                 'sektor_dominan' => $sektorDominan,
+                'kecamatan_dominan' => $kecamatanDominan,
+                'nama_sentra' => $namaSentra,
                 'sektor_ringkasan' => array_slice($sektorCounts, 0, 3, true),
                 'center' => [
                     'latitude' => round($sumLat / $count, 6),

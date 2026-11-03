@@ -331,6 +331,7 @@ class PetaController extends Controller
                 'latitude' => (float) $item->latitude,
                 'longitude' => (float) $item->longitude,
                 'judul_kbli' => $item->kbli->judul_kbli ?? '-',
+                'nama_kecamatan' => $item->kecamatan->nama_kecamatan ?? '-',
             ];
         })->toArray();
 
